@@ -1,0 +1,9 @@
+pandas
+numpy
+matplotlib
+openpyxl
+statsmodels
+lightgbm
+tqdm
+jupyter
+ipykernel
