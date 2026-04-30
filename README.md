@@ -17,7 +17,7 @@ forecasting-retail/
 │   └── playground.ipynb         central orchestrator (the only notebook to run)
 ├── src/
 │   ├── tools/                   load, clean, features, embeddings, clustering, evaluation
-│   └── modelling/               naive, sarimax, prophet, lightgbm, deepar, ns_transformer
+│   └── models/               naive, sarimax, prophet, lightgbm, deepar, ns_transformer
 ├── agent/                       n8n-facing service (FastAPI + prompt parser)
 └── infra/                       Docker Compose for n8n + forecast-api
 ```
