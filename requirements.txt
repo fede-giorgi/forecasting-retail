@@ -15,6 +15,7 @@ prophet
 umap-learn
 hdbscan
 scikit-learn
+jenkspy
 torch
 gluonts[torch]
 lightning
