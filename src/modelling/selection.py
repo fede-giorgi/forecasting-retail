@@ -21,7 +21,7 @@ import numpy as np
 import pandas as pd
 from tqdm.auto import tqdm
 
-from ..tools.evaluation import rolling_block_evaluate, block_summary, rolling_origin_folds
+from ..tools.evaluation import rolling_block_evaluate, block_summary, rolling_origin_folds, wmape
 
 
 def select_best_model(
@@ -79,8 +79,26 @@ def select_best_model(
             tb["Fold"] = fold_id
             test_blocks.append(tb)
 
+    val_block = pd.concat(val_blocks, ignore_index=True) if val_blocks else pd.DataFrame()
+    test_block = pd.concat(test_blocks, ignore_index=True) if test_blocks else pd.DataFrame()
+
+    # Volume-weighted summary across ALL evaluated SKUs (the metric we care about).
+    bench = pd.DataFrame()
+    if not val_block.empty:
+        rows = []
+        for name, g in val_block.groupby("Model"):
+            rows.append({
+                "Model": name,
+                "Val_WMAPE": wmape(g["Actual_Block"], g["Forecast_Block"]),
+                "Val_Block_MAPE_mean": float(g["Block_APE"].mean()),
+                "Val_Block_MAPE_median": float(g["Block_APE"].median()),
+                "n_blocks": int(len(g)),
+            })
+        bench = pd.DataFrame(rows).sort_values("Val_WMAPE")
+
     return {
         "choices": pd.DataFrame(sel_rows),
-        "validation_block": pd.concat(val_blocks, ignore_index=True) if val_blocks else pd.DataFrame(),
-        "test_block": pd.concat(test_blocks, ignore_index=True) if test_blocks else pd.DataFrame(),
+        "validation_block": val_block,
+        "test_block": test_block,
+        "benchmark": bench,
     }

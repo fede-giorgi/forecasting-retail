@@ -16,7 +16,8 @@ umap-learn
 hdbscan
 scikit-learn
 torch
-gluonts
+gluonts[torch]
+lightning
 fastapi
 uvicorn
 pydantic

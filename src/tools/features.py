@@ -48,10 +48,28 @@ def build_series_for_sku(weekly_sku: pd.DataFrame, sku: str) -> pd.Series:
     return s.reindex(full, fill_value=0).rename_axis("Week")
 
 
-def eligible_skus_by_revenue(weekly_sku: pd.DataFrame, top_n: int = 30, min_active_weeks: int = 60) -> list[str]:
+def eligible_skus_by_revenue(
+    weekly_sku: pd.DataFrame,
+    top_n: int = 30,
+    min_active_weeks: int = 60,
+    min_recent_active: int = 6,
+    recent_window: int = 24,
+) -> list[str]:
+    """Top-N by lifetime revenue, restricted to SKUs with:
+       - `min_active_weeks` lifetime weeks of non-zero demand AND
+       - `min_recent_active` weeks of non-zero demand within the last `recent_window`.
+    The recency filter prevents 'zombie' SKUs (high lifetime revenue but dead now)
+    from collapsing block-level APE to vacuous zeros."""
     rev = weekly_sku.groupby("StockCode")["Revenue"].sum().sort_values(ascending=False)
     active = weekly_sku.groupby("StockCode")["Quantity"].apply(lambda s: (s > 0).sum())
-    keep = active[active >= min_active_weeks].index
+    cutoff = weekly_sku["Week"].max() - pd.Timedelta(weeks=recent_window)
+    recent = (
+        weekly_sku[weekly_sku["Week"] >= cutoff]
+        .groupby("StockCode")["Quantity"].apply(lambda s: (s > 0).sum())
+    )
+    keep = active[active >= min_active_weeks].index.intersection(
+        recent[recent >= min_recent_active].index
+    )
     return rev.loc[rev.index.isin(keep)].head(top_n).index.astype(str).tolist()
 
 
