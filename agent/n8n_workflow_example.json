@@ -1,0 +1,51 @@
+{
+  "name": "Retail Forecast Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "forecast-chat",
+        "responseMode": "lastNode"
+      },
+      "id": "webhook",
+      "name": "Chat Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "agent": "openAiFunctionsAgent",
+        "promptType": "define",
+        "text": "={{ $json.body.message }}",
+        "options": {
+          "systemMessage": "You are a retail demand forecasting assistant. When asked about a SKU forecast, ALWAYS call the `forecast_lookup` tool with the user's full message as the `prompt`. Then return the tool's text response verbatim, formatted for chat."
+        }
+      },
+      "id": "agent",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "name": "forecast_lookup",
+        "description": "Get the 12-week demand and revenue forecast for a SKU. Input: a natural-language prompt containing a StockCode (e.g. '22197', '85123A') and optionally a horizon (e.g. 'next 4 weeks').",
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/forecast",
+        "jsonBody": "={\n  \"prompt\": \"{toolInput}\"\n}",
+        "responsePropertyName": "text"
+      },
+      "id": "tool",
+      "name": "Forecast Lookup Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [500, 500]
+    }
+  ],
+  "connections": {
+    "Chat Webhook": {"main": [[{"node": "AI Agent", "type": "main", "index": 0}]]},
+    "Forecast Lookup Tool": {"ai_tool": [[{"node": "AI Agent", "type": "ai_tool", "index": 0}]]}
+  }
+}

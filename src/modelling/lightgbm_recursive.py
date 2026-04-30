@@ -1,3 +1,16 @@
+"""
+LightGBM recursive forecaster with Tweedie loss.
+
+Why Tweedie (not L2): WMAPE is L1-flavoured and our weekly demand is
+non-negative with a long tail of zeros (intermittents). Tweedie at
+variance_power ≈ 1.2 sits between Poisson (1.0) and Gamma (2.0); it directly
+optimizes the kind of error WMAPE penalizes, and avoids the MSE-induced
+optimism on high-volume SKUs that dominate the metric.
+
+Recursive multi-step: we predict step 1, append it to history, predict step 2,
+and so on. Direct multi-output is also viable but recursive is simpler and
+matches the per-SKU contract used by SARIMAX/Prophet.
+"""
 import numpy as np
 import pandas as pd
 
@@ -7,7 +20,7 @@ try:
     import lightgbm as lgb
     HAS_LGB = True
 except Exception:
-    # Catches both ImportError and OSError (missing libomp.dylib on macOS).
+    # Catches ImportError + OSError (missing libomp.dylib on macOS).
     HAS_LGB = False
 
 
@@ -20,7 +33,6 @@ def _make_lagged_df(y: pd.Series, lags: int) -> tuple[pd.DataFrame, pd.Series]:
 
 
 def lightgbm_recursive(train: pd.Series, horizon: int, lags: int = 8) -> np.ndarray:
-    """Recursive multi-step forecast with a LightGBM regressor on lag features."""
     if not HAS_LGB:
         return naive(train, horizon)
 
@@ -29,7 +41,9 @@ def lightgbm_recursive(train: pd.Series, horizon: int, lags: int = 8) -> np.ndar
         return naive(train, horizon)
 
     model = lgb.LGBMRegressor(
-        n_estimators=300,
+        objective="tweedie",
+        tweedie_variance_power=1.2,
+        n_estimators=400,
         learning_rate=0.05,
         num_leaves=31,
         min_data_in_leaf=2,

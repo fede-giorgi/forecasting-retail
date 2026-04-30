@@ -1,0 +1,17 @@
+FROM python:3.11-slim
+
+ENV PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1
+WORKDIR /app
+
+# Slim dep set: just what the FastAPI agent needs at serve-time.
+# (Forecasts are pre-computed by the playground and read from parquet here.)
+RUN pip install --no-cache-dir \
+    fastapi==0.115.* uvicorn[standard]==0.32.* pydantic==2.* \
+    pandas==2.* pyarrow==18.*
+
+COPY agent /app/agent
+COPY src /app/src
+ENV PROJECT_ROOT=/app
+
+EXPOSE 8000
+CMD ["uvicorn", "agent.server:app", "--host", "0.0.0.0", "--port", "8000"]

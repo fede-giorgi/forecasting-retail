@@ -10,3 +10,16 @@ ipykernel
 google-genai
 pyarrow
 python-dotenv
+holidays
+prophet
+umap-learn
+hdbscan
+scikit-learn
+torch
+gluonts
+fastapi
+uvicorn
+pydantic
+# AWS / SageMaker — only needed if you switch DeepARWrapper(backend="sagemaker")
+boto3
+sagemaker

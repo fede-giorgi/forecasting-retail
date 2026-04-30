@@ -7,8 +7,8 @@
 .env.*
 !.env.example
 
-# Generated artifacts
-data/
+# Generated artifacts (raw dataset stays tracked, derived outputs don't)
+data/processed/
 embeddings/
 
 # Python
