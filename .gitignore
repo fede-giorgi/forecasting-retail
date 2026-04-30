@@ -1,10 +1,15 @@
 # Claude Code context (kept private)
-CLAUDE.md
+**/CLAUDE.md
 .claude/
 
 # Environment
 .env
 .env.*
+!.env.example
+
+# Generated artifacts
+data/
+embeddings/
 
 # Python
 __pycache__/

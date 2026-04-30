@@ -1,23 +1,42 @@
+import re
 import pandas as pd
 
-def clean_raw_data(df):
-    
-    # Remove cancellations and invalid lines
-    df = df.dropna(subset=["InvoiceDate", "StockCode", "Invoice"]).copy()
-    df["Invoice"] = df["Invoice"].astype(str)
+PRODUCT_RE = re.compile(r"^\d{5}[A-Za-z]?$")
+BAD_DESC = {
+    "?", "??", "damaged", "damages", "lost", "missing",
+    "check", "wrongly coded", "wet?", "wet",
+}
 
-    # "C..." invoices are cancellations
-    df = df[~df["Invoice"].str.startswith("C")].copy()
-    df = df[df["Quantity"] > 0].copy()
-    df = df[df["Price"] > 0].copy()
 
-    # Revenue
-    df["Revenue"] = df["Quantity"] * df["Price"]
+def split_sales_returns(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """
+    Returns (sales, returns).
+      - sales: target-clean rows (Quantity>0, Price>0, no C-invoice, no admin code).
+      - returns: |Quantity| from C-invoices or negative-qty rows. Used ONLY for
+        feature engineering (return_rate_*), NOT as target.
 
-    # Monday-aligned week
-    df["Week"] = df["InvoiceDate"].dt.to_period("W").dt.start_time
+    See `01_data_load_and_strategy.ipynb` §2 for the rationale.
+    """
+    d = df.dropna(subset=["InvoiceDate", "StockCode", "Description"]).copy()
+    d["Invoice"] = d["Invoice"].astype(str)
+    d["StockCode"] = d["StockCode"].astype(str)
+    d["Description"] = d["Description"].str.strip()
 
-    # Consistent types
-    df["StockCode"] = df["StockCode"].astype(str)
+    d = d[d["StockCode"].str.match(PRODUCT_RE)]
+    d = d[~d["Description"].str.lower().isin(BAD_DESC)]
+    d = d[d["Price"] > 0]
 
-    return df
+    d = d.copy()
+    d["Week"] = d["InvoiceDate"].dt.to_period("W-MON").dt.start_time
+
+    is_cancellation = d["Invoice"].str.startswith("C")
+    is_negative_qty = d["Quantity"] < 0
+
+    sales = d[~is_cancellation & ~is_negative_qty].copy()
+    sales["Revenue"] = sales["Quantity"] * sales["Price"]
+
+    returns = d[is_cancellation | is_negative_qty].copy()
+    returns["Quantity"] = returns["Quantity"].abs()
+    returns = returns[["StockCode", "Week", "Quantity", "Customer ID", "Country"]]
+
+    return sales, returns

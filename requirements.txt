@@ -7,3 +7,6 @@ lightgbm
 tqdm
 jupyter
 ipykernel
+google-genai
+pyarrow
+python-dotenv
