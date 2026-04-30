@@ -98,125 +98,61 @@ def calculate_commercial_profile(raw_sales: pd.DataFrame) -> pd.DataFrame:
 
 # ---------- Dual Clustering Algorithms ----------
 
-def create_profile_clusters(
-    embeddings_df: pd.DataFrame,
-    demand_df: pd.DataFrame,
-    commercial_df: pd.DataFrame,
-    weekly_aggregated_sales: pd.DataFrame | None = None,
-    umap_dimensions: int = 3,
-    n_profile_clusters: int = 4,
-    demand_columns: Iterable[str] | None = None,
-    commercial_columns: Iterable[str] | None = None,
+def create_seasonal_profile_clusters(
+    weekly_aggregated_sales: pd.DataFrame,
+    n_clusters: int = 4,
     random_state: int = 42,
     plot: bool = False,
 ) -> pd.DataFrame:
     """
-    Creates "Behavioral" clusters by fusing Text Embeddings, Demand shape, and Commercial stats.
-    
-    Uses UMAP to compress text embeddings and KMeans to find distinct behavioral archetypes.
-    If weekly_aggregated_sales is provided and plot=True, it also visualizes the timeline.
+    Identifies consumption shapes (profiles) based ONLY on the seasonal timeline.
+    Extracts the 52-week average sales profile for each SKU, scales it (MinMax) 
+    to remove volume bias, and clusters the pure "shape" using KMeans.
     """
-
-    demand_columns = list(demand_columns) if demand_columns else ["ADI", "CV2", "share_zero_weeks"]
-    commercial_columns = list(commercial_columns) if commercial_columns else [
-        "price_median", "mean_basket_size", "n_unique_customers", "country_uk_share"
-    ]
-
-    # 1. Inner-join all three dataframes to ensure we only cluster fully represented SKUs
-    merged_data = (
-        embeddings_df[["StockCode", "embedding"]]
-        .merge(demand_df[["StockCode"] + demand_columns], on="StockCode")
-        .merge(commercial_df[["StockCode"] + commercial_columns], on="StockCode")
-    )
-
-    skus, text_embeddings = embeddings_as_matrix(merged_data)
-
-    # 2. UMAP Dimensionality Reduction on text embeddings
-    print("Compressing text embeddings via UMAP...")
-    reducer = umap.UMAP(n_components=umap_dimensions, metric="cosine", random_state=random_state)
-    embeddings_reduced = reducer.fit_transform(text_embeddings)
-
-    # 3. Standardize the numeric features independently
-    print("Scaling and weighting numeric features...")
-    embeddings_scaled = StandardScaler().fit_transform(embeddings_reduced)
-    demand_scaled = StandardScaler().fit_transform(merged_data[demand_columns].fillna(0).values)
-    commercial_scaled = StandardScaler().fit_transform(merged_data[commercial_columns].fillna(0).values)
-
-    # Balance the mathematical weight of the three domains so KMeans considers them equally
-    demand_scaled = demand_scaled * 1.5
-    commercial_scaled = commercial_scaled * 1.0
-    embeddings_scaled = embeddings_scaled * 1.0
-
-    # Concatenate all three worlds into a single feature matrix
-    final_feature_matrix = np.concatenate([embeddings_scaled, demand_scaled, commercial_scaled], axis=1)
-
-    # 4. KMeans Clustering
-    print(f"Running KMeans to find {n_profile_clusters} distinct profile archetypes...")
+    print(f"Calculating seasonal shape clusters (k={n_clusters}) based on weekly data...")
+    
+    df = weekly_aggregated_sales.copy()
+    
+    # Extract week of the year (1 to 52/53)
+    df["week_of_year"] = df["Week"].dt.isocalendar().week
+    
+    # Calculate the average quantity per week-of-year across all years
+    profiles = df.groupby(["StockCode", "week_of_year"], observed=True)["Quantity"].mean().unstack().fillna(0)
+    
+    # Ensure all weeks from 1 to 52 are represented (just in case)
+    profiles = profiles.reindex(columns=range(1, 53), fill_value=0)
+    
+    # Scale each SKU (row) individually to be between 0 and 1
+    # This isolates the "shape" of the seasonality, removing the effect of absolute volume
+    from sklearn.preprocessing import MinMaxScaler
+    scaler = MinMaxScaler()
+    profiles_scaled = scaler.fit_transform(profiles.T).T
+    
+    # Fit KMeans
     from sklearn.cluster import KMeans
-    kmeans = KMeans(n_clusters=n_profile_clusters, random_state=random_state, n_init="auto")
-    cluster_labels = kmeans.fit_predict(final_feature_matrix)
-
+    kmeans = KMeans(n_clusters=n_clusters, random_state=random_state, n_init=10)
+    cluster_labels = kmeans.fit_predict(profiles_scaled)
+    
     if plot:
-        plot_df = merged_data.copy()
-        plot_df["profile_cluster_id"] = cluster_labels
+        print(f"Executing final K-Means with k={n_clusters} clusters...")
         
-        # Plot 1: Syntetos-Boylan Space
-        if len(plot_df) > 0:
-            plt.figure(figsize=(10, 6))
-            sns.scatterplot(
-                data=plot_df, 
-                x='ADI', 
-                y='CV2', 
-                hue='profile_cluster_id', 
-                palette='tab10', 
-                alpha=0.6,
-                edgecolor=None,
-                s=50
-            )
+        plt.figure(figsize=(12, 6))
+        for i in range(n_clusters):
+            # Calculate the mean profile for the entire cluster
+            cluster_mean = profiles_scaled[cluster_labels == i].mean(axis=0)
+            cluster_size = sum(cluster_labels == i)
+            plt.plot(range(1, 53), cluster_mean, label=f'Cluster {i} (n={cluster_size})', linewidth=2)
 
-            plt.axvline(x=1.32, color='black', linestyle='--', alpha=0.5, label='ADI = 1.32')
-            plt.axhline(y=0.49, color='red', linestyle='--', alpha=0.5, label='CV² = 0.49')
+        plt.title('Normalized 52-Week Seasonal Profiles by SKU Cluster', fontsize=14, fontweight='bold')
+        plt.xlabel('Week of the Year', fontsize=12)
+        plt.ylabel('Normalized Average Quantity (0 to 1)', fontsize=12)
+        plt.xticks(range(1, 53, 4)) # Tick every 4 weeks (roughly a month)
+        plt.legend(title="Seasonal Profile Cluster")
+        plt.grid(True, alpha=0.3)
+        plt.tight_layout()
+        plt.show()
 
-            plt.title('Behavioral Clusters mapped on Syntetos-Boylan Space', fontsize=14, fontweight='bold')
-            plt.xlabel('Average Demand Interval (ADI)', fontsize=12)
-            plt.ylabel('Squared Coefficient of Variation (CV²)', fontsize=12)
-            plt.legend(title='Profile Cluster ID', bbox_to_anchor=(1.05, 1), loc='upper left')
-            plt.grid(True, alpha=0.3)
-
-            plt.xlim(0, plot_df['ADI'].quantile(0.98))
-            plt.ylim(0, plot_df['CV2'].quantile(0.98))
-
-            plt.tight_layout()
-            plt.show()
-            
-        # Plot 2: Chronological Sales Profiles by Cluster
-        if weekly_aggregated_sales is not None:
-            # Pivot to get Week on columns, StockCode on index
-            pivot_df = weekly_aggregated_sales.pivot_table(index="StockCode", columns="Week", values="Quantity", aggfunc="sum").fillna(0)
-            
-            # Merge with cluster labels
-            pivot_df = pivot_df.merge(pd.DataFrame({"StockCode": skus, "profile_cluster_id": cluster_labels}), on="StockCode").set_index("StockCode")
-            
-            # Normalize each SKU's timeline by its maximum value so we only compare the "shape" of the curve
-            max_vals = pivot_df.drop(columns=["profile_cluster_id"]).max(axis=1) + 1e-9
-            normalized_profiles = pivot_df.drop(columns=["profile_cluster_id"]).div(max_vals, axis=0)
-            normalized_profiles["profile_cluster_id"] = pivot_df["profile_cluster_id"]
-            
-            plt.figure(figsize=(12, 6))
-            for cluster_id in sorted(normalized_profiles["profile_cluster_id"].unique()):
-                cluster_data = normalized_profiles[normalized_profiles["profile_cluster_id"] == cluster_id]
-                cluster_mean = cluster_data.drop(columns=["profile_cluster_id"]).mean(axis=0)
-                plt.plot(cluster_mean.index, cluster_mean.values, label=f"Cluster {cluster_id} (n={len(cluster_data)})", linewidth=2)
-                
-            plt.title("Normalized Weekly Sales Profiles by Behavioral Cluster", fontsize=14, fontweight="bold")
-            plt.xlabel("Week", fontsize=12)
-            plt.ylabel("Normalized Avg Quantity (0 to 1)", fontsize=12)
-            plt.legend(title="Profile Cluster ID", bbox_to_anchor=(1.05, 1), loc='upper left')
-            plt.grid(True, alpha=0.3)
-            plt.tight_layout()
-            plt.show()
-
-    return pd.DataFrame({"StockCode": skus, "profile_cluster_id": cluster_labels})
+    return pd.DataFrame({"StockCode": profiles.index, "profile_cluster_id": cluster_labels})
 
 
 def create_volume_clusters(weekly_aggregated_sales: pd.DataFrame, n_tiers: int = 3, plot: bool = False) -> pd.DataFrame:

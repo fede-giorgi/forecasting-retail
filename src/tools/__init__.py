@@ -13,7 +13,7 @@ from .add_temporal_features import add_temporal_features
 
 from .clustering import (
     calculate_demand_profile, calculate_commercial_profile,
-    create_profile_clusters, create_volume_clusters
+    create_seasonal_profile_clusters, create_volume_clusters
 )
 
 from .evaluation import (
@@ -33,7 +33,7 @@ __all__ = [
     "aggregate_weekly_sku", "add_historical_features", "add_pricing_features",
     "add_temporal_features",
     "calculate_demand_profile", "calculate_commercial_profile",
-    "create_profile_clusters", "create_volume_clusters",
+    "create_seasonal_profile_clusters", "create_volume_clusters",
     "pointwise_ape", "mape_0_100", "wmape",
     "rolling_block_evaluate", "block_summary",
     "rolling_origin_folds", "rolling_origin_evaluate",

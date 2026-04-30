@@ -14,7 +14,7 @@ from src.tools.data_loader import load_raw_data
 from src.tools.cleaning import split_sales_returns
 from src.tools.add_temporal_features import add_temporal_features
 from src.tools.feature_engineering import aggregate_weekly_sku, add_historical_features, add_pricing_features
-from src.tools.clustering import calculate_demand_profile, calculate_commercial_profile, create_profile_clusters, create_volume_clusters
+from src.tools.clustering import calculate_demand_profile, calculate_commercial_profile, create_seasonal_profile_clusters, create_volume_clusters
 from src.tools.embeddings import embed_sku_descriptions
 
 
@@ -61,8 +61,8 @@ def process_data(input_path: str, output_path: str, test_cutoff: str = "2011-09-
     demand_df = calculate_demand_profile(weekly_sales_train)
     commercial_df = calculate_commercial_profile(sales_df_train)
     
-    print("Creating Behavioral Clusters (Semantics + Demand + Commercial)...")
-    profile_clusters = create_profile_clusters(embeddings_df, demand_df, commercial_df)
+    print("Creating Behavioral Clusters (52-Week Seasonal Profiles)...")
+    profile_clusters = create_seasonal_profile_clusters(weekly_sales_train, n_clusters=4)
     
     print("Creating Volume Clusters (Jenks Natural Breaks) on Train set...")
     volume_clusters = create_volume_clusters(weekly_sales_train, n_tiers=3)
@@ -78,7 +78,7 @@ def process_data(input_path: str, output_path: str, test_cutoff: str = "2011-09-
     # 8. Export
     print(f"Exporting fully featured dataset to {output_path}...")
     final_df.to_parquet(output_path, index=False)
-    print("Pipeline completed successfully! 🚀")
+    print("Pipeline completed successfully!")
 
 if __name__ == "__main__":
     # Point to the actual Retail dataset!
