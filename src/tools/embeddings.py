@@ -21,9 +21,10 @@ from pathlib import Path
 import os
 import re
 import time
-
 import numpy as np
 import pandas as pd
+from google import genai
+from google.genai import types
 
 # Regular expression to extract the suggested wait time from Gemini API 429 Error (Rate Limit)
 _RETRY_DELAY_REGEX = re.compile(r"'retryDelay':\s*'(\d+(?:\.\d+)?)s'")
@@ -114,8 +115,6 @@ def embed_texts(
     
     Returns a 2D NumPy array of shape (Number of texts, Dimensions).
     """
-    from google import genai
-    from google.genai import types
 
     if client is None:
         client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))

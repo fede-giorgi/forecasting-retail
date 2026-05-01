@@ -1,54 +1,88 @@
 import pandas as pd
 import numpy as np
+import holidays
 from typing import Iterable
 
-
-def aggregate_weekly_sku(raw_sales: pd.DataFrame) -> pd.DataFrame:
+def add_temporal_features(weekly_sku: pd.DataFrame) -> pd.DataFrame:
     """
-    Aggregates raw transaction data into a weekly panel and ensures temporal continuity.
+    Performs feature engineering by extracting time-based components from the 'Week' column.
     
-    This function groups individual purchases into weekly buckets (summing Quantity and Revenue).
-    Crucially, it then generates a continuous 'W-MON' calendar from the first to the last date 
-    in the dataset, and forces every SKU to have an entry for every week. Weeks with no sales 
-    are explicitly filled with 0s. This prevents mathematical errors in downstream time-series 
-    models (like broken lags or distorted seasonality).
+    This function calculates calendar-based features such as the week of the year, month, 
+    quarter, and year. It also applies a cyclical encoding (Sine/Cosine) to the week and month 
+    to preserve their continuous, circular nature for machine learning models. Finally, it identifies 
+    UK national holidays and specific peak shopping windows (like Christmas and Black Friday), 
+    which are critical for capturing retail consumption patterns.
 
     Args:
-        raw_sales (pd.DataFrame): The cleaned transaction data.
+        weekly_sku (pd.DataFrame): The input DataFrame containing weekly aggregated SKU sales. 
+                                   Must contain a 'Week' column in datetime format.
 
     Returns:
-        pd.DataFrame: A continuous, zero-filled weekly aggregated DataFrame with columns:
-                      ['StockCode', 'Week', 'Quantity', 'Revenue'].
+        pd.DataFrame: A new DataFrame containing the original data plus the following columns:
+            - 'week_of_year': ISO week of the year (1 to 52/53).
+            - 'month': Month of the year (1 to 12).
+            - 'quarter': Quarter of the year (1 to 4).
+            - 'year': Year of the observation.
+            - 'sin_woy', 'cos_woy': Cyclical encoding of the week of the year.
+            - 'sin_month', 'cos_month': Cyclical encoding of the month.
+            - 'holiday_uk': Boolean flag (1 if the week contains a UK national holiday, 0 otherwise).
+            - 'is_christmas_window': Boolean flag (1 for weeks near Black Friday and Christmas).
     """
-    # 1. Aggregate existing sales
-    weekly_aggregated = (
-        raw_sales.groupby(["StockCode", "Week"], as_index=False)
-        .agg(
-            Quantity=("Quantity", "sum"),
-            Revenue=("Revenue", "sum")
-        )
-    )
     
-    # 2. Find the global timeline boundaries
-    min_week = weekly_aggregated["Week"].min()
-    max_week = weekly_aggregated["Week"].max()
-    full_calendar = pd.date_range(start=min_week, end=max_week, freq="W-MON")
+    # 1. Extract base datetime components for easier reference
+    week_dates = weekly_sku["Week"]
     
-    # 3. Create a perfect mathematical grid of ALL SKUs vs ALL Weeks
-    all_skus = weekly_aggregated["StockCode"].unique()
-    continuous_grid = pd.MultiIndex.from_product(
-        [all_skus, full_calendar], 
-        names=["StockCode", "Week"]
-    )
+    # 2. Calculate intermediate temporal values needed for both features and cyclical encodings
+    week_of_year = week_dates.dt.isocalendar().week.astype(int)
+    month = week_dates.dt.month.astype(int)
+    quarter = week_dates.dt.quarter.astype(int)
+    year = week_dates.dt.year.astype(int)
     
-    # 4. Map the aggregated data onto the perfect grid, filling holes with 0
-    continuous_aggregated = (
-        weekly_aggregated.set_index(["StockCode", "Week"])
-        .reindex(continuous_grid, fill_value=0)
-        .reset_index()
-    )
+    # 3. Calculate UK national holidays
+    uk_holidays = holidays.country_holidays("GB")
     
-    return continuous_aggregated
+    # Helper to check if any day within the 7-day week (starting from Monday) is a UK holiday
+    def is_uk_holiday(monday_date):
+        return int(any((monday_date + pd.Timedelta(days=i)) in uk_holidays for i in range(7)))
+
+    # 4. Construct a dictionary containing all the new temporal features
+    new_features = {
+        
+        # 1 to 52 (or 53)
+        'week_of_year': week_of_year,
+        
+        # 1 to 12
+        'month': month,
+        
+        # 1 to 4
+        'quarter': quarter,
+        
+        # The chronological year
+        'year': year,
+        
+        # Cyclical encoding for the week of the year to preserve circular continuity (e.g., week 52 is close to week 1)
+        'sin_woy': np.sin(2 * np.pi * week_of_year / 52),
+        'cos_woy': np.cos(2 * np.pi * week_of_year / 52),
+        
+        # Cyclical encoding for the month to preserve circular continuity
+        'sin_month': np.sin(2 * np.pi * month / 12),
+        'cos_month': np.cos(2 * np.pi * month / 12),
+        
+        # 1 if any day in the week is a holiday in the UK, 0 otherwise
+        'holiday_uk': week_dates.apply(is_uk_holiday),
+        
+        # 1 if the week falls in the high-volume holiday shopping period (Black Friday to Christmas)
+        # Specifically: Month 11 (November) starting from week 47, OR the entire Month 12 (December)
+        'is_christmas_window': ((month == 11) & (week_of_year >= 47)).astype(int) | (month == 12).astype(int)
+    }
+    
+    # 5. Concatenate the new features to the original DataFrame
+    # Note: Since the values in 'new_features' are Pandas Series, the index is automatically preserved
+    enhanced_weekly_sku = pd.concat([weekly_sku, pd.DataFrame(new_features)], axis=1)
+    
+    return enhanced_weekly_sku
+
+
 
 
 
@@ -62,14 +96,14 @@ def add_historical_features(
     Combines return rates, lagged quantities, and rolling statistics into a single 
     historical feature engineering step.
     
-    This function performs three main tasks:
+    This function performs four main tasks:
     1. It aggregates the 'returns' dataframe to calculate the total quantity returned 
        per SKU per week.
     2. It computes rolling return rates (e.g., over 4 and 13 weeks) by dividing 
        rolling returns by rolling sales.
-    3. It generates lagged demand features (to capture seasonality like 52 weeks = 1 year) 
-       and rolling means/standard deviations (to capture recent trends and volatility).
-       
+    3. It generates lagged demand features (to capture seasonality like 52 weeks = 1 year).
+    4. It generates rolling means/standard deviations (to capture recent trends and volatility).
+    
     Args:
         sales_weekly (pd.DataFrame): The main weekly aggregated sales data.
         returns (pd.DataFrame): The separate returns dataset.
@@ -89,60 +123,56 @@ def add_historical_features(
         pd.DataFrame: A new DataFrame containing the original sales data enriched with 
                       historical return rates, lags, and rolling metrics.
     """
-    # 1. Aggregate the return quantities by SKU and Week
-    # We rename the column to 'qty_returned' to clearly distinguish it from sales 'Quantity'
+    # Task 1: Aggregate the return quantities by SKU and Week
+    # 1. Rename the column to 'qty_returned' to clearly distinguish it from sales 'Quantity'
     weekly_returns = returns.groupby(["StockCode", "Week"], as_index=False).agg(qty_returned=("Quantity", "sum"))
     
-    # Merge the returns onto our main sales dataframe. 
+    # 2. Merge the returns onto our main sales dataframe. 
     # If there are no returns for a specific week, we fill the missing value with 0.
     enriched_df = sales_weekly.merge(weekly_returns, on=["StockCode", "Week"], how="left").fillna({"qty_returned": 0})
     
-    # Sort chronologically to ensure rolling windows and lags are calculated correctly
+    # 3. Sort chronologically to ensure rolling windows and lags are calculated correctly
     enriched_df = enriched_df.sort_values(["StockCode", "Week"]).copy()
     
-    # Group the data by SKU so that lags and rolling windows don't bleed across different products
+    # 4. Group the data by SKU so that lags and rolling windows don't bleed across different products
     sku_groups = enriched_df.groupby("StockCode", group_keys=False)
     
-    # We will collect all new features (NumPy arrays) in a dictionary to attach them all at once 
+    # 5. Collect all new features (NumPy arrays) in a dictionary to attach them all at once 
     # at the end using pd.concat, avoiding repeated fragmentation of the DataFrame.
     new_features = {}
     
-    # --- Part A: Return Rates ---
-    # We calculate return rate using two standard windows: 4 weeks (1 month) and 13 weeks (1 quarter)
+    # Task 2: Calculate return rates using two standard windows: 4 weeks (1 month) and 13 weeks (1 quarter)
     return_windows = (4, 13)
     for window in return_windows:
-        # Calculate rolling sum of sales
+        # 1. Calculate rolling sum of sales
         rolling_sales = sku_groups["Quantity"].rolling(window, min_periods=1).sum().reset_index(level=0, drop=True)
-        # Calculate rolling sum of returns
+        # 2. Calculate rolling sum of returns
         rolling_returns = sku_groups["qty_returned"].rolling(window, min_periods=1).sum().reset_index(level=0, drop=True)
         
-        # Calculate the rate: Returns / Sales. 
+        # 3. Calculate the rate: Returns / Sales. 
         # We replace 0 sales with NaN to avoid division by zero, fill resulting NaNs with 0, and clip between 0 and 1.
-        rate_column_name = f"return_rate_{window}w"
-        new_features[rate_column_name] = (rolling_returns / rolling_sales.replace(0, np.nan)).fillna(0).clip(0, 1).values
+        new_features[f"return_rate_{window}w"] = (rolling_returns / rolling_sales.replace(0, np.nan)).fillna(0).clip(0, 1).values
 
-    # --- Part B: Lags (Past Sales) ---
+    # Task 3: Lags (Past Sales)
     for lag in lags:
-        lag_column_name = f"lag_{lag}"
-        new_features[lag_column_name] = sku_groups["Quantity"].shift(lag).values
+        # Shift the quantity by the lag value (e.g., lag 1 is previous week)
+        new_features[f"lag_{lag}"] = sku_groups["Quantity"].shift(lag).values
         
-    # --- Part C: Rolling Means and Standard Deviations ---
+    # Task 4: Rolling Means and Standard Deviations
     for window in windows:
         # We shift by 1 FIRST, because we want the rolling statistics of the *past*, 
         # not including the current week's sales (which would be data leakage/cheating!)
         past_sales = sku_groups["Quantity"].shift(1)
-        
-        mean_column_name = f"rmean_{window}"
-        std_column_name = f"rstd_{window}"
-        
-        new_features[mean_column_name] = past_sales.rolling(window, min_periods=1).mean().values
-        new_features[std_column_name] = past_sales.rolling(window, min_periods=2).std().fillna(0).values
+        new_features[f"rmean_{window}"] = past_sales.rolling(window, min_periods=1).mean().values
+        new_features[f"rstd_{window}"] = past_sales.rolling(window, min_periods=2).std().fillna(0).values
 
-    # Finally, concatenate all historical features to the sorted dataframe.
+    # Concatenate all historical features to the sorted dataframe.
     # Since we extract '.values' above, we must explicitly pass the index to align perfectly.
     final_df = pd.concat([enriched_df, pd.DataFrame(new_features, index=enriched_df.index)], axis=1)
     
     return final_df
+
+
 
 
 

@@ -240,6 +240,7 @@ def create_volume_clusters(weekly_aggregated_sales: pd.DataFrame, n_tiers: int =
 
         ax.set_xlabel('Historical Total Quantity Sold (Log Scale)', fontsize=12)
         ax.set_ylabel('Density Count (Number of SKUs)', fontsize=12)
+        ax.set_yscale('log')
         ax.legend(fontsize=10)
         ax.spines[['top', 'right']].set_visible(False)
 

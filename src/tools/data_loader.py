@@ -4,18 +4,22 @@ import pandas as pd
 
 def load_raw_data(input_path: str | Path) -> pd.DataFrame:
     """
-    Load Online Retail II xlsx. Reads BOTH sheets and concatenates
-    with a SourceSheet column for traceability.
+    Load the Online Retail II dataset from an Excel file.
+    Reads all available sheets and concatenates them into a single DataFrame.
     """
     path = Path(input_path)
+    
+    # Load all sheets into a dictionary
     sheets = pd.read_excel(
         path,
         sheet_name=None,
         dtype={"Invoice": str, "StockCode": str},
     )
-    df = pd.concat(
-        [s.assign(SourceSheet=name) for name, s in sheets.items()],
-        ignore_index=True,
-    )
+    
+    # Concatenate all sheets (Year 2009-2010 and 2010-2011)
+    df = pd.concat(sheets.values(), ignore_index=True)
+    
+    # Ensure InvoiceDate is in datetime format for temporal analysis
     df["InvoiceDate"] = pd.to_datetime(df["InvoiceDate"], errors="coerce")
+    
     return df

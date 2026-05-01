@@ -9,13 +9,21 @@ if PROJECT_ROOT not in sys.path:
 import pandas as pd
 import numpy as np
 
-# Import all our beautifully refactored modules
-from src.tools.data_loader import load_raw_data
-from src.tools.cleaning import split_sales_returns
-from src.tools.add_temporal_features import add_temporal_features
-from src.tools.feature_engineering import aggregate_weekly_sku, add_historical_features, add_pricing_features
-from src.tools.clustering import calculate_demand_profile, calculate_commercial_profile, create_seasonal_profile_clusters, create_volume_clusters, create_semantic_clusters
-from src.tools.embeddings import embed_sku_descriptions
+# Import our specialized pipeline tools via the centralized interface
+from src.tools import (
+    load_raw_data,
+    clean_and_split_transactions,
+    aggregate_weekly_sku,
+    add_temporal_features,
+    add_historical_features,
+    add_pricing_features,
+    calculate_demand_profile,
+    calculate_commercial_profile,
+    create_seasonal_profile_clusters,
+    create_volume_clusters,
+    create_semantic_clusters,
+    embed_sku_descriptions
+)
 
 
 def process_data(input_path: str, output_path: str, test_cutoff: str = "2011-09-01"):
@@ -30,7 +38,7 @@ def process_data(input_path: str, output_path: str, test_cutoff: str = "2011-09-
     
     # 2. Cleaning & Separation
     print("Separating valid sales from returns and cleaning text...")
-    sales_df, returns_df = split_sales_returns(raw_df)
+    sales_df, returns_df = clean_and_split_transactions(raw_df)
     
     # 3. Aggregation to Weekly Frequency
     print("Aggregating transactions into weekly buckets per SKU (with zero-filling)...")

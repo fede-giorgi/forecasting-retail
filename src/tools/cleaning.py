@@ -29,22 +29,45 @@ OPERATIONAL_NOTES = {
 }
 
 
-def split_sales_returns(raw_dataframe: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+def clean_and_split_transactions(raw_dataframe: pd.DataFrame, verbose: bool = False) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
-    Cleans the raw retail dataset and splits it into two distinct dataframes: Sales and Returns.
+    Orchestrates the cleaning, validation, and splitting of raw Online Retail II data.
 
-    Filters applied in order:
+    This function transforms raw transactional records into two clean datasets (Sales and Returns)
+    by applying a series of filters to remove administrative noise, missing values, and 
+    operational adjustments.
+
+    Data Processing Impact (based on Online Retail II analysis):
+    ----------------------------------------------------------
+    1.  Missing Values removal      : ~4,382 rows
+    2.  Whitespace stripping        : ~213,035 rows
+    3.  Invalid StockCode removal   : ~7,399 rows
+    4.  Operational notes removal   : ~487 rows
+    5.  Non-positive price removal  : ~1,307 rows
+    ----------------------------------------------------------
+    Operational notes breakdown:
+         - 'check', '?', '??'      : ~261 rows
+         - 'damaged', 'damages'    : ~192 rows
+         - 'missing', 'lost', 'wet': ~34 rows
+    ----------------------------------------------------------
+    Final Result:
+    - Valid Sales                   : ~1,035,620 rows
+    - Valid Returns                 : ~18,176 rows
+
+    Filters applied:
       1. Drop rows missing critical information (InvoiceDate, StockCode, Description).
-      2. Cast ID and SKU to strings to prevent losing alphanumeric codes.
+      2. Cast Invoice and StockCode to strings to prevent losing alphanumeric codes.
       3. Strip whitespace from product descriptions.
       4. Keep only valid StockCodes (using the PRODUCT_REGEX).
-      5. Drop rows containing warehouse operational notes in the description.
+      5. Drop rows containing warehouse operational notes (e.g., 'damaged', 'check').
+         These are non-sales entries that artificially inflate demand.
       6. Drop rows with Price <= 0 (accounting adjustments or free samples).
       7. Create a Monday-aligned 'Week' column for downstream weekly aggregation.
       8. Split the dataset: cancellations and negative quantities go to Returns, the rest to Sales.
 
     Args:
         raw_dataframe (pd.DataFrame): The raw input dataset.
+        verbose (bool): If True, prints the count of rows removed at each step.
 
     Returns:
         tuple[pd.DataFrame, pd.DataFrame]: A tuple containing:
@@ -53,25 +76,42 @@ def split_sales_returns(raw_dataframe: pd.DataFrame) -> tuple[pd.DataFrame, pd.D
     """
     
     # 1. Drop rows missing critical information to ensure data integrity
+    n_before = raw_dataframe.shape[0]
     cleaned_df = raw_dataframe.dropna(subset=["InvoiceDate", "StockCode", "Description"]).copy()
+    if verbose:
+        print(f"Removed {n_before - cleaned_df.shape[0]} rows with missing values.")
     
     # 2. Ensure that Invoice and StockCode are treated as text, not numbers
     cleaned_df["Invoice"] = cleaned_df["Invoice"].astype(str)
     cleaned_df["StockCode"] = cleaned_df["StockCode"].astype(str)
+    if verbose:
+        print(f"Changed Invoice and StockCode to string type.")
     
     # 3. Remove leading and trailing whitespaces from the descriptions
+    if verbose:
+        has_space = cleaned_df["Description"].str.contains(r"^\s|\s$", na=False)
+        print(f"Stripping whitespace from {has_space.sum()} rows.")
     cleaned_df["Description"] = cleaned_df["Description"].str.strip()
 
     # 4. Filter out administrative codes (like postage fees) by keeping only valid SKUs
     is_valid_product = cleaned_df["StockCode"].str.match(PRODUCT_REGEX)
+    if verbose:
+        print(f"Removing {len(cleaned_df) - is_valid_product.sum()} rows with invalid StockCodes.")
     cleaned_df = cleaned_df[is_valid_product]
     
     # 5. Filter out warehouse operational notes (like "damaged" or "lost")
+    # mask = cleaned_df["Description"].str.lower().isin(OPERATIONAL_NOTES)
+    # cleaned_df[mask]["Description"].value_counts()
     is_not_operational_note = ~cleaned_df["Description"].str.lower().isin(OPERATIONAL_NOTES)
+    if verbose:
+        print(f"Removing {len(cleaned_df) - is_not_operational_note.sum()} rows with operational notes.")
     cleaned_df = cleaned_df[is_not_operational_note]
     
     # 6. Filter out free items, gifts, or negative price adjustments
-    cleaned_df = cleaned_df[cleaned_df["Price"] > 0]
+    is_positive_price = cleaned_df["Price"] > 0
+    if verbose:
+        print(f"Removing {len(cleaned_df) - is_positive_price.sum()} rows with negative or zero prices.")
+    cleaned_df = cleaned_df[is_positive_price]
 
     # Create a fresh copy to avoid SettingWithCopyWarning during date manipulation
     cleaned_df = cleaned_df.copy()
@@ -81,12 +121,17 @@ def split_sales_returns(raw_dataframe: pd.DataFrame) -> tuple[pd.DataFrame, pd.D
     # We use a timedelta offset to guarantee exact alignment to Monday 00:00:00
     cleaned_df["Week"] = cleaned_df["InvoiceDate"] - pd.to_timedelta(cleaned_df["InvoiceDate"].dt.dayofweek, unit="D")
     cleaned_df["Week"] = cleaned_df["Week"].dt.normalize()
+    if verbose:
+        print(f"Created 'Week' column aligned to Monday.")
 
     # 8. Identify Returns vs Sales
     # An invoice starting with 'C' means it was a cancellation.
     # A negative quantity means items were returned to the warehouse.
     is_cancellation_invoice = cleaned_df["Invoice"].str.startswith("C")
     is_negative_quantity = cleaned_df["Quantity"] < 0
+    if verbose:
+        print(f"Identified {is_cancellation_invoice.sum()} cancellations and {is_negative_quantity.sum()} negative quantities.")
+
 
     # --- Process the Sales DataFrame ---
     
@@ -95,6 +140,9 @@ def split_sales_returns(raw_dataframe: pd.DataFrame) -> tuple[pd.DataFrame, pd.D
     
     # Calculate the total revenue for each valid sale transaction
     valid_sales["Revenue"] = valid_sales["Quantity"] * valid_sales["Price"]
+    if verbose:
+        print(f"Created valid_sales dataframe with {valid_sales.shape[0]} rows.")
+
 
     # --- Process the Returns DataFrame ---
     
@@ -108,6 +156,8 @@ def split_sales_returns(raw_dataframe: pd.DataFrame) -> tuple[pd.DataFrame, pd.D
     # Keep only the columns necessary for the return rate features downstream
     columns_to_keep_for_returns = ["StockCode", "Week", "Quantity", "Customer ID", "Country"]
     valid_returns = valid_returns[columns_to_keep_for_returns]
+    if verbose:
+        print(f"Created valid_returns dataframe with {valid_returns.shape[0]} rows.")
 
     # Return the split data
     return valid_sales, valid_returns
