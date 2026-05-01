@@ -14,7 +14,7 @@ from src.tools.data_loader import load_raw_data
 from src.tools.cleaning import split_sales_returns
 from src.tools.add_temporal_features import add_temporal_features
 from src.tools.feature_engineering import aggregate_weekly_sku, add_historical_features, add_pricing_features
-from src.tools.clustering import calculate_demand_profile, calculate_commercial_profile, create_seasonal_profile_clusters, create_volume_clusters
+from src.tools.clustering import calculate_demand_profile, calculate_commercial_profile, create_seasonal_profile_clusters, create_volume_clusters, create_semantic_clusters
 from src.tools.embeddings import embed_sku_descriptions
 
 
@@ -64,6 +64,9 @@ def process_data(input_path: str, output_path: str, test_cutoff: str = "2011-09-
     print("Creating Behavioral Clusters (52-Week Seasonal Profiles)...")
     profile_clusters = create_seasonal_profile_clusters(weekly_sales_train, n_clusters=4)
     
+    print("Creating Semantic Categories from Text Embeddings...")
+    semantic_clusters = create_semantic_clusters(embeddings_df, n_clusters=15)
+    
     print("Creating Volume Clusters (Jenks Natural Breaks) on Train set...")
     volume_clusters = create_volume_clusters(weekly_sales_train, n_tiers=3)
     
@@ -71,9 +74,10 @@ def process_data(input_path: str, output_path: str, test_cutoff: str = "2011-09-
     print("Joining clusters back to the main weekly panel (Train + Test)...")
     final_df = weekly_sales.merge(profile_clusters, on="StockCode", how="left")
     final_df = final_df.merge(volume_clusters[["StockCode", "volume_cluster_id", "volume_tier"]], on="StockCode", how="left")
+    final_df = final_df.merge(semantic_clusters, on="StockCode", how="left")
     
     # Drop rows that didn't get clustered (e.g., products that only appeared in the test set or lacked text descriptions)
-    final_df = final_df.dropna(subset=["profile_cluster_id", "volume_cluster_id"])
+    final_df = final_df.dropna(subset=["profile_cluster_id", "volume_cluster_id", "semantic_cluster_id"])
     
     # 8. Export
     print(f"Exporting fully featured dataset to {output_path}...")

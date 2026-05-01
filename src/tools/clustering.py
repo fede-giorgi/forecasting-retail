@@ -249,3 +249,87 @@ def create_volume_clusters(weekly_aggregated_sales: pd.DataFrame, n_tiers: int =
     # Return just the mapping to be used as a feature
     return_columns = ["StockCode", "volume_cluster_id", "volume_tier"] if n_tiers == 3 else ["StockCode", "volume_cluster_id"]
     return total_volume_per_sku[return_columns]
+
+
+def create_semantic_clusters(
+    embeddings_df: pd.DataFrame,
+    n_clusters: int = 15,
+    n_keywords: int = 3,
+    random_state: int = 42,
+    plot: bool = False
+) -> pd.DataFrame:
+    """
+    Clusters products purely based on their Gemini semantic text embeddings.
+    Extracts human-readable names for each cluster using TF-IDF on the descriptions.
+    """
+    print(f"Clustering semantic embeddings into {n_clusters} distinct categories...")
+    skus, text_embeddings = embeddings_as_matrix(embeddings_df)
+    
+    # 1. Cluster the raw 768-D embeddings (they are already L2 normalized, so Euclidean/KMeans works well)
+    from sklearn.cluster import KMeans
+    kmeans = KMeans(n_clusters=n_clusters, random_state=random_state, n_init="auto")
+    cluster_labels = kmeans.fit_predict(text_embeddings)
+    
+    df = embeddings_df.copy()
+    df["semantic_cluster_id"] = cluster_labels
+    
+    # 2. Extract Keywords for each cluster using TF-IDF
+    print("Extracting cluster names via TF-IDF...")
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    cluster_names = {}
+    
+    for cluster_id in range(n_clusters):
+        docs = df[df["semantic_cluster_id"] == cluster_id]["desc_canonical"].dropna().tolist()
+        if not docs:
+            cluster_names[cluster_id] = f"Cluster {cluster_id}"
+            continue
+            
+        # Fit TF-IDF on the descriptions of this cluster
+        vectorizer = TfidfVectorizer(stop_words='english', max_features=100)
+        try:
+            tfidf_matrix = vectorizer.fit_transform(docs)
+            # Sum tf-idf scores across all docs in the cluster
+            word_scores = np.array(tfidf_matrix.sum(axis=0)).flatten()
+            words = vectorizer.get_feature_names_out()
+            
+            # Get top N keywords
+            top_indices = word_scores.argsort()[-n_keywords:][::-1]
+            top_words = [words[i].upper() for i in top_indices]
+            cluster_names[cluster_id] = " + ".join(top_words)
+        except ValueError:
+            # Fallback if TF-IDF fails (e.g. only numbers/stopwords)
+            cluster_names[cluster_id] = f"Cluster {cluster_id}"
+            
+    df["semantic_cluster_name"] = df["semantic_cluster_id"].map(cluster_names)
+    
+    # 3. Plotting
+    if plot:
+        print("Reducing dimensions via UMAP for semantic visualization...")
+        import umap
+        reducer = umap.UMAP(n_components=2, metric="cosine", random_state=random_state)
+        umap_2d = reducer.fit_transform(text_embeddings)
+        
+        plot_df = pd.DataFrame({
+            "UMAP1": umap_2d[:, 0],
+            "UMAP2": umap_2d[:, 1],
+            "Cluster Name": df["semantic_cluster_name"]
+        })
+        
+        plt.figure(figsize=(14, 8))
+        sns.scatterplot(
+            data=plot_df, 
+            x="UMAP1", 
+            y="UMAP2", 
+            hue="Cluster Name", 
+            palette="tab20", 
+            alpha=0.7, 
+            edgecolor=None,
+            s=40
+        )
+        plt.title('Semantic Product Categories (UMAP 2D Projection)', fontsize=14, fontweight='bold')
+        plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', title="Semantic Clusters", fontsize=9)
+        plt.tight_layout()
+        plt.show()
+        
+    return df[["StockCode", "semantic_cluster_id", "semantic_cluster_name"]]
+
