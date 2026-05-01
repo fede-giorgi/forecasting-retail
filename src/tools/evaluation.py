@@ -3,9 +3,8 @@ evaluation.py
 -------------
 Shared evaluation metrics for all forecasting models in the project.
 
-All functions operate on raw (un-scaled) kW values and return percentages.
-Keeping metrics here ensures a single source of truth across Linear Regression,
-Prophet, SARIMAX, and any future model.
+All functions operate on raw (un-scaled) values and return percentages or units.
+Keeping metrics here ensures a single source of truth across all models.
 """
 import numpy as np
 import pandas as pd
@@ -15,22 +14,28 @@ def mape(y_true: np.ndarray, y_pred: np.ndarray, threshold: float = 0.0) -> floa
     """
     Mean Absolute Percentage Error (MAPE).
 
-    Rows where y_true <= threshold are excluded to avoid division-by-zero
-    distortions on near-zero consumption readings.
+    Formula:
+        MAPE = 100 * mean( |Actual - Forecast| / |Actual| )
 
-    Parameters
-    ----------
-    y_true : array-like
-        Actual consumption values (Qty/Units).
-    y_pred : array-like
-        Predicted consumption values (Qty/Units).
-    threshold : float, optional
-        Minimum actual value to include in the calculation. Default is 0.0 Units.
+    Description:
+        MAPE measures the average magnitude of the errors in a set of predictions, 
+        without considering their direction. It is expressed as a percentage.
+        
+        WARNING: MAPE is asymmetric and heavily penalizes over-forecasting. 
+        More importantly, it is mathematically undefined when Actual = 0 (division by zero).
+        In retail forecasting, where zero-demand weeks are common, MAPE will either
+        fail or produce infinitely large errors unless a threshold is applied.
 
-    Returns
-    -------
-    float
-        MAPE expressed as a percentage (e.g. 5.3 means 5.3%).
+    Parameters:
+        y_true (np.ndarray): Array of actual observed quantities.
+        y_pred (np.ndarray): Array of predicted quantities.
+        threshold (float): Minimum actual value required to include a point in the calculation.
+                           Any observation where y_true <= threshold is completely ignored.
+                           Defaults to 0.0 to prevent division by zero.
+
+    Returns:
+        float: The MAPE expressed as a percentage (e.g., 15.5 for 15.5%). 
+               Returns np.nan if no observations exceed the threshold.
     """
     y_true = np.asarray(y_true, dtype=float)
     y_pred = np.asarray(y_pred, dtype=float)
@@ -42,76 +47,119 @@ def mape(y_true: np.ndarray, y_pred: np.ndarray, threshold: float = 0.0) -> floa
     return float(np.mean(np.abs(y_true[mask] - y_pred[mask]) / y_true[mask]) * 100)
 
 
-def wmape(y_true: np.ndarray, y_pred: np.ndarray) -> float:
+def smape(y_true: np.ndarray, y_pred: np.ndarray) -> float:
     """
-    Weighted Mean Absolute Percentage Error (WMAPE).
+    Symmetric Mean Absolute Percentage Error (SMAPE).
 
-    Weights each observation by its actual volume, which makes this metric
-    more robust to low-consumption periods and preferred for portfolio-level
-    business reporting.
+    Formula:
+        SMAPE = 100 * mean( |Actual - Forecast| / ((|Actual| + |Forecast|) / 2) )
 
-        WMAPE = ( sum|actual - pred| / sum|actual| ) * 100
+    Description:
+        SMAPE is an alternative to MAPE that solves the asymmetry and division-by-zero
+        problems. It calculates the absolute error relative to the *average* of the 
+        actual and forecasted values. 
+        
+        This bounds the maximum possible error to exactly 200%.
+        - 0%: Perfect prediction.
+        - 200%: Complete mismatch (e.g., predicting 100 when actual is 0, or vice versa).
+        
+        This metric is highly recommended for Retail Forecasting because it gracefully
+        handles intermittent demand (frequent 0s) and does not disproportionately punish
+        over-forecasting compared to under-forecasting.
 
-    Parameters
-    ----------
-    y_true : array-like
-        Actual consumption values (Qty).
-    y_pred : array-like
-        Predicted consumption values (Qty).
+    Parameters:
+        y_true (np.ndarray): Array of actual observed quantities.
+        y_pred (np.ndarray): Array of predicted quantities.
 
-    Returns
-    -------
-    float
-        WMAPE expressed as a percentage (e.g. 3.7 means 3.7%).
+    Returns:
+        float: The SMAPE expressed as a percentage between 0.0 and 200.0.
     """
     y_true = np.asarray(y_true, dtype=float)
     y_pred = np.asarray(y_pred, dtype=float)
+    
+    denominator = (np.abs(y_true) + np.abs(y_pred)) / 2.0
+    mask = denominator > 0.0
+    
+    if mask.sum() == 0:
+        return 0.0
 
-    total_actual = np.sum(np.abs(y_true))
-    if total_actual == 0:
-        return np.nan
+    return float(np.mean(np.abs(y_true[mask] - y_pred[mask]) / denominator[mask]) * 100)
 
-    return float(np.sum(np.abs(y_true - y_pred)) / total_actual * 100)
+
+def mae(y_true: np.ndarray, y_pred: np.ndarray) -> float:
+    """
+    Mean Absolute Error (MAE).
+
+    Formula:
+        MAE = mean( |Actual - Forecast| )
+
+    Description:
+        MAE measures the average magnitude of the errors in a set of predictions,
+        without considering their direction. Unlike MAPE or SMAPE, MAE is not a 
+        percentage; it is expressed in the same physical units as the target variable
+        (e.g., "number of items sold").
+        
+        This is an excellent business-facing metric because it directly answers: 
+        "On average, how many physical units are our predictions off by?"
+
+    Parameters:
+        y_true (np.ndarray): Array of actual observed quantities.
+        y_pred (np.ndarray): Array of predicted quantities.
+
+    Returns:
+        float: The Mean Absolute Error in physical units.
+    """
+    y_true = np.asarray(y_true, dtype=float)
+    y_pred = np.asarray(y_pred, dtype=float)
+    return float(np.mean(np.abs(y_true - y_pred)))
 
 
 def compute_cluster_metrics(cluster_eval: pd.DataFrame) -> pd.DataFrame:
     """
-    Compute MAPE and WMAPE for each cluster from a pre-aggregated evaluation
-    DataFrame (one row per cluster-date with Actual_Qty and Predicted_Qty columns).
+    Computes a comprehensive summary of portfolio-level metrics (MAPE, SMAPE, MAE)
+    for each individual cluster, as well as a 'Global' rollup across all clusters.
 
-    This is a convenience wrapper around mape() and wmape() that operates at
-    cluster level, suitable for summary tables in notebooks or reports.
+    Description:
+        This function takes a dataframe of raw predictions and actuals, typically 
+        generated by the `evaluate_models` step of a modeling pipeline, and computes
+        the aggregate performance metrics. It allows us to see if the model is 
+        performing exceptionally well on certain seasonal profiles (clusters) while 
+        failing on others.
 
-    Parameters
-    ----------
-    cluster_eval : pd.DataFrame
-        DataFrame with columns: ['Cluster', 'Date', 'Actual_Qty', 'Predicted_Qty'].
-        Typically the output of the evaluate_models() step.
+    Parameters:
+        cluster_eval (pd.DataFrame): A dataframe containing at least the columns:
+                                     - 'Cluster': The cluster identifier.
+                                     - 'Actual_Qty': The actual sales quantities.
+                                     - 'Predicted_Qty': The model's predictions.
 
-    Returns
-    -------
-    pd.DataFrame
-        Summary DataFrame indexed by Cluster with columns:
-        ['Portfolio_MAPE', 'Portfolio_WMAPE'].
+    Returns:
+        pd.DataFrame: A summary dataframe indexed by 'Cluster' containing three columns:
+                      - 'Portfolio_MAPE': The standard MAPE (excluding 0-demand weeks).
+                      - 'Portfolio_SMAPE': The Symmetric MAPE (0-200%).
+                      - 'Portfolio_MAE': The average absolute error in physical units.
     """
     records = []
 
     global_mape = mape(cluster_eval["Actual_Qty"].values, cluster_eval["Predicted_Qty"].values)
-    global_wmape = wmape(cluster_eval["Actual_Qty"].values, cluster_eval["Predicted_Qty"].values)
+    global_smape = smape(cluster_eval["Actual_Qty"].values, cluster_eval["Predicted_Qty"].values)
+    global_mae = mae(cluster_eval["Actual_Qty"].values, cluster_eval["Predicted_Qty"].values)
     
     records.append({
         "Cluster": "Global",
         "Portfolio_MAPE":  round(global_mape, 2),
-        "Portfolio_WMAPE": round(global_wmape, 2),
+        "Portfolio_SMAPE": round(global_smape, 2),
+        "Portfolio_MAE":   round(global_mae, 2),
     })
 
     for cluster_id, group in cluster_eval.groupby("Cluster", observed=True):
         cluster_mape  = mape(group["Actual_Qty"].values, group["Predicted_Qty"].values)
-        cluster_wmape = wmape(group["Actual_Qty"].values, group["Predicted_Qty"].values)
+        cluster_smape = smape(group["Actual_Qty"].values, group["Predicted_Qty"].values)
+        cluster_mae   = mae(group["Actual_Qty"].values, group["Predicted_Qty"].values)
         records.append({
             "Cluster": cluster_id,
             "Portfolio_MAPE":  round(cluster_mape,  2),
-            "Portfolio_WMAPE": round(cluster_wmape, 2),
+            "Portfolio_SMAPE": round(cluster_smape, 2),
+            "Portfolio_MAE":   round(cluster_mae, 2),
         })
 
     summary = pd.DataFrame(records).set_index("Cluster")

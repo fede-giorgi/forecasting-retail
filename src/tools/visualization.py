@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from src.tools.evaluation import mape, wmape
+from src.tools.evaluation import mape, smape, mae
 
 def plot_cluster_portfolio(
     cluster_eval: pd.DataFrame,
@@ -30,8 +30,7 @@ def plot_cluster_portfolio(
     ----------
     cluster_eval : pd.DataFrame
         One row per (Cluster, Date) with columns ['Actual_Qty', 'Predicted_Qty'].
-    summary : pd.DataFrame
-        Indexed by Cluster with columns ['Portfolio_MAPE', 'Portfolio_WMAPE'].
+        Indexed by Cluster with columns ['Portfolio_MAPE', 'Portfolio_SMAPE', 'Portfolio_MAE'].
     model_label : str, optional
         Label used in the plot legend to identify the model (e.g. "LR", "Prophet").
     n_steps_to_show : int, optional
@@ -47,7 +46,8 @@ def plot_cluster_portfolio(
         ax = axes[idx]
         c_plot = cluster_eval[cluster_eval["Cluster"] == cluster_id].sort_values("Date")
         c_mape  = summary.loc[cluster_id, "Portfolio_MAPE"]
-        c_wmape = summary.loc[cluster_id, "Portfolio_WMAPE"]
+        c_smape = summary.loc[cluster_id, "Portfolio_SMAPE"]
+        c_mae = summary.loc[cluster_id, "Portfolio_MAE"]
         plot_slice = -n_steps_to_show
 
         ax.plot(
@@ -69,7 +69,7 @@ def plot_cluster_portfolio(
         )
 
         ax.set_title(
-            f"Cluster {cluster_id} Portfolio — MAPE: {c_mape:.2f}% | WMAPE: {c_wmape:.2f}%",
+            f"Cluster {cluster_id} Portfolio — MAPE: {c_mape:.2f}% | SMAPE: {c_smape:.2f}% | MAE: {c_mae:.2f}",
             fontsize=14,
         )
         ax.set_ylabel("Total Consumption (Units)")
@@ -86,7 +86,7 @@ def analyze_time_periods(
     n_bins: int = 4,
 ) -> pd.DataFrame:
     """
-    Calculates MAPE/WMAPE per period using centralized metrics and visualizes 
+    Calculates MAPE/SMAPE/MAE per period using centralized metrics and visualizes 
     the error distribution via boxplots.
     """
     # 1. Data Preparation & Binning
@@ -107,7 +107,8 @@ def analyze_time_periods(
         records.append({
             "Time_Period": period,
             "MAPE": round(mape(group["Actual_Qty"].values, group["Predicted_Qty"].values), 2),
-            "WMAPE": round(wmape(group["Actual_Qty"].values, group["Predicted_Qty"].values), 2)
+            "SMAPE": round(smape(group["Actual_Qty"].values, group["Predicted_Qty"].values), 2),
+            "MAE": round(mae(group["Actual_Qty"].values, group["Predicted_Qty"].values), 2)
         })
     summary_df = pd.DataFrame(records).set_index("Time_Period")
 
@@ -127,7 +128,7 @@ def analyze_time_periods(
     axes[0].tick_params(axis="x", rotation=15)
 
     sns.boxplot(data=df_eval, x="Time_Period", y="Abs_Error", ax=axes[1], showfliers=False)
-    axes[1].set_title("Individual Client Volume Error Spread (kW)", fontsize=14)
+    axes[1].set_title("Individual Client Volume Error Spread (Units)", fontsize=14)
     axes[1].set_ylabel("Absolute Error (Units)")
     axes[1].grid(True, alpha=0.3, axis="y")
     axes[1].tick_params(axis="x", rotation=15)

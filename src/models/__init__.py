@@ -8,7 +8,7 @@ factory adapter that returns the same per-SKU contract for use in selection.py.
 from .naive import naive
 from .sarimax import sarimax
 from .lightgbm_recursive import lightgbm_recursive, HAS_LGB
-from .prophet_model import prophet_forecast, HAS_PROPHET
+from . import prophet_model
 from .forecast import forecast_final_horizon, attach_revenue
 from .global_adapter import cached_forecast_factory
 
@@ -16,16 +16,15 @@ from .global_adapter import cached_forecast_factory
 def default_registry() -> dict:
     """Local-model registry. Add Prophet / LightGBM only if their backends imported OK."""
     reg = {"Naive": naive, "SARIMAX": sarimax}
-    if HAS_PROPHET:
-        reg["Prophet"] = prophet_forecast
+    reg["Prophet"] = prophet_model
     if HAS_LGB:
         reg["LightGBM"] = lightgbm_recursive
     return reg
 
 
 __all__ = [
-    "naive", "sarimax", "lightgbm_recursive", "prophet_forecast",
-    "HAS_LGB", "HAS_PROPHET",
+    "naive", "sarimax", "lightgbm_recursive", "prophet_model",
+    "HAS_LGB",
     "forecast_final_horizon", "attach_revenue",
     "default_registry", "cached_forecast_factory",
 ]

@@ -2,7 +2,7 @@ import os
 import sys
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, Ridge
 from sklearn.preprocessing import MinMaxScaler
 from tqdm import tqdm
 import joblib
@@ -32,8 +32,8 @@ def preprocess_and_split(df_long):
     train = train.sort_values(by=['StockCode', 'Week'])
     test  = test.sort_values(by=['StockCode', 'Week'])
 
-    # Features to scale per SKU
-    scale_cols = ['Quantity'] + [f'lag_{l}' for l in (1, 2, 4, 8, 13, 26, 52)] + \
+    # Features to scale per SKU (TARGET EXCLUDED)
+    scale_cols = [f'lag_{l}' for l in (1, 2, 4, 8, 13, 26, 52)] + \
                  [f'rmean_{w}' for w in (4, 13, 26)] + [f'rstd_{w}' for w in (4, 13, 26)] + \
                  ['price_weekly', 'price_percent_change', 'qty_returned']
                  
@@ -44,6 +44,10 @@ def preprocess_and_split(df_long):
     for col in scale_cols:
         train[f'{col}_Scaled'] = np.nan
         test[f'{col}_Scaled'] = np.nan
+        
+    # Log transform the target natively
+    train['Quantity_Scaled'] = np.log1p(train['Quantity'])
+    test['Quantity_Scaled']  = np.log1p(test['Quantity'])
 
     sku_scalers = {}
 
@@ -122,7 +126,7 @@ def train_models(X_train, y_train, train):
         if len(X_train_cluster) == 0:
             continue
 
-        model = LinearRegression()
+        model = Ridge(alpha=1.0)
         model.fit(X_train_cluster_vals, y_train_cluster)
         cluster_models[cluster_id] = model
         print(f" - Model for Cluster {int(cluster_id)} trained on {len(X_train_cluster)} historical rows.")
@@ -145,9 +149,8 @@ def predict_models(cluster_models, test, X_test, sku_scalers):
             test.loc[cluster_mask, 'Predicted_Quantity_Scaled'] = preds
 
     print("Applying physical constraints (Capping at 0)...")
-    # For MinMaxScaler, 0 scaled is 0 if minimum quantity was 0. 
-    # Usually the minimum quantity is 0 because of zero-filling.
-    # So we can just cap the *scaled* prediction at 0.
+    # log1p transformation means inverse is expm1.
+    # We will do the inverse transform in evaluate_models, but let's cap the scaled predictions here just in case.
     test['Predicted_Quantity_Scaled'] = np.maximum(test['Predicted_Quantity_Scaled'].fillna(0), 0)
 
     print("Predictions Complete!")
@@ -156,18 +159,7 @@ def predict_models(cluster_models, test, X_test, sku_scalers):
 
 def evaluate_models(test, sku_scalers, train):
     print("\nEvaluating model (raw Quantity)...")
-    
-    # Reconstruct the scale_cols index to know where 'Quantity' is
-    scale_cols = ['Quantity'] + [f'lag_{l}' for l in (1, 2, 4, 8, 13, 26, 52)] + \
-                 [f'rmean_{w}' for w in (4, 13, 26)] + [f'rstd_{w}' for w in (4, 13, 26)] + \
-                 ['price_weekly', 'price_percent_change', 'qty_returned']
-    scale_cols = [c for c in scale_cols if c in train.columns]
-    qty_idx = scale_cols.index('Quantity')
-
     for sku in test['StockCode'].unique():
-        if sku not in sku_scalers:
-            continue
-
         sku_mask = test['StockCode'] == sku
         sku_data = test[sku_mask].copy()
 
@@ -176,13 +168,9 @@ def evaluate_models(test, sku_scalers, train):
             continue
 
         y_true_qty = sku_data.loc[valid, 'Quantity'].values
-        scaler = sku_scalers[sku]
-        
-        # We need to construct a dummy array to inverse_transform, because scaler was fit on all scale_cols
-        dummy_arr = np.zeros((len(y_true_qty), len(scale_cols)))
-        dummy_arr[:, qty_idx] = sku_data.loc[valid, 'Predicted_Quantity_Scaled'].values
-        
-        y_pred_qty = scaler.inverse_transform(dummy_arr)[:, qty_idx]
+        y_pred_scaled = sku_data.loc[valid, 'Predicted_Quantity_Scaled'].values
+        y_pred_scaled = np.clip(y_pred_scaled, a_min=None, a_max=20.0) # max ~485M units
+        y_pred_qty = np.expm1(y_pred_scaled)
 
         # Cap predictions at 0 real units
         y_pred_qty = np.maximum(y_pred_qty, 0)
@@ -243,4 +231,6 @@ def run_linear_regression_pipeline(file_path, plot=False):
 
 if __name__ == "__main__":
     DATA_PATH = os.path.join(PROJECT_ROOT, "data", "processed_retail_data.parquet")
-    run_linear_regression_pipeline(DATA_PATH, plot=False)
+    _, _, _, summary = run_linear_regression_pipeline(DATA_PATH, plot=False)
+    print("\n=== Linear Regression Evaluation Summary ===")
+    print(summary.to_markdown())

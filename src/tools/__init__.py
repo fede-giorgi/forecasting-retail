@@ -19,7 +19,7 @@ from .clustering import (
 )
 
 from .evaluation import (
-    mape, wmape, compute_cluster_metrics
+    mape, smape, mae, compute_cluster_metrics
 )
 
 from .embeddings import (
@@ -34,7 +34,7 @@ __all__ = [
     "add_temporal_features",
     "calculate_demand_profile", "calculate_commercial_profile",
     "create_seasonal_profile_clusters", "create_volume_clusters", "create_semantic_clusters",
-    "mape", "wmape", "compute_cluster_metrics",
+    "mape", "smape", "mae", "compute_cluster_metrics",
     "canonical_descriptions", "embed_texts",
     "embed_sku_descriptions", "embeddings_as_matrix",
 ]
