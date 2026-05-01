@@ -51,4 +51,19 @@ def eligible_skus_by_revenue(
     keep = active[active >= min_active_weeks].index.intersection(
         recent[recent >= min_recent_active].index
     )
-    return rev.loc[rev.index.isin(keep)].head(top_n).index.astype(str).tolist()
+    return rev[rev.index.isin(keep)].head(top_n).index.tolist()
+
+
+def build_series_for_sku(
+    weekly_sku: pd.DataFrame, 
+    sku: str, 
+    value_col: str = "Quantity", 
+    time_col: str = "Week"
+) -> pd.Series:
+    """
+    Extracts a time-indexed pandas Series for a specific SKU.
+    Used by individual models (e.g., Naive, SARIMAX) to train on single-SKU history.
+    """
+    subset = weekly_sku[weekly_sku["StockCode"] == sku].sort_values(time_col)
+    s = pd.Series(subset[value_col].values, index=subset[time_col])
+    return s

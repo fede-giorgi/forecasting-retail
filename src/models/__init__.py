@@ -9,7 +9,6 @@ from .naive import naive
 from .sarimax import sarimax
 from .lightgbm_recursive import lightgbm_recursive, HAS_LGB
 from .prophet_model import prophet_forecast, HAS_PROPHET
-from .selection import select_best_model
 from .forecast import forecast_final_horizon, attach_revenue
 from .global_adapter import cached_forecast_factory
 
@@ -27,6 +26,6 @@ def default_registry() -> dict:
 __all__ = [
     "naive", "sarimax", "lightgbm_recursive", "prophet_forecast",
     "HAS_LGB", "HAS_PROPHET",
-    "select_best_model", "forecast_final_horizon", "attach_revenue",
+    "forecast_final_horizon", "attach_revenue",
     "default_registry", "cached_forecast_factory",
 ]
