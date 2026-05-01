@@ -157,7 +157,12 @@ def create_seasonal_profile_clusters(
     return pd.DataFrame({"StockCode": profiles.index, "profile_cluster_id": cluster_labels})
 
 
-def create_volume_clusters(weekly_aggregated_sales: pd.DataFrame, n_tiers: int = 3, plot: bool = False) -> pd.DataFrame:
+def create_volume_clusters(
+    weekly_aggregated_sales: pd.DataFrame,
+    n_tiers: int = 3,
+    verbose: bool = False,
+    plot: bool = False
+    ) -> pd.DataFrame:
     """
     Creates Volume-based clusters to distinguish Top Sellers from Long-Tail products.
     
@@ -176,7 +181,8 @@ def create_volume_clusters(weekly_aggregated_sales: pd.DataFrame, n_tiers: int =
         
     # 2. Apply Jenks Natural Breaks Optimization
     #  Find the optimal "gaps" in the data to minimize within-group variance
-    print(f"Applying Jenks Natural Breaks to segment volumes into {n_tiers} tiers...")
+    if verbose:
+        print(f"Applying Jenks Natural Breaks to segment volumes into {n_tiers} tiers...")
     breaks = jenkspy.jenks_breaks(volumes_list, n_classes=n_tiers)
     
     # Categorize each SKU into a cluster based on the discovered breakpoints
@@ -250,16 +256,18 @@ def create_semantic_clusters(
     n_clusters: int = 15,
     n_keywords: int = 3,
     random_state: int = 42,
+    verbose: bool = False,
     plot: bool = False
     ) -> pd.DataFrame:
     """
     Clusters products purely based on their Gemini semantic text embeddings.
     Extracts human-readable names for each cluster using TF-IDF on the descriptions.
     """
-    print(f"Clustering semantic embeddings into {n_clusters} distinct categories...")
+    # 1. Cluster the raw 768-D embeddings (they are already L2 normalized, so Euclidean/KMeans works well)
     skus, text_embeddings = embeddings_as_matrix(embeddings_df)
     
-    # 1. Cluster the raw 768-D embeddings (they are already L2 normalized, so Euclidean/KMeans works well)
+    if verbose:
+        print(f"Clustering semantic embeddings into {n_clusters} distinct categories...")
     kmeans = KMeans(n_clusters=n_clusters, random_state=random_state, n_init="auto")
     cluster_labels = kmeans.fit_predict(text_embeddings)
     
@@ -267,7 +275,8 @@ def create_semantic_clusters(
     df["semantic_cluster_id"] = cluster_labels
     
     # 2. Extract Keywords for each cluster using TF-IDF
-    print("Extracting cluster names via TF-IDF...")
+    if verbose:
+        print("Extracting cluster names via TF-IDF...")
     cluster_names = {}
     
     for cluster_id in range(n_clusters):

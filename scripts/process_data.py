@@ -30,6 +30,27 @@ def process_data(input_path: str, output_path: str, test_cutoff: str = "2011-09-
     """
     Main orchestration pipeline for the Forecasting Retail project.
     Transforms raw transactional data into a fully featured dataset ready for ML modeling.
+
+    The pipeline executes the following 10 steps:
+    1.  **Data Loading**: Reads the raw Excel export into a structured DataFrame.
+    2.  **Cleaning & Separation**: Removes noise and splits valid Sales from Returns/Cancellations.
+    3.  **Weekly Aggregation**: Groups transactions into weekly buckets with continuous zero-filling.
+    4.  **Feature Engineering**: Injects temporal (holidays), historical (lags), and pricing features.
+    5.  **Semantic Embeddings**: Uses Gemini API to convert text descriptions into mathematical vectors.
+    6.  **Train/Test Split**: Slices the timeline to isolate training data for bias-free profiling.
+    7.  **Static SKU Profiles**: Calculates demand intermittency (ADI/CV2) and commercial metrics.
+    8.  **Clustering**: Groups products by seasonal shape, semantic meaning, and volumetric tiers.
+    9.  **Final Joins**: Maps all computed features and clusters back to the full (Train+Test) panel.
+    10. **Export**: Saves the enriched, ML-ready dataset into an optimized Parquet file.
+
+    Args:
+        input_path (str): Absolute path to the raw Online Retail II Excel file.
+        output_path (str): Destination path for the processed Parquet dataset.
+        test_cutoff (str): Date string (YYYY-MM-DD) used to separate data for profiling 
+                           to prevent data leakage.
+
+    Returns:
+        None: The function exports the resulting DataFrame directly to the specified output_path.
     """
     
     # 1. Load Data
@@ -64,11 +85,12 @@ def process_data(input_path: str, output_path: str, test_cutoff: str = "2011-09-
     weekly_sales_train = weekly_sales[weekly_sales["Week"] < test_cutoff]
     sales_df_train = sales_df[sales_df["InvoiceDate"] < test_cutoff]
     
-    # 7. Clustering (Strictly on Training Data)
+    # 7. Static SKU Profiles Demand and Commercial (Strictly on Training Data)
     print("Building static SKU profiles (Demand & Commercial) on Train set...")
     demand_df = calculate_demand_profile(weekly_sales_train)
     commercial_df = calculate_commercial_profile(sales_df_train)
     
+    # 8. Clustering (Strictly on Training Data)
     print("Creating Behavioral Clusters (52-Week Seasonal Profiles)...")
     profile_clusters = create_seasonal_profile_clusters(weekly_sales_train, n_clusters=4)
     
@@ -78,16 +100,18 @@ def process_data(input_path: str, output_path: str, test_cutoff: str = "2011-09-
     print("Creating Volume Clusters (Jenks Natural Breaks) on Train set...")
     volume_clusters = create_volume_clusters(weekly_sales_train, n_tiers=3)
     
-    # 8. Final Joins (Mapping clusters back to the FULL dataset)
-    print("Joining clusters back to the main weekly panel (Train + Test)...")
+    # 9. Final Joins (Mapping clusters and profiles back to the FULL dataset)
+    print("Joining clusters and profiles back to the main weekly panel (Train + Test)...")
     final_df = weekly_sales.merge(profile_clusters, on="StockCode", how="left")
     final_df = final_df.merge(volume_clusters[["StockCode", "volume_cluster_id", "volume_tier"]], on="StockCode", how="left")
     final_df = final_df.merge(semantic_clusters, on="StockCode", how="left")
+    final_df = final_df.merge(demand_df, on="StockCode", how="left")
+    final_df = final_df.merge(commercial_df, on="StockCode", how="left")
     
     # Drop rows that didn't get clustered (e.g., products that only appeared in the test set or lacked text descriptions)
     final_df = final_df.dropna(subset=["profile_cluster_id", "volume_cluster_id", "semantic_cluster_id"])
     
-    # 8. Export
+    # 10. Export
     print(f"Exporting fully featured dataset to {output_path}...")
     final_df.to_parquet(output_path, index=False)
     print("Pipeline completed successfully!")

@@ -108,6 +108,7 @@ def embed_texts(
     task_type: str = DEFAULT_TASK,
     normalize: bool = True,
     client=None,
+    verbose: bool = False,
     ) -> np.ndarray:
     """
     Calls the Google Gemini API to convert a list of strings into mathematical embeddings.
@@ -131,6 +132,8 @@ def embed_texts(
         # We attempt the API call up to 6 times in case of temporary network or rate-limit issues
         for attempt in range(6):
             try:
+                if verbose:
+                    print(f"[Embedding Engine] Attempting to embed batch starting at index {index} (Attempt {attempt + 1})...")
                 response = client.models.embed_content(
                     model=MODEL,
                     contents=api_contents,
@@ -139,7 +142,6 @@ def embed_texts(
                         output_dimensionality=dim,
                     ),
                 )
-                
                 returned_embeddings = list(response.embeddings)
                 
                 # Sanity check to ensure Google returned exactly one vector per input text
@@ -147,8 +149,11 @@ def embed_texts(
                     raise RuntimeError(
                         f"API Error: Requested {len(text_batch)} embeddings, but received {len(returned_embeddings)}."
                     )
-                    
                 all_embeddings.extend(embedding.values for embedding in returned_embeddings)
+                
+                if verbose and attempt > 0:
+                    print(f"[Embedding Engine] Chunk starting at index {index} succeeded after {attempt + 1} attempts.")
+                
                 break  # Success! Break out of the retry loop.
                 
             except Exception as exception:
@@ -159,13 +164,15 @@ def embed_texts(
                 # Otherwise, we use exponential backoff (1s, 2s, 4s, 8s, 16s...)
                 wait_time = _suggested_delay(exception)
                 wait_time = (wait_time + 1.0) if wait_time is not None else min(60.0, 2 ** attempt)
-                
-                print(f"[Embedding Engine] Retrying chunk {index} (Attempt {attempt + 1}) in {wait_time:.0f} seconds. Error: {str(exception)[:80]}")
+                if verbose:
+                    print(f"[Embedding Engine] Retrying chunk {index} (Attempt {attempt + 1}) in {wait_time:.0f} seconds. Error: {str(exception)[:80]}")
                 time.sleep(wait_time)
 
     # Convert the raw lists of floats into an optimized NumPy matrix
-    embeddings_matrix = np.asarray(all_embeddings, dtype=np.float32)
+    if verbose:
+        print(f"[Embedding Engine] Successfully processed {len(texts)} texts in chunks of {batch_size}.")
     
+    embeddings_matrix = np.asarray(all_embeddings, dtype=np.float32)
     if normalize:
         return _l2_normalize(embeddings_matrix)
     return embeddings_matrix
@@ -179,6 +186,7 @@ def embed_sku_descriptions(
     task_type: str = DEFAULT_TASK,
     normalize: bool = True,
     force: bool = False,
+    verbose: bool = False,
     ) -> pd.DataFrame:
     """
     Main entry point for product embedding.
@@ -193,19 +201,23 @@ def embed_sku_descriptions(
         cache_path = Path(cache_path)
         # If cache exists and we are not forcing a recalculation, load and return it instantly
         if cache_path.exists() and not force:
-            print(f"Loading cached embeddings from {cache_path}...")
+            if verbose:
+                print(f"Loading cached embeddings from {cache_path}...")
             return pd.read_parquet(cache_path)
 
-    print("Extracting canonical descriptions...")
+    if verbose:
+        print("Extracting canonical descriptions...")
     canonical_df = canonical_descriptions(sales)
-    
-    print("Sending descriptions to Gemini API for embedding...")
+
+    if verbose:
+        print("Sending descriptions to Gemini API for embedding...")
     embeddings_matrix = embed_texts(
         canonical_df["desc_canonical"].tolist(),
         dim=dim, 
         batch_size=batch_size, 
         task_type=task_type, 
         normalize=normalize,
+        verbose=verbose,
     )
     
     # Attach the resulting vectors to the dataframe
@@ -215,7 +227,8 @@ def embed_sku_descriptions(
     if cache_path:
         cache_path.parent.mkdir(parents=True, exist_ok=True)
         canonical_df.to_parquet(cache_path, index=False)
-        print(f"Embeddings cached to {cache_path}.")
+        if verbose:
+            print(f"Embeddings cached to {cache_path}.")
         
     return canonical_df
 
