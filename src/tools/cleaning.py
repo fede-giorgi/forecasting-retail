@@ -109,5 +109,5 @@ def split_sales_returns(raw_dataframe: pd.DataFrame) -> tuple[pd.DataFrame, pd.D
     columns_to_keep_for_returns = ["StockCode", "Week", "Quantity", "Customer ID", "Country"]
     valid_returns = valid_returns[columns_to_keep_for_returns]
 
-    # Return the split datasets
+    # Return the split data
     return valid_sales, valid_returns

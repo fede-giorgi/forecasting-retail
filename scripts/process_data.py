@@ -48,7 +48,7 @@ def process_data(input_path: str, output_path: str, test_cutoff: str = "2011-09-
     
     # 5. Semantic Embeddings (For Profiling)
     print("Generating or loading semantic embeddings from product descriptions...")
-    embeddings_cache_path = os.path.join(PROJECT_ROOT, "Datasets", "embeddings_cache.parquet")
+    embeddings_cache_path = os.path.join(PROJECT_ROOT, "data", "embeddings_cache.parquet")
     embeddings_df = embed_sku_descriptions(sales_df, cache_path=embeddings_cache_path)
     
     # 6. Train/Test Split for Static Profiling (Prevent Data Leakage)
@@ -86,10 +86,10 @@ def process_data(input_path: str, output_path: str, test_cutoff: str = "2011-09-
 
 if __name__ == "__main__":
     # Point to the actual Retail dataset!
-    input_p = os.path.join(PROJECT_ROOT, "Datasets", "online_retail_II.xlsx")
-    output_p = os.path.join(PROJECT_ROOT, "Datasets", "processed_retail_data.parquet")
+    input_p = os.path.join(PROJECT_ROOT, "data", "online_retail_II.xlsx")
+    output_p = os.path.join(PROJECT_ROOT, "data", "processed_retail_data.parquet")
     
-    # Create the Datasets folder if it doesn't exist
+    # Create the data folder if it doesn't exist
     os.makedirs(os.path.dirname(output_p), exist_ok=True)
     
     process_data(input_p, output_p)
