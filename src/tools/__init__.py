@@ -8,12 +8,12 @@ from .features import (
 )
 
 from .feature_engineering import (
-    add_temporal_features, add_historical_features, add_pricing_features
+    add_temporal_features, add_historical_features, add_pricing_features,
+    calculate_demand_profile, calculate_commercial_profile
 )
 
 
 from .clustering import (
-    calculate_demand_profile, calculate_commercial_profile,
     create_seasonal_profile_clusters, create_volume_clusters,
     create_semantic_clusters
 )

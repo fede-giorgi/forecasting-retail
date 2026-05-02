@@ -226,3 +226,76 @@ def add_pricing_features(weekly_sales: pd.DataFrame, raw_sales: pd.DataFrame) ->
     enriched_df["is_on_promotion"] = (enriched_df["price_relative_to_historical"] < 0.85).fillna(False).astype(int)
     
     return enriched_df
+
+
+def calculate_demand_profile(weekly_aggregated_sales: pd.DataFrame) -> pd.DataFrame:
+    """
+    Computes Syntetos-Boylan demand classification metrics for each SKU.
+    
+    Metrics:
+    - ADI (Average Demand Interval): Average weeks between non-zero sales.
+    - CV2 (Squared Coefficient of Variation): Volatility of non-zero sales.
+    
+    Args:
+        weekly_aggregated_sales (pd.DataFrame): The weekly aggregated panel.
+
+    Returns:
+        pd.DataFrame: A DataFrame containing ADI, CV2, demand_class, and share_zero_weeks.
+    """
+    profile_rows = []
+    
+    # Group by StockCode to calculate metrics per product
+    for sku, group in weekly_aggregated_sales.groupby("StockCode"):
+        sales_series = group.sort_values("Week")["Quantity"].values
+        total_weeks = len(sales_series)
+        
+        # Isolate weeks where the product actually sold
+        non_zero_sales = sales_series[sales_series > 0]
+        
+        # ADI calculation
+        adi = total_weeks / max(len(non_zero_sales), 1)
+        
+        # CV2 calculation
+        if len(non_zero_sales) > 1:
+            cv2 = (np.std(non_zero_sales) / np.mean(non_zero_sales)) ** 2
+        else:
+            cv2 = 0.0
+            
+        # Syntetos-Boylan Classification Matrix
+        if adi < 1.32 and cv2 < 0.49:
+            demand_class = "smooth"
+        elif adi < 1.32:
+            demand_class = "erratic"
+        elif cv2 < 0.49:
+            demand_class = "intermittent"
+        else:
+            demand_class = "lumpy"
+            
+        share_zero_weeks = float((sales_series == 0).mean())
+        
+        profile_rows.append((sku, adi, cv2, demand_class, share_zero_weeks))
+        
+    return pd.DataFrame(
+        profile_rows, 
+        columns=["StockCode", "ADI", "CV2", "demand_class", "share_zero_weeks"]
+    )
+
+
+def calculate_commercial_profile(raw_sales: pd.DataFrame) -> pd.DataFrame:
+    """
+    Computes static commercial features for each SKU.
+    
+    These features represent the general business footprint of the product, 
+    such as how much it costs, how many people buy it at once, and its global reach.
+    """
+    sku_groups = raw_sales.groupby("StockCode")
+    
+    commercial_df = pd.DataFrame({
+        "price_median": sku_groups["Price"].median(),
+        "mean_basket_size": sku_groups["Quantity"].mean(),
+        "n_unique_customers": sku_groups["Customer ID"].nunique(),
+        "country_uk_share": sku_groups["Country"].apply(lambda series: float((series == "United Kingdom").mean())),
+    }).reset_index()
+    
+    # We drop price_tier from here since we will build a dedicated Volume cluster later
+    return commercial_df
