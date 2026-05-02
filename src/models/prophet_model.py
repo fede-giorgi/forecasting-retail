@@ -26,16 +26,12 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 from src.config import TEST_CUTOFF_DT
-from src.tools.evaluation import compute_cluster_metrics
-from src.tools.visualization import plot_cluster_portfolio, analyze_time_periods
+from src.tools import load_processed_data, compute_cluster_metrics, plot_cluster_portfolio, analyze_time_periods
 
 # Suppress Prophet/cmdstanpy verbose logging
 logging.getLogger('cmdstanpy').setLevel(logging.WARNING)
 logging.getLogger('prophet').setLevel(logging.WARNING)
 
-def load_processed_data(file_path):
-    print("Loading processed data...")
-    return pd.read_parquet(file_path)
 
 def preprocess_and_split(df_long):
     print("Preparing train/test split and log-scaling...")
