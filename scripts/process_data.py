@@ -118,7 +118,7 @@ def process_data(input_path: str, output_path: str, test_cutoff: str = "2011-09-
 
 if __name__ == "__main__":
     # Point to the actual Retail dataset!
-    input_p = os.path.join(PROJECT_ROOT, "data", "online_retail_II.xlsx")
+    input_p = os.path.join(PROJECT_ROOT, "data", "raw", "online_retail_II.xlsx")
     output_p = os.path.join(PROJECT_ROOT, "data", "processed_retail_data.parquet")
     
     # Create the data folder if it doesn't exist
