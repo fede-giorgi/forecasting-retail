@@ -89,8 +89,8 @@ def add_temporal_features(weekly_sku: pd.DataFrame) -> pd.DataFrame:
 def add_historical_features(
     sales_weekly: pd.DataFrame, 
     returns: pd.DataFrame, 
-    lags: Iterable[int] = (1, 2, 4, 8, 13, 26, 52),
-    windows: Iterable[int] = (4, 13, 26)
+    lags: Iterable[int] = (1, 4, 13, 52),
+    windows: Iterable[int] = (4, 13)
     ) -> pd.DataFrame:
     """
     Combines return rates, lagged quantities, and rolling statistics into a single 
@@ -109,15 +109,13 @@ def add_historical_features(
         returns (pd.DataFrame): The separate returns dataset.
         lags (Iterable[int]): Specific weeks to shift backwards to capture exact past events.
                               Defaults: 
-                                - 1, 2: Short-term momentum/inertia.
-                                - 4, 8, 13: 1 month, 2 months, 1 quarter past.
-                                - 26: Half a year ago.
+                                - 1: Short-term momentum/inertia.
+                                - 4, 13: 1 month, 1 quarter past.
                                 - 52: Exact same week 1 year ago (crucial for annual holiday seasonality).
         windows (Iterable[int]): Window sizes for moving averages and volatility (smoothing noise).
                                  Defaults: 
                                   - 4: 1-month smoothed trend.
                                   - 13: 1-quarter smoothed trend (catches seasonal changes).
-                                  - 26: Bi-annual trend (identifies dying or stable best-selling products).
 
     Returns:
         pd.DataFrame: A new DataFrame containing the original sales data enriched with 
@@ -142,8 +140,7 @@ def add_historical_features(
     new_features = {}
     
     # Task 2: Calculate return rates using two standard windows: 4 weeks (1 month) and 13 weeks (1 quarter)
-    return_windows = (4, 13)
-    for window in return_windows:
+    for window in windows:
         # 1. Calculate rolling sum of sales
         rolling_sales = sku_groups["Quantity"].rolling(window, min_periods=1).sum().reset_index(level=0, drop=True)
         # 2. Calculate rolling sum of returns
@@ -192,7 +189,6 @@ def add_pricing_features(weekly_sales: pd.DataFrame, raw_sales: pd.DataFrame) ->
     Returns:
         pd.DataFrame: A new DataFrame containing the original weekly data enriched with:
             - 'price_weekly': The median price of the item for that specific week.
-            - 'price_relative_to_historical': Ratio of the weekly price vs the all-time median price.
             - 'price_percent_change': Week-over-week percentage change in price.
             - 'is_on_promotion': Boolean flag (1 if price drops below 85% of historical median).
     """
@@ -206,24 +202,18 @@ def add_pricing_features(weekly_sales: pd.DataFrame, raw_sales: pd.DataFrame) ->
     
     # Merge these weekly prices onto our main aggregated dataframe
     enriched_df = weekly_sales.merge(weekly_prices, on=["StockCode", "Week"], how="left")
-    
-    # 2. Calculate the historical all-time median price for each SKU
-    # Using transform("median") maps the single median value back to all rows of that SKU
-    historical_median_price = enriched_df.groupby("StockCode")["price_weekly"].transform("median")
-    
-    # 3. Calculate Relative Price
-    # A value of 1.0 means it's selling at its normal price. A value of 0.8 means a 20% discount.
-    # We replace 0 with NaN to avoid division by zero errors for free items.
-    enriched_df["price_relative_to_historical"] = enriched_df["price_weekly"] / historical_median_price.replace(0, np.nan)
-    
-    # 4. Calculate Week-over-Week percent change
+
+    # 2. Calculate Week-over-Week percent change
     # Sort just in case, though it should already be chronological
     enriched_df = enriched_df.sort_values(["StockCode", "Week"])
-    enriched_df["price_percent_change"] = enriched_df.groupby("StockCode")["price_weekly"].pct_change().fillna(0)
+    enriched_df["price_percent_change"] = enriched_df.groupby("StockCode")["price_weekly"].pct_change(fill_method=None).fillna(0)
     
-    # 5. Create Promotional Flag
+    # 3. Create Promotional Flag
+    historical_median_price = enriched_df.groupby("StockCode")["price_weekly"].transform("median")
+    temp_relative_price = enriched_df["price_weekly"] / historical_median_price.replace(0, np.nan)
+    
     # If the current weekly price is less than 85% of its historical median, we flag it as a promotion.
-    enriched_df["is_on_promotion"] = (enriched_df["price_relative_to_historical"] < 0.85).fillna(False).astype(int)
+    enriched_df["is_on_promotion"] = (temp_relative_price < 0.85).fillna(False).astype(int)
     
     return enriched_df
 

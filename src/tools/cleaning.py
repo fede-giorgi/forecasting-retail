@@ -14,6 +14,7 @@ which expect strictly positive demand. Clipping to 0 wastes information and bias
 
 import re
 import pandas as pd
+from src.config import TEST_CUTOFF_DT
 
 # Regex pattern to match real product codes.
 # Real product codes are 5 digits with an optional single letter at the end (e.g., 22197, 85123A).
@@ -161,3 +162,50 @@ def clean_and_split_transactions(raw_dataframe: pd.DataFrame, verbose: bool = Fa
 
     # Return the split data
     return valid_sales, valid_returns
+
+
+def trim_inactive_periods(weekly_sales: pd.DataFrame, test_cutoff_dt: pd.Timestamp = TEST_CUTOFF_DT) -> pd.DataFrame:
+    """ 
+    Cleans the weekly aggregated dataset by:
+    1. Trimming leading zeros (removing weeks before a product's first sale).
+    2. Removing inactive/discontinued products (0 sales in the last 4 weeks before cutoff).
+    
+    Args:
+        weekly_sales (pd.DataFrame): The weekly aggregated panel dataset.
+        test_cutoff_dt (pd.Timestamp): The split date between train and test.
+        
+    Returns:
+        pd.DataFrame: The cleaned weekly dataset.
+    """
+    df = weekly_sales.copy()
+    
+    # PART 1: TRIMMING LEADING ZEROS (Product Launch Date)
+    print("Trimming leading zeros (finding actual launch date for each SKU)...")
+    start_dates = df[df['Quantity'] > 0].groupby('StockCode', observed=True)['Week'].min().reset_index()
+    start_dates.columns = ['StockCode', 'StartDate']
+    
+    df = df.merge(start_dates, on='StockCode')
+    df = df[df['Week'] >= df['StartDate']].copy()
+    df = df.drop(columns=['StartDate'])
+    print(f"Trimmed pre-launch periods. Remaining rows: {len(df)}")
+    
+    # PART 2: REMOVE INACTIVE PRODUCTS (Delisted / Discontinued)
+    print("Removing inactive SKUs (0 sales in the 4 weeks prior to test cutoff)...")
+    # We look at the 4 weeks immediately preceding the test cutoff
+    cutoff_date = test_cutoff_dt - pd.Timedelta(weeks=4)
+    last_month_df = df[(df['Week'] >= cutoff_date) & (df['Week'] < test_cutoff_dt)]
+    
+    recent_sales = last_month_df.groupby('StockCode', observed=True)['Quantity'].sum()
+    active_skus = recent_sales[recent_sales > 0].index
+    
+    inactive_count = len(recent_sales) - len(active_skus)
+    print(f"Detected {inactive_count} inactive SKUs in the 4 weeks before cutoff.")
+    
+    df = df[df['StockCode'].isin(active_skus)].copy()
+    
+    if isinstance(df['StockCode'].dtype, pd.CategoricalDtype):
+        df['StockCode'] = df['StockCode'].cat.remove_unused_categories()
+        
+    print(f"Removed inactive products. Remaining rows: {len(df)}")
+    
+    return df

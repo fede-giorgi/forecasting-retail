@@ -16,7 +16,7 @@ import jenkspy
 import umap
 from .embeddings import embeddings_as_matrix
 
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, normalize
 from sklearn.cluster import KMeans
 from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -44,14 +44,10 @@ def create_seasonal_profile_clusters(
     # 3. Ensure all weeks from 1 to 52 are represented (just in case)
     profiles = profiles.reindex(columns=range(1, 53), fill_value=0)
     
-    # 4. Scale each SKU (row) individually to be between 0 and 1
-    # This isolates the "shape" of the seasonality, removing the effect of absolute volume
-    scaler = MinMaxScaler()
-    profiles_scaled = scaler.fit_transform(profiles.T).T
-    
-    # Handle potential NaNs or Infs that can arise if a SKU has constant values (max == min)
-    # or extreme outliers that cause numerical instability in the scaler.
-    profiles_scaled = np.nan_to_num(profiles_scaled, nan=0.0, posinf=0.0, neginf=0.0)
+    # 4. L2 Normalize each SKU (row) individually.
+    # This isolates the "shape" of the seasonality, removing volume bias.
+    # Using L2 norm is safer than MinMaxScaler and prevents division by zero (NaNs) on flat profiles.
+    profiles_scaled = normalize(profiles.values, axis=1, norm='l2')
 
     # 5. Fit KMeans
     kmeans = KMeans(n_clusters=n_clusters, random_state=random_state, n_init=10)
@@ -107,22 +103,21 @@ def create_volume_clusters(
         print(f"Applying Jenks Natural Breaks to segment volumes into {n_tiers} tiers...")
     breaks = jenkspy.jenks_breaks(volumes_list, n_classes=n_tiers)
     
-    # Categorize each SKU into a cluster based on the discovered breakpoints
-    labels = list(range(n_tiers))
-    total_volume_per_sku["volume_cluster_id"] = pd.cut(
+    # 2. Categorize each SKU directly into human-readable tiers
+    if n_tiers == 3:
+        labels = ["Low", "Medium", "High"]
+    else:
+        # Fallback if someone asks for more/fewer than 3 tiers in the future
+        labels = [f"Tier_{i}" for i in range(1, n_tiers + 1)]
+        
+    total_volume_per_sku["volume_tier"] = pd.cut(
         total_volume_per_sku["Quantity"], 
         bins=breaks, 
         labels=labels, 
         include_lowest=True
-    ).astype(int)
+    )
 
-    # 3. Create human-readable labels (Independent of plotting)
-    if n_tiers == 3:
-        # Map numeric IDs to human-readable labels (Low, Medium, High)
-        tier_names = {0: "Low", 1: "Medium", 2: "High"}
-        total_volume_per_sku["volume_tier"] = total_volume_per_sku["volume_cluster_id"].map(tier_names)
-
-    # 4. Visualization
+    # 3. Visualization
     if plot and n_tiers == 3:
         # Prepare data for the log-scaled distribution plot
         plot_vol_df = total_volume_per_sku[total_volume_per_sku['Quantity'] > 0]
@@ -170,9 +165,8 @@ def create_volume_clusters(
         plt.tight_layout()
         plt.show()
         
-    # Final Export: Return StockCode mapping
-    return_columns = ["StockCode", "volume_cluster_id", "volume_tier"] if n_tiers == 3 else ["StockCode", "volume_cluster_id"]
-    return total_volume_per_sku[return_columns]
+    # 4. Final Export: Return StockCode mapping
+    return total_volume_per_sku[["StockCode", "volume_tier"]]
 
 
 def create_semantic_clusters(
@@ -255,5 +249,5 @@ def create_semantic_clusters(
         plt.tight_layout()
         plt.show()
         
-    return df[["StockCode", "semantic_cluster_id", "semantic_cluster_name"]]
+    return df[["StockCode", "semantic_cluster_name"]]
 

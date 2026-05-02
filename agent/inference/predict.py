@@ -24,6 +24,8 @@ ARTIFACTS_DIR = os.path.join(os.path.dirname(CURRENT_DIR), "artifacts")
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
+from src.config import TEST_CUTOFF_DT
+
 @dataclass
 class ForecastResult:
     model_name: str
@@ -85,12 +87,11 @@ def predict_retail(stock_code: str, model_name: str, df_all: pd.DataFrame, horiz
         cluster_id = product_data["profile_cluster_id"].iloc[0]
 
         # 2. Extract testing segment for this product
-        TEST_CUTOFF = pd.to_datetime("2011-09-01")
-        test_df = product_data[product_data['Week'] >= TEST_CUTOFF].copy()
+        test_df = product_data[product_data['Week'] >= TEST_CUTOFF_DT].copy()
         test_df = test_df.sort_values(by="Week").head(horizon_weeks)
         
         if test_df.empty:
-            raise ValueError(f"No testing data available for '{stock_code}' after {TEST_CUTOFF.strftime('%Y-%m-%d')}.")
+            raise ValueError(f"No testing data available for '{stock_code}' after {TEST_CUTOFF_DT.strftime('%Y-%m-%d')}.")
             
         future_ts = test_df['Week'].dt.strftime('%Y-%m-%d').tolist()
 

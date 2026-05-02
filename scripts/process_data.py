@@ -10,9 +10,11 @@ import pandas as pd
 import numpy as np
 
 # Import our specialized pipeline tools via the centralized interface
+from src.config import TEST_CUTOFF
 from src.tools import (
     load_raw_data,
     clean_and_split_transactions,
+    trim_inactive_periods,
     aggregate_weekly_sku,
     add_temporal_features,
     add_historical_features,
@@ -26,7 +28,7 @@ from src.tools import (
 )
 
 
-def process_data(input_path: str, output_path: str, test_cutoff: str = "2011-09-01"):
+def process_data(input_path: str, output_path: str, test_cutoff: str = TEST_CUTOFF):
     """
     Main orchestration pipeline for the Forecasting Retail project.
     Transforms raw transactional data into a fully featured dataset ready for ML modeling.
@@ -64,8 +66,12 @@ def process_data(input_path: str, output_path: str, test_cutoff: str = "2011-09-
     # 3. Aggregation to Weekly Frequency
     print("Aggregating transactions into weekly buckets per SKU (with zero-filling)...")
     weekly_sales = aggregate_weekly_sku(sales_df)
+
+    # 4. Trimming leading zeros and removing discontinued products
+    print("Trimming leading zeros and removing discontinued products...")
+    weekly_sales = trim_inactive_periods(weekly_sales, pd.to_datetime(test_cutoff))
     
-    # 4. Feature Engineering
+    # 5. Feature Engineering
     print("Adding temporal (calendar) features...")
     weekly_sales = add_temporal_features(weekly_sales)
     
@@ -75,22 +81,22 @@ def process_data(input_path: str, output_path: str, test_cutoff: str = "2011-09-
     print("Adding pricing metrics (median price & promotional flags)...")
     weekly_sales = add_pricing_features(weekly_sales, sales_df)
     
-    # 5. Semantic Embeddings (For Profiling)
+    # 6. Semantic Embeddings (For Profiling)
     print("Generating or loading semantic embeddings from product descriptions...")
     embeddings_cache_path = os.path.join(PROJECT_ROOT, "data", "embeddings_cache.parquet")
     embeddings_df = embed_sku_descriptions(sales_df, cache_path=embeddings_cache_path)
     
-    # 6. Train/Test Split for Static Profiling (Prevent Data Leakage)
+    # 7. Train/Test Split for Static Profiling (Prevent Data Leakage)
     print("Splitting data to calculate clusters using ONLY training data...")
     weekly_sales_train = weekly_sales[weekly_sales["Week"] < test_cutoff]
     sales_df_train = sales_df[sales_df["InvoiceDate"] < test_cutoff]
     
-    # 7. Static SKU Profiles Demand and Commercial (Strictly on Training Data)
+    # 8. Static SKU Profiles Demand and Commercial (Strictly on Training Data)
     print("Building static SKU profiles (Demand & Commercial) on Train set...")
     demand_df = calculate_demand_profile(weekly_sales_train)
     commercial_df = calculate_commercial_profile(sales_df_train)
     
-    # 8. Clustering (Strictly on Training Data)
+    # 9. Clustering (Strictly on Training Data)
     print("Creating Behavioral Clusters (52-Week Seasonal Profiles)...")
     profile_clusters = create_seasonal_profile_clusters(weekly_sales_train, n_clusters=4)
     
@@ -100,18 +106,19 @@ def process_data(input_path: str, output_path: str, test_cutoff: str = "2011-09-
     print("Creating Volume Clusters (Jenks Natural Breaks) on Train set...")
     volume_clusters = create_volume_clusters(weekly_sales_train, n_tiers=3)
     
-    # 9. Final Joins (Mapping clusters and profiles back to the FULL dataset)
+    # 10. Final Joins (Mapping clusters and profiles back to the FULL dataset)
     print("Joining clusters and profiles back to the main weekly panel (Train + Test)...")
     final_df = weekly_sales.merge(profile_clusters, on="StockCode", how="left")
-    final_df = final_df.merge(volume_clusters[["StockCode", "volume_cluster_id", "volume_tier"]], on="StockCode", how="left")
+    final_df = final_df.merge(volume_clusters, on="StockCode", how="left")
     final_df = final_df.merge(semantic_clusters, on="StockCode", how="left")
     final_df = final_df.merge(demand_df, on="StockCode", how="left")
     final_df = final_df.merge(commercial_df, on="StockCode", how="left")
     
-    # Drop rows that didn't get clustered (e.g., products that only appeared in the test set or lacked text descriptions)
-    final_df = final_df.dropna(subset=["profile_cluster_id", "volume_cluster_id", "semantic_cluster_id"])
+    # Drop rows for "new" products that only appeared in the test set 
+    # (they lack historical data to be clustered, so we cannot predict them with these models)
+    final_df = final_df.dropna(subset=["profile_cluster_id", "volume_tier", "semantic_cluster_name"])
     
-    # 10. Export
+    # 11. Export
     print(f"Exporting fully featured dataset to {output_path}...")
     final_df.to_parquet(output_path, index=False)
     print("Pipeline completed successfully!")

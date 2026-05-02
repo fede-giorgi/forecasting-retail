@@ -23,3 +23,8 @@ def load_raw_data(input_path: str | Path) -> pd.DataFrame:
     df["InvoiceDate"] = pd.to_datetime(df["InvoiceDate"], errors="coerce")
     
     return df
+
+def load_processed_data(file_path: str | Path) -> pd.DataFrame:
+    """Loads the processed data from a parquet file."""
+    print("Loading processed data...")
+    return pd.read_parquet(file_path)

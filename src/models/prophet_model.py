@@ -25,6 +25,7 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(CURRENT_DIR))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
+from src.config import TEST_CUTOFF_DT
 from src.tools.evaluation import compute_cluster_metrics
 from src.tools.visualization import plot_cluster_portfolio, analyze_time_periods
 
@@ -39,10 +40,8 @@ def load_processed_data(file_path):
 def preprocess_and_split(df_long):
     print("Preparing train/test split and log-scaling...")
     
-    TEST_CUTOFF = pd.to_datetime("2011-09-01")
-    
-    train_raw = df_long[df_long['Week'] < TEST_CUTOFF].copy()
-    test_raw  = df_long[df_long['Week'] >= TEST_CUTOFF].copy()
+    train_raw = df_long[df_long['Week'] < TEST_CUTOFF_DT].copy()
+    test_raw  = df_long[df_long['Week'] >= TEST_CUTOFF_DT].copy()
     
     # 1. Log Scaling for Quantity
     print("Applying log1p scaling to Quantity...")

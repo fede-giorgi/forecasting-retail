@@ -13,78 +13,82 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(CURRENT_DIR))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
+from src.config import TEST_CUTOFF_DT
 from src.tools.evaluation import compute_cluster_metrics
 from src.tools.visualization import plot_cluster_portfolio, analyze_time_periods
+from src.tools import load_processed_data
 
-def load_processed_data(file_path):
-    print("Loading processed data...")
-    return pd.read_parquet(file_path)
 
 def preprocess_and_split(df_long):
     print("Feature Engineering and Train/Test Split...")
     
-    # We rely on the test_cutoff used in process_data.py
-    TEST_CUTOFF = pd.to_datetime("2011-09-01")
+    cat_cols = ['volume_tier', 'semantic_cluster_name', 'demand_class']
+    for col in cat_cols:
+        if col in df_long.columns:
+            df_long[col] = df_long[col].astype(str)
+            
+    df_long = pd.get_dummies(df_long, columns=[c for c in cat_cols if c in df_long.columns], drop_first=False)
     
-    train = df_long[df_long['Week'] < TEST_CUTOFF].copy()
-    test  = df_long[df_long['Week'] >= TEST_CUTOFF].copy()
+    dummy_cols = [c for c in df_long.columns if any(c.startswith(f"{cat}_") for cat in cat_cols)]
+    df_long[dummy_cols] = df_long[dummy_cols].astype(float)
+    
+    # We rely on the global test_cutoff defined in src/config.py
+    train = df_long[df_long['Week'] < TEST_CUTOFF_DT].copy()
+    test  = df_long[df_long['Week'] >= TEST_CUTOFF_DT].copy()
     
     train = train.sort_values(by=['StockCode', 'Week'])
     test  = test.sort_values(by=['StockCode', 'Week'])
 
-    # Features to scale per SKU (TARGET EXCLUDED)
-    scale_cols = [f'lag_{l}' for l in (1, 2, 4, 8, 13, 26, 52)] + \
-                 [f'rmean_{w}' for w in (4, 13, 26)] + [f'rstd_{w}' for w in (4, 13, 26)] + \
-                 ['price_weekly', 'price_percent_change', 'qty_returned']
+    # Features to scale per SKU
+    scale_cols = [f'lag_{l}' for l in (1, 4, 13, 52)] + \
+                 [f'rmean_{w}' for w in (4, 13)] + [f'rstd_{w}' for w in (4, 13)] + \
+                 ['return_rate_4w', 'return_rate_13w'] + \
+                 ['price_weekly', 'price_percent_change'] + \
+                 ['ADI', 'CV2', 'share_zero_weeks']
                  
     # Ensure they exist
     scale_cols = [c for c in scale_cols if c in train.columns]
 
-    # Create empty scaled columns
-    for col in scale_cols:
-        train[f'{col}_Scaled'] = np.nan
-        test[f'{col}_Scaled'] = np.nan
-        
     # Log transform the target natively
-    train['Quantity_Scaled'] = np.log1p(train['Quantity'])
-    test['Quantity_Scaled']  = np.log1p(test['Quantity'])
+    train['Quantity_Scaled'] = np.log1p(train['Quantity'].clip(lower=0))
+    test['Quantity_Scaled']  = np.log1p(test['Quantity'].clip(lower=0))
 
-    sku_scalers = {}
+    print("Applying Global Scaling (Log1p for volumes, MinMax for ratios)...")
+    
+    # 1. Log-transform volume-based features to match target scale and prevent outlier explosions
+    vol_features = [f'lag_{l}' for l in (1, 4, 13, 52)] + [f'rmean_{w}' for w in (4, 13)] + [f'rstd_{w}' for w in (4, 13)]
+    for col in vol_features:
+        if col in train.columns:
+            train[f'{col}_Scaled'] = np.log1p(train[col].clip(lower=0).fillna(0))
+            test[f'{col}_Scaled']  = np.log1p(test[col].clip(lower=0).fillna(0))
 
-    for sku in tqdm(df_long['StockCode'].unique(), desc="Scaling SKUs"):
-        scaler = MinMaxScaler()
-        train_mask = train['StockCode'] == sku
-        test_mask  = test['StockCode'] == sku
-
-        if not train_mask.any():
-            print(f"Warning: SKU {sku} has no data in the train set. Skipping...")
-            continue
-            
-        # Fit on train, transform train and test
-        # Note: MinMaxScaler scales each column independently. We can scale all columns at once for a given SKU!
-        train_vals = train.loc[train_mask, scale_cols].values
-        # Handle potential NaNs before fitting
-        train_vals = np.nan_to_num(train_vals)
-        
-        scaled_train = scaler.fit_transform(train_vals)
-        
-        for i, col in enumerate(scale_cols):
-            train.loc[train_mask, f'{col}_Scaled'] = scaled_train[:, i]
-
-        if test_mask.any():
-            test_vals = test.loc[test_mask, scale_cols].values
-            test_vals = np.nan_to_num(test_vals)
-            scaled_test = scaler.transform(test_vals)
-            for i, col in enumerate(scale_cols):
-                test.loc[test_mask, f'{col}_Scaled'] = scaled_test[:, i]
-
-        sku_scalers[sku] = scaler
+    # 2. Global MinMax for ratios, prices, and static metrics (Fast & Stable)
+    ratio_features = ['return_rate_4w', 'return_rate_13w', 'price_weekly', 'price_percent_change', 'ADI', 'CV2', 'share_zero_weeks']
+    ratio_features = [c for c in ratio_features if c in train.columns]
+    
+    global_scaler = MinMaxScaler()
+    
+    # Fill NaNs before scaling
+    train[ratio_features] = train[ratio_features].fillna(0)
+    test[ratio_features]  = test[ratio_features].fillna(0)
+    
+    train_scaled = global_scaler.fit_transform(train[ratio_features])
+    test_scaled  = global_scaler.transform(test[ratio_features])
+    
+    for i, col in enumerate(ratio_features):
+        train[f'{col}_Scaled'] = train_scaled[:, i]
+        test[f'{col}_Scaled']  = test_scaled[:, i]
 
     # Drop rows that have NaN in scaled target (should be handled by nan_to_num though, but just in case)
     train = train.dropna(subset=['Quantity_Scaled'])
 
     # Columns to drop for X
-    cols_to_drop = ['Week', 'StockCode', 'Quantity_Scaled'] + scale_cols + ['desc_canonical', 'embedding', 'semantic_cluster_name', 'volume_tier']
+    cols_to_drop = [
+        'Week', 'StockCode', 'Quantity', 'Quantity_Scaled', 'qty_returned', 'Revenue',
+        'week_of_year', 'month', 'quarter', 'year',
+        'price_median', 'mean_basket_size', 'n_unique_customers', 'country_uk_share'
+    ] + scale_cols + ['desc_canonical', 'embedding', 'semantic_cluster_name', 'volume_tier']
+    
     cols_to_drop_train = [c for c in cols_to_drop if c in train.columns]
     
     # We also don't train on clusters that we use to segment
@@ -96,21 +100,17 @@ def preprocess_and_split(df_long):
 
     print(f"Training shape: {X_train.shape}")
     print(f"Testing shape:  {X_test.shape}")
+    print(f"Features:  {X_test.columns.tolist()}")
 
     # We exclude profile_cluster_id from feature_cols because we segment on it
     feature_cols = X_train.drop(columns=['profile_cluster_id'], errors='ignore').columns.tolist()
 
-    return train, test, X_train, y_train, X_test, sku_scalers, feature_cols
+    return train, test, X_train, y_train, X_test, feature_cols
 
 
 def train_models(X_train, y_train, train):
     print("Training Linear Regression models per Seasonal Profile Cluster...")
     cluster_models = {}
-    
-    # We use profile_cluster_id
-    if 'profile_cluster_id' not in train.columns:
-        print("Error: profile_cluster_id not found!")
-        return {}
         
     unique_clusters = train['profile_cluster_id'].dropna().unique()
 
@@ -134,7 +134,7 @@ def train_models(X_train, y_train, train):
     return cluster_models
 
 
-def predict_models(cluster_models, test, X_test, sku_scalers):
+def predict_models(cluster_models, test, X_test):
     print("Predicting on Test Set...")
     test['Predicted_Quantity_Scaled'] = np.nan
 
@@ -157,7 +157,7 @@ def predict_models(cluster_models, test, X_test, sku_scalers):
     return test
 
 
-def evaluate_models(test, sku_scalers, train):
+def evaluate_models(test):
     print("\nEvaluating model (raw Quantity)...")
     for sku in test['StockCode'].unique():
         sku_mask = test['StockCode'] == sku
@@ -182,12 +182,8 @@ def evaluate_models(test, sku_scalers, train):
     test['Cluster'] = test['profile_cluster_id']
     test['Date'] = test['Week']
     
-    cluster_eval = (
-        test.dropna(subset=['Actual_Qty', 'Predicted_Qty'])
-        .groupby(['Cluster', 'Date'], observed=True)[['Actual_Qty', 'Predicted_Qty']]
-        .sum()
-        .reset_index()
-    )
+    # Pass the raw, item-level predictions to accurately calculate Median MAPE and WMAPE without "variance pooling".
+    cluster_eval = test.dropna(subset=['Actual_Qty', 'Predicted_Qty'])[['Cluster', 'StockCode', 'Date', 'Actual_Qty', 'Predicted_Qty']].copy()
 
     summary = compute_cluster_metrics(cluster_eval)
 
@@ -200,7 +196,6 @@ def save_cluster_artifacts(cluster_models, sku_scalers, feature_cols, sku_cluste
     
     artifact = {
         "cluster_models": cluster_models,
-        "sku_scalers": sku_scalers,
         "feature_cols": list(feature_cols),
         "sku_clusters": {k: v for k, v in sku_clusters.items()}
     }
@@ -215,13 +210,13 @@ def run_linear_regression_pipeline(file_path, plot=False):
     Complete pipeline to load data, train models, predict, evaluate, and visualize results.
     """
     df_long = load_processed_data(file_path)
-    train, test, X_train, y_train, X_test, sku_scalers, feature_cols = preprocess_and_split(df_long)
+    train, test, X_train, y_train, X_test, feature_cols = preprocess_and_split(df_long)
     cluster_models = train_models(X_train, y_train, train)
-    test = predict_models(cluster_models, test, X_test, sku_scalers)
-    cluster_eval, summary = evaluate_models(test, sku_scalers, train)
+    test = predict_models(cluster_models, test, X_test)
+    cluster_eval, summary = evaluate_models(test)
     
     sku_clusters = df_long.drop_duplicates(subset=['StockCode']).set_index('StockCode')['profile_cluster_id'].to_dict()
-    save_cluster_artifacts(cluster_models, sku_scalers, feature_cols, sku_clusters, artifacts_dir=os.path.join(os.path.dirname(__file__), '..', '..', 'agent', 'artifacts'))
+    save_cluster_artifacts(cluster_models, feature_cols, sku_clusters, artifacts_dir=os.path.join(os.path.dirname(__file__), '..', '..', 'agent', 'artifacts'))
     
     if plot:
         plot_cluster_portfolio(cluster_eval, summary)
