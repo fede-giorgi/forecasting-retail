@@ -169,5 +169,5 @@ class NonStationaryTransformer(nn.Module):
         for layer in self.decoder:
             dec_out = layer(dec_out, cross=enc_out, tau=tau, delta=delta)
         dec_out = self.proj(self.dec_norm(dec_out))
-        dec_out = dec_out * sigma[:, :, :1] + mu[:, :, :1]
+        dec_out = dec_out * sigma + mu
         return dec_out[:, -self.pred_len :, :]
