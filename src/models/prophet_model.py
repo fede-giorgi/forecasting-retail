@@ -154,9 +154,8 @@ def evaluate_models(test_raw):
 
 
 
-def save_prophet_artifacts(cluster_models, artifacts_dir=None):
-    if artifacts_dir is None:
-        artifacts_dir = os.path.join(PROJECT_ROOT, 'agent', 'artifacts')
+def save_artifacts(cluster_models, regressors, sku_clusters, artifacts_dir="../agent/artifacts"):
+    print(f"Saving Cluster Prophet artifacts to {artifacts_dir}...")
     os.makedirs(artifacts_dir, exist_ok=True)
     
     file_name = "prophet_cluster_models.pkl"
@@ -164,10 +163,12 @@ def save_prophet_artifacts(cluster_models, artifacts_dir=None):
     
     artifact = {
         "cluster_models": cluster_models,
-        "is_retail": True
+        "regressors": list(regressors), # Equivalent to feature_cols for Prophet
+        "sku_clusters": {k: v for k, v in sku_clusters.items()}
     }
+    
     joblib.dump(artifact, path)
-    print(f"\n Prophet artifacts successfully saved to: {path}")
+    print(f"Successfully saved {path}")
 
 
 def run_prophet_pipeline(file_path, plot=False):
@@ -179,7 +180,11 @@ def run_prophet_pipeline(file_path, plot=False):
     test_raw = predict_models(cluster_models, test_agg, test_raw, regressors)
     cluster_eval, summary = evaluate_models(test_raw)
     
-    save_prophet_artifacts(cluster_models)
+    # Extract the SKU mapping dictionary
+    sku_clusters = df_long.drop_duplicates(subset=['StockCode']).set_index('StockCode')['profile_cluster_id'].to_dict()
+    
+    # Save artifacts with all necessary production context
+    save_artifacts(cluster_models, regressors, sku_clusters)
     
     if plot:
         plot_cluster_portfolio(cluster_eval, summary, model_label="Prophet (Yearly + Regressors)")

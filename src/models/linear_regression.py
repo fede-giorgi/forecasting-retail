@@ -188,9 +188,12 @@ def evaluate_models(test):
     return cluster_eval, summary
 
 
-def save_cluster_artifacts(cluster_models, sku_scalers, feature_cols, sku_clusters, artifacts_dir="../agent/artifacts"):
+def save_artifacts(cluster_models, feature_cols, sku_clusters, artifacts_dir="../agent/artifacts"):
     print(f"Saving Cluster Linear Regression artifacts to {artifacts_dir}...")
     os.makedirs(artifacts_dir, exist_ok=True)
+
+    file_name = "lr_cluster_models.pkl"
+    path = os.path.join(artifacts_dir, file_name)
     
     artifact = {
         "cluster_models": cluster_models,
@@ -198,7 +201,6 @@ def save_cluster_artifacts(cluster_models, sku_scalers, feature_cols, sku_cluste
         "sku_clusters": {k: v for k, v in sku_clusters.items()}
     }
     
-    path = os.path.join(artifacts_dir, "lr_cluster_models.pkl")
     joblib.dump(artifact, path)
     print(f"Successfully saved {path}")
 
@@ -214,8 +216,8 @@ def run_linear_regression_pipeline(file_path, plot=False):
     cluster_eval, summary = evaluate_models(test)
     
     sku_clusters = df_long.drop_duplicates(subset=['StockCode']).set_index('StockCode')['profile_cluster_id'].to_dict()
-    save_cluster_artifacts(cluster_models, feature_cols, sku_clusters, artifacts_dir=os.path.join(os.path.dirname(__file__), '..', '..', 'agent', 'artifacts'))
-    
+    save_artifacts(cluster_models, feature_cols, sku_clusters, artifacts_dir=os.path.join(PROJECT_ROOT, 'agent', 'artifacts'))
+
     if plot:
         plot_cluster_portfolio(cluster_eval, summary)
         analyze_time_periods(test)
