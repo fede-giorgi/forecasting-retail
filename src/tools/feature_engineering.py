@@ -60,9 +60,11 @@ def add_temporal_features(weekly_sku: pd.DataFrame) -> pd.DataFrame:
         # The chronological year
         'year': year,
         
-        # Cyclical encoding for the week of the year to preserve circular continuity (e.g., week 52 is close to week 1)
-        'sin_woy': np.sin(2 * np.pi * week_of_year / 52),
-        'cos_woy': np.cos(2 * np.pi * week_of_year / 52),
+        # Cyclical encoding for the week of the year.
+        # ISO week can reach 53 in some years (e.g. 2009, 2015); using 53 as the period
+        # ensures all valid values [1..53] map into exactly one full cycle without overflow.
+        'sin_woy': np.sin(2 * np.pi * week_of_year / 53),
+        'cos_woy': np.cos(2 * np.pi * week_of_year / 53),
         
         # Cyclical encoding for the month to preserve circular continuity
         'sin_month': np.sin(2 * np.pi * month / 12),
@@ -141,27 +143,50 @@ def add_historical_features(
     
     # Task 2: Calculate return rates using two standard windows: 4 weeks (1 month) and 13 weeks (1 quarter)
     for window in windows:
-        # 1. Calculate rolling sum of sales
-        rolling_sales = sku_groups["Quantity"].rolling(window, min_periods=1).sum().reset_index(level=0, drop=True)
-        # 2. Calculate rolling sum of returns
-        rolling_returns = sku_groups["qty_returned"].rolling(window, min_periods=1).sum().reset_index(level=0, drop=True)
-        
-        # 3. Calculate the rate: Returns / Sales. 
-        # We replace 0 sales with NaN to avoid division by zero, fill resulting NaNs with 0, and clip between 0 and 1.
+        # Shift by 1 to exclude the current week (at prediction time the current week's
+        # returns are unknown — same reason lags and rolling stats shift by 1).
+        # Re-group after shifting so the rolling window never crosses SKU boundaries.
+        past_qty_rr = sku_groups["Quantity"].shift(1)
+        past_ret_rr = sku_groups["qty_returned"].shift(1)
+        rolling_sales = (
+            past_qty_rr
+            .groupby(enriched_df["StockCode"], sort=False)
+            .rolling(window, min_periods=1).sum()
+            .reset_index(level=0, drop=True)
+        )
+        rolling_returns = (
+            past_ret_rr
+            .groupby(enriched_df["StockCode"], sort=False)
+            .rolling(window, min_periods=1).sum()
+            .reset_index(level=0, drop=True)
+        )
         new_features[f"return_rate_{window}w"] = (rolling_returns / rolling_sales.replace(0, np.nan)).fillna(0).clip(0, 1).values
 
     # Task 3: Lags (Past Sales)
     for lag in lags:
         # Shift the quantity by the lag value (e.g., lag 1 is previous week)
         new_features[f"lag_{lag}"] = sku_groups["Quantity"].shift(lag).values
-        
+
     # Task 4: Rolling Means and Standard Deviations
     for window in windows:
-        # We shift by 1 FIRST, because we want the rolling statistics of the *past*, 
-        # not including the current week's sales (which would be data leakage/cheating!)
-        past_sales = sku_groups["Quantity"].shift(1)
-        new_features[f"rmean_{window}"] = past_sales.rolling(window, min_periods=1).mean().values
-        new_features[f"rstd_{window}"] = past_sales.rolling(window, min_periods=2).std().fillna(0).values
+        # Shift by 1 first (exclude current week), then roll strictly within each SKU.
+        # A plain Series.rolling() after a grouped shift bleeds across SKU boundaries at the
+        # first rows of every new SKU; re-grouping before .rolling() prevents that.
+        past_qty = sku_groups["Quantity"].shift(1)
+        new_features[f"rmean_{window}"] = (
+            past_qty
+            .groupby(enriched_df["StockCode"], sort=False)
+            .rolling(window, min_periods=1).mean()
+            .reset_index(level=0, drop=True)
+            .values
+        )
+        new_features[f"rstd_{window}"] = (
+            past_qty
+            .groupby(enriched_df["StockCode"], sort=False)
+            .rolling(window, min_periods=2).std().fillna(0)
+            .reset_index(level=0, drop=True)
+            .values
+        )
 
     # Concatenate all historical features to the sorted dataframe.
     # Since we extract '.values' above, we must explicitly pass the index to align perfectly.
@@ -173,18 +198,25 @@ def add_historical_features(
 
 
 
-def add_pricing_features(weekly_sales: pd.DataFrame, raw_sales: pd.DataFrame) -> pd.DataFrame:
+def add_pricing_features(
+    weekly_sales: pd.DataFrame,
+    raw_sales: pd.DataFrame,
+    train_cutoff: pd.Timestamp = None,
+) -> pd.DataFrame:
     """
-    Calculates pricing dynamics, including weekly median prices, relative price changes, 
+    Calculates pricing dynamics, including weekly median prices, relative price changes,
     and promotional flags.
 
-    This function extracts the typical (median) price at which an item was sold during 
-    a specific week. It then compares this weekly price to the item's historical median price 
+    This function extracts the typical (median) price at which an item was sold during
+    a specific week. It then compares this weekly price to the item's historical median price
     to determine if the item is currently discounted (is_on_promotion).
 
     Args:
         weekly_sales (pd.DataFrame): The main weekly aggregated sales dataframe.
         raw_sales (pd.DataFrame): The unaggregated, raw transaction data (needed to find the true median price).
+        train_cutoff (pd.Timestamp): If provided, the reference median price used to flag
+            promotions is computed only from weeks strictly before this date, preventing
+            test-period prices from leaking into training features.
 
     Returns:
         pd.DataFrame: A new DataFrame containing the original weekly data enriched with:
@@ -209,9 +241,15 @@ def add_pricing_features(weekly_sales: pd.DataFrame, raw_sales: pd.DataFrame) ->
     enriched_df["price_percent_change"] = enriched_df.groupby("StockCode")["price_weekly"].pct_change(fill_method=None).fillna(0)
     
     # 3. Create Promotional Flag
-    historical_median_price = enriched_df.groupby("StockCode")["price_weekly"].transform("median")
+    # Reference median is computed strictly on training weeks to prevent look-ahead leakage.
+    # If no cutoff is provided (e.g., in unit tests), fall back to full-history median.
+    if train_cutoff is not None:
+        train_prices = enriched_df.loc[enriched_df["Week"] < train_cutoff].groupby("StockCode")["price_weekly"].median()
+    else:
+        train_prices = enriched_df.groupby("StockCode")["price_weekly"].median()
+    historical_median_price = enriched_df["StockCode"].map(train_prices)
     temp_relative_price = enriched_df["price_weekly"] / historical_median_price.replace(0, np.nan)
-    
+
     # If the current weekly price is less than 85% of its historical median, we flag it as a promotion.
     enriched_df["is_on_promotion"] = (temp_relative_price < 0.85).fillna(False).astype(int)
     

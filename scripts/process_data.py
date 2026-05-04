@@ -84,7 +84,7 @@ def process_data(input_path: str, output_path: str, test_cutoff: str = TEST_CUTO
     weekly_sales = add_historical_features(weekly_sales, returns_df)
     
     print("Adding pricing metrics (median price & promotional flags)...")
-    weekly_sales = add_pricing_features(weekly_sales, sales_df)
+    weekly_sales = add_pricing_features(weekly_sales, sales_df, train_cutoff=TEST_CUTOFF_DT)
     
     # 6. Semantic Embeddings (For Profiling)
     print("Generating or loading semantic embeddings from product descriptions...")
@@ -93,8 +93,8 @@ def process_data(input_path: str, output_path: str, test_cutoff: str = TEST_CUTO
     
     # 7. Train/Test Split for Static Profiling (Prevent Data Leakage)
     print("Splitting data to calculate clusters using ONLY training data...")
-    weekly_sales_train = weekly_sales[weekly_sales["Week"] < test_cutoff]
-    sales_df_train = sales_df[sales_df["InvoiceDate"] < test_cutoff]
+    weekly_sales_train = weekly_sales[weekly_sales["Week"] < TEST_CUTOFF_DT]
+    sales_df_train = sales_df[sales_df["InvoiceDate"] < TEST_CUTOFF_DT]
     
     # 8. Static SKU Profiles Demand and Commercial (Strictly on Training Data)
     print("Building static SKU profiles (Demand & Commercial) on Train set...")
