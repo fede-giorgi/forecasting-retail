@@ -1,112 +1,205 @@
-# Forecasting Retail
+# Retail Demand Forecasting with Agentic AI
 
-Weekly SKU-level demand forecasting on the UCI *Online Retail II* dataset (UK gift-ware retailer, 2009-2011). Per-cluster training (Linear/Ridge, Prophet, LightGBM-Tweedie) on a HDBSCAN segmentation built from Gemini description embeddings + demand & commercial profiles. A LangChain ReAct agent in the terminal exposes the forecasts in natural language.
+![Python](https://img.shields.io/badge/Python-3.9%2B-blue?style=flat-square&logo=python)
+![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-ee4c2c?style=flat-square&logo=pytorch)
+![LangChain](https://img.shields.io/badge/LangChain-Agentic_AI-green?style=flat-square)
+![Optuna](https://img.shields.io/badge/Optuna-Hyperparameter_Tuning-blue?style=flat-square)
+![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)
 
-## Layout
+An end-to-end, production-ready Machine Learning pipeline for SKU-level retail demand forecasting on the UCI *Online Retail II* dataset (UK gift-ware retailer).
 
+This project bridges the gap between complex data science operations and business decision-making by implementing a scalable MLOps architecture, four distinct forecasting models (including a State-of-the-Art Non-Stationary Transformer and Optuna auto-tuning), and an **LLM-based Agentic Assistant** for natural language querying and automated model routing.
+
+---
+
+## 📖 Table of Contents
+- [System Architecture](#-system-architecture)
+- [Key Features](#-key-features)
+- [Repository Structure](#-repository-structure)
+- [Getting Started](#-getting-started)
+- [Usage & Pipeline Execution](#-usage--pipeline-execution)
+- [The Agentic AI Layer](#-the-agentic-ai-layer)
+- [Modeling Strategy](#-modeling-strategy)
+
+---
+
+## 🏛 System Architecture
+
+The conceptual architecture of the system follows a strict separation of concerns, progressing from raw data ingestion to dynamic model routing, orchestrated by an intelligent AI layer.
+
+```mermaid
+graph LR
+    %% Define Node Styles
+    classDef block fill:#ffffff,stroke:#004479,stroke-width:2px,color:#000000,font-weight:bold;
+    classDef model fill:#e6e8ea,stroke:#6e757c,stroke-width:2px,color:#000000,font-weight:bold;
+    classDef agent fill:#fff3e6,stroke:#ffa500,stroke-width:2px,stroke-dasharray: 5 5,color:#000000,font-weight:bold;
+    classDef user fill:#f4f5f6,stroke:#6e757c,stroke-width:1px;
+
+    %% Nodes
+    User([Business Manager<br>Natural Language]):::user
+    Agent{LLM Agentic Assistant<br>Routing & Orchestration}:::agent
+    
+    Preproc[Data Preprocessing<br>Embeddings & HDBSCAN]:::block
+    
+    subgraph Forecasting Engine
+        LR[Linear Regression]:::model
+        PR[Facebook Prophet]:::model
+        LGB[LightGBM Tweedie]:::model
+        NST[NS-Transformer]:::model
+    end
+    
+    Select[Auto-Routing<br>Model Selector]:::block
+
+    %% Data Flow
+    Preproc ==> LR & PR & LGB & NST
+    LR & PR & LGB & NST ==> Select
+    
+    %% User/Agent Interaction
+    User <==>|Query / Response| Agent
+    
+    %% Agent Routing
+    Agent -.->|Lookup Best Model| Select
+    Select -.->|Execute Inference| LR
+    Select -.->|Execute Inference| PR
+    Select -.->|Execute Inference| LGB
+    Select -.->|Execute Inference| NST
 ```
+
+### Architecture Breakdown
+1. **Data Preprocessing & Clustering:** Centralized ingestion that cleans data, engineers temporal/pricing features, calculates Syntetos-Boylan demand classes (Smooth, Erratic, Lumpy, Intermittent), and clusters SKUs using HDBSCAN on Gemini LLM embeddings of product descriptions.
+2. **Forecasting Engine:** Four parallel modeling architectures that train dynamically based on the semantic/behavioral clusters. Includes automated hyperparameter tuning via Optuna.
+3. **Auto-Routing Model Selection:** Evaluates the test-set WMAPE for every SKU across all models and builds a routing matrix (`best_model_per_sku.json`).
+4. **Agentic Orchestration:** An LLM-powered layer that abstracts backend complexity. It interprets business queries, automatically routes inference to the best-performing model for that specific product, and provides analytical insights.
+
+---
+
+## ✨ Key Features
+
+* **Intelligent Auto-Routing:** The Agentic Chatbot automatically serves predictions from the most accurate model for any given SKU, removing the guesswork from model selection.
+* **Semantic & Behavioral Clustering:** Models are trained on aggregated clusters built using Gemini text embeddings and time-series profiles, drastically improving robustness and capturing cross-learning effects between similar products.
+* **Advanced Feature Engineering:** Integrates Syntetos-Boylan demand profiling (ADI/CV2), pricing dynamics, return rates, Autoregressive Lags, and UK Holiday constraints.
+* **State-of-the-Art Deep Learning:** Implements the Non-Stationary Transformer (NeurIPS 2022) with De-stationary Attention mechanisms (`tau` and `delta` learners) using PyTorch.
+* **Automated Tuning:** Seamless integration with Optuna for 50-trial hyperparameter sweeps on LightGBM, Prophet, and Ridge Regression.
+
+---
+
+## 📂 Repository Structure
+
+To ensure scalability and maintainability, the repository follows modern MLOps best practices:
+
+```text
 forecasting-retail/
-├── data/
-│   ├── raw/                 online_retail_II.xlsx (committed)
-│   └── processed/           parquet artifacts (gitignored — embeddings, agent tables)
-├── docs/
-│   ├── strategy_roadmap.ipynb   rationale + status badges + pseudocode
-│   ├── reference/               prior team's PDFs
-│   └── archive/                 prior team's monolith notebook
-├── notebooks/
-│   ├── playground.ipynb         central orchestrator (top-to-bottom)
-│   ├── eda_playground.ipynb     dataset exploration
-│   └── *_playground.ipynb       per-model sandboxes
-├── src/
-│   ├── tools/                   load, clean, feature_engineering, embeddings,
-│   │                            clustering, evaluation, visualization
-│   └── models/                  naive, linear_regression, prophet_model,
-│                                lightgbm_recursive, sarimax, deepar,
-│                                ns_transformer, selection
-├── agent/                       LangChain ReAct agent (terminal, rich-rendered)
-│   ├── chatbot.py               main entry: python -m agent.chatbot
-│   ├── inference/predict.py     model lookup + forecast generation
-│   └── artifacts/               trained pickles written by the playground
-├── scripts/                     one-off processing scripts
-├── requirements.txt
-└── .env.example                 copy to .env and fill in keys
+│
+├── agent/                      # Production inference layer
+│   ├── artifacts/              # Serialized models, JSON lookups, and best params
+│   ├── inference/predict.py    # Robust inference engine with model routing
+│   └── chatbot.py              # LLM conversational interface (CLI)
+│
+├── data/                       # Raw and processed datasets (ignored in git)
+│
+├── notebooks/                  # Interactive playgrounds for EDA and Sandboxing
+│
+├── src/                        # Core mathematical and utility logic (The Engine)
+│   ├── models/                 # Unified API for LR, Prophet, LightGBM, NST, and Selector
+│   └── tools/                  # Data loaders, embeddings, clustering, evaluation
+│
+├── requirements.txt            # Project dependencies
+└── README.md                   
 ```
 
-## Setup
+---
+
+## 🚀 Getting Started
+
+### 1. Prerequisites
+- Python 3.10+ (Tested on 3.12 / 3.13)
+- Git
+
+### 2. Installation
+Clone the repository and install the dependencies:
 
 ```bash
-# Python 3.14 (recommended). 3.12 also works.
-brew install python@3.14 libomp
+git clone https://github.com/yourusername/forecasting-retail.git
 cd forecasting-retail
-python3.14 -m venv .venv
-source .venv/bin/activate
-pip install --upgrade pip wheel setuptools
+
+# Create a virtual environment (recommended)
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
 pip install -r requirements.txt
-
-cp .env.example .env            # then fill in the keys you need
 ```
 
-### What to put in `.env`
+### 3. Environment Variables
+To use the Agentic Chatbot and generate embeddings, create a `.env` file in the root directory:
 
-At minimum: an LLM key matching your `LLM_PROVIDER` (default OpenAI), and `GEMINI_API_KEY` if you ever need to (re)build embeddings — the embeddings cache means only the first playground run hits the API.
+```env
+OPENAI_API_KEY=your_openai_api_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
+```
 
-| Variable | Required? | Notes |
-|---|---|---|
-| `LLM_PROVIDER` | optional | `openai` (default) / `gemini` / `claude` / `ollama` |
-| `OPENAI_API_KEY` | if provider=openai | gpt-4o-mini by default |
-| `GOOGLE_API_KEY` | if provider=gemini | LangChain reads this name |
-| `ANTHROPIC_API_KEY` | if provider=claude | |
-| `GEMINI_API_KEY` | for embeddings | Same key as `GOOGLE_API_KEY` works |
-| `AWS_*` | optional | Only for DeepAR on SageMaker |
+---
 
-## Run
+## ⚙️ Usage & Pipeline Execution
 
-### 1. Run the playground (produces processed data + trained model artifacts)
+### Step 1: Data Preprocessing
+Generate the ML-ready Parquet dataset. This handles data cleaning, feature engineering, LLM embeddings, and HDBSCAN clustering.
+
+**Option A — Terminal (recommended for automation):**
+```bash
+python scripts/process_data.py
+```
+
+**Option B — Notebook (recommended for exploration):**
+Open `notebooks/data_processing_playground.ipynb` and execute from top to bottom.
+
+### Step 2: Train Models & Tune Hyperparameters
+Each model runs an Optuna hyperparameter sweep (where applicable), trains the cluster models, and saves the per-SKU WMAPE metrics.
+
+**Option A — Terminal:**
+```bash
+python src/models/lightgbm_recursive.py
+python src/models/linear_regression.py
+python src/models/prophet_model.py
+python src/models/ns_transformer/train.py
+```
+
+**Option B — Notebooks (one per model, with plots and diagnostics):**
+| Model | Notebook |
+|---|---|
+| LightGBM | `notebooks/lighgbm_playground.ipynb` |
+| Ridge Regression | `notebooks/lr_playground.ipynb` |
+| Prophet | `notebooks/prophet_playground.ipynb` |
+| NS-Transformer | `notebooks/nst_playground.ipynb` |
+
+### Step 3: Run the Auto-Router
+Generate the optimal routing matrix by comparing the saved evaluation metrics.
 
 ```bash
-jupyter lab notebooks/playground.ipynb
+python src/models/model_selector.py
 ```
-Run top-to-bottom. Stages: load → clean → features → embedding → clustering → per-cluster model training → evaluation → write artifacts.
 
-This produces:
-- `data/processed/processed_retail_data.parquet` — the full panel the chatbot reads on startup
-- `agent/artifacts/{lgb,prophet,lr}_cluster_models.pkl` — trained per-cluster models
-
-### 2. Talk to the agent
+### Step 4: Run the Agentic Assistant
+Interact with the models via the natural language terminal interface.
 
 ```bash
-python -m agent.chatbot
+python agent/chatbot.py
 ```
 
-You'll get a rich-rendered terminal chat. Try:
-- `Tell me about product 22423`
-- `Forecast 85123A for the next 8 weeks`
-- `Compare LightGBM vs Prophet on 22423 over 12 weeks`
-- `What's the seasonal profile of 47566?`
+---
 
-Type `exit` / `quit` / `q` (or Ctrl+C) to leave.
+## 🤖 The Agentic AI Layer
 
-The agent has two tools: `run_forecast(stock_code, model, horizon_weeks)` and `get_product_info(stock_code)`. The system prompt nudges it to call `get_product_info` for profiling questions and to compare two models when forecasting.
+The `chatbot.py` script acts as a smart orchestrator. It allows non-technical business managers to query complex models without writing code.
 
-## Pipeline
+**Example Interaction:**
+<img src="Images/Screenshot.png" width="100%" alt="Example Interaction">
 
-1. Load both Excel sheets (2009-2010 + 2010-2011)
-2. Split sales (target) from returns (feature only); detail in `docs/strategy_roadmap.ipynb` §2
-3. Build temporal + return-rate + lag/rolling + price + demand-class + commercial-profile features (`src/tools/feature_engineering.py`)
-4. Embed canonical SKU descriptions with Gemini Embedding 2 (parquet-cached)
-5. HDBSCAN cluster on `[UMAP(emb) ⊕ demand profile ⊕ commercial profile]` → `profile_cluster_id`
-6. **One model per cluster** (Linear/Ridge, Prophet, LightGBM-Tweedie); trained on cluster-aggregated demand, predictions broadcast back to constituent SKUs
-7. Evaluate with **WMAPE as headline** + Median MAPE + MAE per cluster (see `src/tools/evaluation.py`)
-8. Pickle each cluster's trained model into `agent/artifacts/` for the LangChain agent to load
+---
 
-### Current performance
+## 📈 Modeling Strategy
 
-LightGBM is the best per-cluster model (WMAPE ~50%), followed by Prophet and Ridge (~60%), with Naive as the floor. Why MAPE looks high: at ~10 units/week per SKU, a 4-unit miss is already 40-50% MAPE no matter how good the model is. **Read WMAPE first** — it pools by volume, so high-volume SKUs (the ones that drive inventory cost) dominate the score.
-
-## Demand classification (Syntetos-Boylan)
-
-`feature_engineering.py` tags every SKU with one of `smooth / erratic / intermittent / lumpy` based on ADI (avg weeks between sales) and CV² (squared coefficient of variation). The thresholds (1.32 / 0.49) come from Syntetos & Boylan 2005 — they're the analytical break-even points where Croston's method beats simple smoothing, and where SBA beats Croston. See the comment block in `calculate_demand_profile()` for the full derivation.
-
-## License
-
-MIT — see `LICENSE`.
+1. **LightGBM (Tweedie):** The primary workhorse. A gradient boosting framework using the Tweedie objective to naturally handle zero-inflated, intermittent retail demand without predicting negative values.
+2. **Linear Regression (Ridge):** A highly interpretable autoregressive baseline utilizing dummy variables for temporal states.
+3. **Facebook Prophet:** Specialized in capturing strong additive multi-seasonality (weekly, yearly) and holiday effects.
+4. **Non-Stationary Transformer (NST):** A deep learning architecture that tackles the inherent non-stationarity of retail markets. It utilizes Projector networks (`tau` and `delta` learners) to de-stationarize the inputs before attention calculation.

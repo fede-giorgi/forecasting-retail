@@ -18,6 +18,8 @@ umap-learn
 hdbscan
 scikit-learn
 seaborn
+tabulate
+optuna
 jenkspy==0.4.1
 torch
 gluonts[torch]
