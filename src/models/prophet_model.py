@@ -45,7 +45,7 @@ def preprocess_and_split(df_long):
     test_raw['Quantity_Scaled'] = np.log1p(test_raw['Quantity'].clip(lower=0))
 
     # 2. Define External Regressors to include in Prophet
-    # We select key exogenous features. Since Prophet models time inherently via Fourier terms, 
+    # We select key exogenous features. Since Prophet models time inherently via Fourier terms,
     # we avoid redundant temporal features like 'month' or 'sin_woy'.
     regressors = ['is_christmas_window', 'is_on_promotion', 'price_percent_change', 'lag_1', 'lag_4']
     
@@ -78,8 +78,9 @@ def train_models(train_agg, regressors):
         df_cluster = train_agg[train_agg['Cluster'] == cluster_id]
         
         m = Prophet(
-            changepoint_prior_scale=0.05, 
-            uncertainty_samples=0, 
+            changepoint_prior_scale=0.05,
+            seasonality_mode='multiplicative',
+            uncertainty_samples=0,
             daily_seasonality=False,
             weekly_seasonality=False, # We are using weekly data
             yearly_seasonality=True

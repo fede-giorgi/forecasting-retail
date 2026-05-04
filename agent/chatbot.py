@@ -22,7 +22,15 @@ from langchain_core.tools import tool
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from langgraph.prebuilt import create_react_agent
 
-from inference.predict import predict_retail
+from rich.console import Console
+from rich.markdown import Markdown
+from rich.panel import Panel
+from rich.prompt import Prompt
+from rich.text import Text
+
+from agent.inference.predict import predict_retail
+
+console = Console()
 
 # DATASET
 _df: pd.DataFrame | None = None
@@ -133,75 +141,87 @@ def main():
     # 1. Dynamically select the LLM provider based on environment variables
     # Defaults to 'openai' if not specified in the .env file
     provider = os.environ.get("LLM_PROVIDER", "openai").lower()
-    print(f"Initializing LLM Agent using provider: {provider.upper()}")
+    console.print(f"[dim]Initializing LLM Agent using provider:[/dim] [bold cyan]{provider.upper()}[/bold cyan]")
 
     try:
         # Initialize the chosen LLM with temperature 0 for deterministic tool calling
         if provider == "openai":
             from langchain_openai import ChatOpenAI
             llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
-            
+
         elif provider == "gemini":
             from langchain_google_genai import ChatGoogleGenerativeAI
             llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
-            
+
         elif provider == "claude":
             from langchain_anthropic import ChatAnthropic
             llm = ChatAnthropic(model="claude-3-haiku-20240307", temperature=0)
-            
+
         elif provider == "ollama":
             from langchain_community.chat_models import ChatOllama
             # Ollama runs locally, so we default to a standard fast model like llama3
             llm = ChatOllama(model="llama3", temperature=0)
-            
+
         else:
-            print(f"[Error] Unsupported LLM_PROVIDER: '{provider}'. Please use openai, gemini, claude, or ollama.")
+            console.print(f"[bold red][Error][/bold red] Unsupported LLM_PROVIDER: '{provider}'. Please use openai, gemini, claude, or ollama.")
             return
-            
+
     except ImportError as e:
-        print(f"[Error] Missing required library for {provider.upper()}: {e}")
-        print(f"Please run: pip install langchain-{provider if provider != 'ollama' else 'community'}")
+        pkg_map = {
+            "openai": "langchain-openai",
+            "gemini": "langchain-google-genai",
+            "claude": "langchain-anthropic",
+            "ollama": "langchain-community",
+        }
+        console.print(f"[bold red][Error][/bold red] Missing required library for {provider.upper()}: {e}")
+        console.print(f"[dim]Please run:[/dim] pip install {pkg_map.get(provider, 'langchain-' + provider)}")
         return
     except Exception as e:
-        print(f"[Critical Error] Failed to initialize {provider.upper()}: {e}")
-        print("Please ensure your API keys are correctly set in the .env file.")
+        console.print(f"[bold red][Critical Error][/bold red] Failed to initialize {provider.upper()}: {e}")
+        console.print("[dim]Please ensure your API keys are correctly set in the .env file.[/dim]")
         return
 
-    print("Loading retail dataset...")
-    # Using relative path from agent/ directory
-    parquet_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "processed_retail_data.parquet")
-    
-    try:
-        _df = pd.read_parquet(parquet_path, engine="pyarrow")
-        print(f"Ready — {_df['StockCode'].nunique()} products mapped to clusters.\n")
-    except Exception as e:
-        print(f"[Critical Error] Could not load dataset at {parquet_path}: {e}")
-        return
+    with console.status("[dim]Loading retail dataset…[/dim]", spinner="dots"):
+        parquet_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "processed_retail_data.parquet")
+        try:
+            _df = pd.read_parquet(parquet_path, engine="pyarrow")
+        except Exception as e:
+            console.print(f"[bold red][Critical Error][/bold red] Could not load dataset at {parquet_path}: {e}")
+            return
+
+    n_skus = _df['StockCode'].nunique()
+    console.print(Panel.fit(
+        Text.from_markup(
+            f"[bold green]Retail Demand Analyst[/bold green]\n"
+            f"[dim]{n_skus} products mapped to clusters · type 'exit' to quit[/dim]"
+        ),
+        border_style="green",
+    ))
 
     # Create the ReAct agent using the dynamically loaded LLM
     tools = [run_forecast, get_product_info]
     agent = create_react_agent(llm, tools)
 
     chat_history = []
-    print("Retail Demand Analyst Bot - (type 'exit' to quit)")
-    
+
     while True:
         try:
-            user_input = input("\nYou: ").strip()
+            user_input = Prompt.ask("\n[bold cyan]You ›[/bold cyan]").strip()
         except (KeyboardInterrupt, EOFError):
-            print("\nGoodbye.")
+            console.print("\n[dim]Goodbye.[/dim]")
             break
 
         if user_input.lower() in ("exit", "quit", "q"):
-            print("Goodbye.")
+            console.print("[dim]Goodbye.[/dim]")
             break
         if not user_input:
             continue
 
         try:
             messages = [SystemMessage(content=SYSTEM)] + chat_history + [HumanMessage(content=user_input)]
-            result   = agent.invoke({"messages": messages})
-            
+            with console.status("[dim]Thinking…[/dim]", spinner="dots"):
+                result = agent.invoke({"messages": messages})
+
             # Safely extract the text content, handling cases where it might be a list or dict
             raw_content = result["messages"][-1].content
             if isinstance(raw_content, list):
@@ -209,14 +229,23 @@ def main():
                 reply = raw_content[0].get('text', str(raw_content))
             else:
                 reply = raw_content
-                
-            print(f"\nAgent:\n{reply}")
+
+            console.print(Panel(
+                Markdown(reply),
+                title="[bold green]Agent[/bold green]",
+                border_style="green",
+                padding=(1, 2),
+            ))
 
             chat_history.append(HumanMessage(content=user_input))
             chat_history.append(AIMessage(content=reply))
 
         except Exception as e:
-            print(f"\n[Error] {e}")
+            console.print(Panel(
+                f"[bold red]{e}[/bold red]",
+                title="[bold red]Error[/bold red]",
+                border_style="red",
+            ))
 
 if __name__ == "__main__":
     main()

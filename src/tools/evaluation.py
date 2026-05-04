@@ -143,6 +143,16 @@ def compute_cluster_metrics(cluster_eval: pd.DataFrame) -> pd.DataFrame:
     """
     Computes a comprehensive summary of item-level metrics (WMAPE, Median MAPE, MAE)
     for each individual cluster, as well as a 'Global' rollup across all clusters.
+
+    HOW TO READ THIS TABLE
+    ----------------------
+    WMAPE is the headline (first column). Read it first, ignore Median_MAPE if
+    they disagree. Reason: Online Retail II SKUs sell ~5–15 units/week, and at
+    that volume MAPE is structurally pessimistic — a forecast off by 4 units on
+    a true value of 8 looks like a 50% miss even though the absolute error is
+    small. WMAPE pools the error by volume, so high-volume SKUs (the ones that
+    matter for inventory) dominate the score. That's the number to optimize.
+    Median_MAPE and MAE are kept for diagnostics, not as the target.
     """
     records = []
 
@@ -187,4 +197,7 @@ def compute_cluster_metrics(cluster_eval: pd.DataFrame) -> pd.DataFrame:
         })
 
     summary = pd.DataFrame(records).set_index("Cluster")
+    # Belt-and-suspenders: enforce WMAPE-first column order in case the dict
+    # insertion order ever changes.
+    summary = summary[["WMAPE", "Median_MAPE", "Mean_Absolute_Error"]]
     return summary

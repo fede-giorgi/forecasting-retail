@@ -252,6 +252,29 @@ def calculate_demand_profile(weekly_aggregated_sales: pd.DataFrame) -> pd.DataFr
             cv2 = 0.0
             
         # Syntetos-Boylan Classification Matrix
+        # ----------------------------------------------------------------------
+        # The thresholds 1.32 (ADI) and 0.49 (CV²) come from Syntetos & Boylan
+        # (2005, "On the categorization of demand patterns", JORS). They were
+        # not picked by hand — they were derived analytically as the points where
+        # one classical intermittent-demand method starts outperforming another:
+        #
+        #   ADI = 1.32  →  boundary where Croston's method beats simple
+        #                  exponential smoothing. Below 1.32 the product sells
+        #                  often enough that classical smoothing already works;
+        #                  above 1.32 the gaps between sales make Croston's
+        #                  intermittent-aware estimator more accurate.
+        #
+        #   CV² = 0.49  →  boundary where the Syntetos-Boylan Approximation
+        #                  (SBA) beats Croston. Below 0.49 the non-zero demand
+        #                  has low enough dispersion that the mean is a stable
+        #                  summary; above 0.49 you need bias correction.
+        #
+        # The four resulting quadrants (now an industry standard) are:
+        #   smooth        (ADI < 1.32, CV² < 0.49)  — frequent + steady, easiest
+        #   erratic       (ADI < 1.32, CV² ≥ 0.49)  — frequent but volatile size
+        #   intermittent  (ADI ≥ 1.32, CV² < 0.49)  — sparse but stable size
+        #   lumpy         (ADI ≥ 1.32, CV² ≥ 0.49)  — sparse + volatile, hardest
+        # ----------------------------------------------------------------------
         if adi < 1.32 and cv2 < 0.49:
             demand_class = "smooth"
         elif adi < 1.32:

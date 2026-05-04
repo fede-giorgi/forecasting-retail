@@ -1,5 +1,7 @@
+cython==3.1.4
 pandas
 numpy
+scipy>=1.16.1
 matplotlib
 openpyxl
 statsmodels
@@ -15,13 +17,20 @@ prophet
 umap-learn
 hdbscan
 scikit-learn
-jenkspy
+seaborn
+jenkspy==0.4.1
 torch
 gluonts[torch]
 lightning
-fastapi
-uvicorn
-pydantic
+rich
+# LangChain agent (terminal chatbot)
+langchain
+langchain-core
+langchain-openai
+langchain-google-genai
+langchain-anthropic
+langchain-community
+langgraph
 # AWS / SageMaker — only needed if you switch DeepARWrapper(backend="sagemaker")
 boto3
 sagemaker
