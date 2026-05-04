@@ -1,11 +1,19 @@
 import os
 import sys
+import json
+import warnings
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import LinearRegression, Ridge
+from sklearn.linear_model import Ridge
 from sklearn.preprocessing import MinMaxScaler
 from tqdm import tqdm
 import joblib
+import optuna
+
+# Suppress sklearn matmul RuntimeWarnings (divide by zero / overflow).
+# These are expected with this dataset's scale and are already handled
+# downstream by np.nan_to_num and capping predictions at 0.
+warnings.filterwarnings("ignore", category=RuntimeWarning, module="sklearn")
 
 # Ensure project root is in sys.path for absolute imports
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -14,8 +22,7 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 from src.config import TEST_CUTOFF_DT
-from src.tools import compute_cluster_metrics, load_processed_data, plot_cluster_portfolio, analyze_time_periods
-
+from src.tools import compute_cluster_metrics, wmape, plot_cluster_portfolio, analyze_time_periods, load_processed_data
 
 def preprocess_and_split(df_long):
     print("Feature Engineering and Train/Test Split...")
@@ -106,9 +113,56 @@ def preprocess_and_split(df_long):
     return train, test, X_train, y_train, X_test, feature_cols
 
 
-def train_models(X_train, y_train, train):
+def tune_hyperparameters(X_train, y_train, train, n_trials=50):
+    """
+    Uses Optuna to find the best Ridge alpha.
+    
+    Strategy: Time-aware validation split — the last 12 weeks of training data
+    are held out as validation. We train on the rest and evaluate WMAPE.
+    """
+    optuna.logging.set_verbosity(optuna.logging.WARNING)
+    
+    # Time-aware split: last 12 weeks as validation
+    val_cutoff = train['Week'].max() - pd.Timedelta(weeks=12)
+    train_mask = train['Week'] < val_cutoff
+    val_mask = train['Week'] >= val_cutoff
+    
+    X_tr = X_train[train_mask].drop(columns=['profile_cluster_id'], errors='ignore').fillna(0)
+    X_tr_vals = np.nan_to_num(X_tr.values, nan=0.0, posinf=0.0, neginf=0.0)
+    y_tr = y_train[train_mask]
+    X_val = X_train[val_mask].drop(columns=['profile_cluster_id'], errors='ignore').fillna(0)
+    X_val_vals = np.nan_to_num(X_val.values, nan=0.0, posinf=0.0, neginf=0.0)
+    y_val_qty = train.loc[val_mask, 'Quantity'].values
+    
+    def objective(trial):
+        alpha = trial.suggest_float("alpha", 0.001, 100.0, log=True)
+        
+        model = Ridge(alpha=alpha)
+        model.fit(X_tr_vals, y_tr)
+        
+        preds_scaled = model.predict(X_val_vals)
+        preds_scaled = np.clip(preds_scaled, a_min=None, a_max=20.0)
+        preds_qty = np.maximum(np.expm1(preds_scaled), 0)
+        
+        return wmape(y_val_qty, preds_qty)
+    
+    print(f"\nOptuna: Tuning Ridge Regression ({n_trials} trials)...")
+    study = optuna.create_study(direction="minimize", sampler=optuna.samplers.TPESampler(seed=42))
+    study.optimize(objective, n_trials=n_trials, show_progress_bar=True)
+    
+    best = study.best_params
+    print(f"Best Ridge params (WMAPE={study.best_value:.2f}%): {best}")
+    
+    return best
+
+
+def train_models(X_train, y_train, train, params=None):
     print("Training Linear Regression models per Seasonal Profile Cluster...")
     cluster_models = {}
+    
+    alpha = 1.0
+    if params and 'alpha' in params:
+        alpha = params['alpha']
         
     unique_clusters = train['profile_cluster_id'].dropna().unique()
 
@@ -124,10 +178,10 @@ def train_models(X_train, y_train, train):
         if len(X_train_cluster) == 0:
             continue
 
-        model = Ridge(alpha=1.0)
+        model = Ridge(alpha=alpha)
         model.fit(X_train_cluster_vals, y_train_cluster)
         cluster_models[cluster_id] = model
-        print(f" - Model for Cluster {int(cluster_id)} trained on {len(X_train_cluster)} historical rows.")
+        print(f" - Model for Cluster {int(cluster_id)} trained on {len(X_train_cluster)} historical rows (alpha={alpha:.4f}).")
 
     return cluster_models
 
@@ -188,7 +242,7 @@ def evaluate_models(test):
     return cluster_eval, summary
 
 
-def save_artifacts(cluster_models, feature_cols, sku_clusters, artifacts_dir="../agent/artifacts"):
+def save_artifacts(cluster_models, feature_cols, sku_clusters, best_params=None, artifacts_dir="../agent/artifacts"):
     print(f"Saving Cluster Linear Regression artifacts to {artifacts_dir}...")
     os.makedirs(artifacts_dir, exist_ok=True)
 
@@ -198,25 +252,49 @@ def save_artifacts(cluster_models, feature_cols, sku_clusters, artifacts_dir="..
     artifact = {
         "cluster_models": cluster_models,
         "feature_cols": list(feature_cols),
-        "sku_clusters": {k: v for k, v in sku_clusters.items()}
+        "sku_clusters": {k: v for k, v in sku_clusters.items()},
+        "best_params": best_params,
     }
     
     joblib.dump(artifact, path)
     print(f"Successfully saved {path}")
 
+    # Also save best params as readable JSON
+    if best_params:
+        json_path = os.path.join(artifacts_dir, "lr_best_params.json")
+        with open(json_path, 'w') as f:
+            json.dump(best_params, f, indent=2)
+        print(f"Saved best params to {json_path}")
 
-def run_linear_regression_pipeline(file_path, plot=False):
+
+def run_linear_regression_pipeline(file_path, plot=False, tune=False):
     """
-    Complete pipeline to load data, train models, predict, evaluate, and visualize results.
+    Complete pipeline to load data, (optionally tune), train models, predict, evaluate, and visualize results.
     """
     df_long = load_processed_data(file_path)
     train, test, X_train, y_train, X_test, feature_cols = preprocess_and_split(df_long)
-    cluster_models = train_models(X_train, y_train, train)
+    
+    best_params = None
+    if tune:
+        best_params = tune_hyperparameters(X_train, y_train, train)
+    
+    cluster_models = train_models(X_train, y_train, train, params=best_params)
     test = predict_models(cluster_models, test, X_test)
     cluster_eval, summary = evaluate_models(test)
     
     sku_clusters = df_long.drop_duplicates(subset=['StockCode']).set_index('StockCode')['profile_cluster_id'].to_dict()
-    save_artifacts(cluster_models, feature_cols, sku_clusters, artifacts_dir=os.path.join(PROJECT_ROOT, 'agent', 'artifacts'))
+    artifacts_dir = os.path.join(PROJECT_ROOT, 'agent', 'artifacts')
+    save_artifacts(cluster_models, feature_cols, sku_clusters, best_params=best_params, artifacts_dir=artifacts_dir)
+
+    # Save per-SKU metrics for the model selector
+    sku_wmape = {}
+    for sku, group in cluster_eval.groupby('StockCode'):
+        act = group['Actual_Qty'].values
+        prd = group['Predicted_Qty'].values
+        if act.sum() > 0:
+            sku_wmape[sku] = float(wmape(act, prd))
+    with open(os.path.join(artifacts_dir, "lr_sku_wmape.json"), "w") as f:
+        json.dump(sku_wmape, f, indent=2)
 
     if plot:
         plot_cluster_portfolio(cluster_eval, summary)
@@ -226,6 +304,7 @@ def run_linear_regression_pipeline(file_path, plot=False):
 
 if __name__ == "__main__":
     DATA_PATH = os.path.join(PROJECT_ROOT, "data", "processed_retail_data.parquet")
-    _, _, _, summary = run_linear_regression_pipeline(DATA_PATH, plot=False)
-    print("\n=== Linear Regression Evaluation Summary ===")
+    # By default, we run with tuning enabled when called directly from terminal
+    _, _, _, summary = run_linear_regression_pipeline(DATA_PATH, plot=False, tune=True)
+    print("\n=== Linear Regression Evaluation Summary (Optuna Tuned) ===")
     print(summary.to_markdown())

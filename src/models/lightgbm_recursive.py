@@ -1,24 +1,14 @@
-"""
-lightgbm_model.py
------------------
-Modularized implementation of the retail forecasting model using LightGBM.
-Trains one Tree-Based model per seasonal profile cluster using a Tweedie objective 
-(ideal for zero-inflated, long-tail demand data).
-
-Features:
-- Handles missing data naturally (no need for extreme imputation).
-- Built-in handling of categorical features.
-- Uses exact same global feature engineering and scaling as Linear Regression.
-"""
-
 import os
 import sys
+import json
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 from tqdm import tqdm
 import joblib
 import logging
+import lightgbm as lgb
+import optuna
 
 # Ensure project root is in sys.path for absolute imports
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -27,12 +17,8 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 from src.config import TEST_CUTOFF_DT
-from src.tools.evaluation import compute_cluster_metrics
-from src.tools.visualization import plot_cluster_portfolio, analyze_time_periods
-from src.tools import load_processed_data
+from src.tools import compute_cluster_metrics, wmape, plot_cluster_portfolio, analyze_time_periods, load_processed_data
 
-# Check LightGBM availability
-import lightgbm as lgb
 
 def preprocess_and_split(df_long):
     print("Feature Engineering and Train/Test Split...")
@@ -117,11 +103,80 @@ def preprocess_and_split(df_long):
     return train, test, X_train, y_train, X_test, feature_cols
 
 
-def train_models(X_train, y_train, train):
-    print("Training LightGBM models per Seasonal Profile Cluster (Tweedie Objective)...")
+def tune_hyperparameters(X_train, y_train, train, n_trials=50):
+    """
+    Uses Optuna to find the best LightGBM hyperparameters.
+    
+    Strategy: Time-aware validation split — the last 12 weeks of training data
+    are held out as validation. We train on the rest and evaluate WMAPE.
+    """
+    optuna.logging.set_verbosity(optuna.logging.WARNING)
+    
+    # Time-aware split: last 12 weeks as validation
+    val_cutoff = train['Week'].max() - pd.Timedelta(weeks=12)
+    train_mask = train['Week'] < val_cutoff
+    val_mask = train['Week'] >= val_cutoff
+    
+    X_tr = X_train[train_mask].drop(columns=['profile_cluster_id'], errors='ignore')
+    y_tr = y_train[train_mask]
+    X_val = X_train[val_mask].drop(columns=['profile_cluster_id'], errors='ignore')
+    y_val_scaled = y_train[val_mask]
+    y_val_qty = train.loc[val_mask, 'Quantity'].values
+    
+    def objective(trial):
+        params = {
+            "objective": "tweedie",
+            "tweedie_variance_power": trial.suggest_float("tweedie_variance_power", 1.0, 1.8),
+            "n_estimators": trial.suggest_int("n_estimators", 100, 800),
+            "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.2, log=True),
+            "num_leaves": trial.suggest_int("num_leaves", 15, 63),
+            "min_data_in_leaf": trial.suggest_int("min_data_in_leaf", 10, 50),
+            "reg_alpha": trial.suggest_float("reg_alpha", 1e-4, 10.0, log=True),
+            "reg_lambda": trial.suggest_float("reg_lambda", 1e-4, 10.0, log=True),
+            "random_state": 42,
+            "verbosity": -1,
+            "n_jobs": -1,
+        }
+        
+        model = lgb.LGBMRegressor(**params)
+        model.fit(X_tr, y_tr)
+        
+        preds_scaled = model.predict(X_val)
+        preds_scaled = np.clip(preds_scaled, a_min=None, a_max=20.0)
+        preds_qty = np.maximum(np.expm1(preds_scaled), 0)
+        
+        return wmape(y_val_qty, preds_qty)
+    
+    print(f"\nOptuna: Tuning LightGBM ({n_trials} trials)...")
+    study = optuna.create_study(direction="minimize", sampler=optuna.samplers.TPESampler(seed=42))
+    study.optimize(objective, n_trials=n_trials, show_progress_bar=True)
+    
+    best = study.best_params
+    print(f"Best LightGBM params (WMAPE={study.best_value:.2f}%): {best}")
+    
+    return best
+
+
+def train_models(X_train, y_train, train, params=None):
+    print("Training LightGBM models per Seasonal Profile Cluster...")
     cluster_models = {}
         
     unique_clusters = train['profile_cluster_id'].dropna().unique()
+
+    # Merge tuned params with essential defaults
+    model_params = {
+        "objective": "tweedie",
+        "tweedie_variance_power": 1.2,
+        "n_estimators": 400,
+        "learning_rate": 0.05,
+        "num_leaves": 31,
+        "min_data_in_leaf": 20,
+        "random_state": 42,
+        "verbosity": -1,
+        "n_jobs": -1,
+    }
+    if params:
+        model_params.update(params)
 
     for cluster_id in sorted(unique_clusters):
         cluster_mask = train['profile_cluster_id'] == cluster_id
@@ -131,19 +186,7 @@ def train_models(X_train, y_train, train):
         if len(X_train_cluster) == 0:
             continue
 
-        # Initialize the LightGBM Regressor using the Tweedie loss function
-        # Tweedie is specifically designed for zero-inflated distributions (like retail sales)
-        model = lgb.LGBMRegressor(
-            objective="tweedie",
-            tweedie_variance_power=1.2, # 1.0 = Poisson (Counts), 2.0 = Gamma (Continuous). 1.2 is a good blend for retail.
-            n_estimators=400,
-            learning_rate=0.05,
-            num_leaves=31,
-            min_data_in_leaf=20, # Higher than previous script to prevent overfitting on specific SKUs
-            random_state=42,
-            verbosity=-1,
-            n_jobs=-1 # Use all cores
-        )
+        model = lgb.LGBMRegressor(**model_params)
         
         # LightGBM handles NaNs automatically, no need for np.nan_to_num!
         model.fit(X_train_cluster, y_train_cluster)
@@ -151,6 +194,7 @@ def train_models(X_train, y_train, train):
         print(f" - Model for Cluster {int(cluster_id)} trained on {len(X_train_cluster)} historical rows.")
 
     return cluster_models
+
 
 
 def predict_models(cluster_models, test, X_test):
@@ -199,7 +243,7 @@ def evaluate_models(test):
     return cluster_eval, summary
 
 
-def save_artifacts(cluster_models, feature_cols, sku_clusters, artifacts_dir="../agent/artifacts"):
+def save_artifacts(cluster_models, feature_cols, sku_clusters, best_params=None, artifacts_dir="../agent/artifacts"):
     print(f"Saving Cluster LightGBM artifacts to {artifacts_dir}...")
     os.makedirs(artifacts_dir, exist_ok=True)
 
@@ -209,25 +253,49 @@ def save_artifacts(cluster_models, feature_cols, sku_clusters, artifacts_dir="..
     artifact = {
         "cluster_models": cluster_models,
         "feature_cols": list(feature_cols),
-        "sku_clusters": {k: v for k, v in sku_clusters.items()}
+        "sku_clusters": {k: v for k, v in sku_clusters.items()},
+        "best_params": best_params,
     }
     
     joblib.dump(artifact, path)
     print(f"Successfully saved {path}")
 
+    # Also save best params as readable JSON
+    if best_params:
+        json_path = os.path.join(artifacts_dir, "lgb_best_params.json")
+        with open(json_path, 'w') as f:
+            json.dump(best_params, f, indent=2)
+        print(f"Saved best params to {json_path}")
 
-def run_lgb_pipeline(file_path, plot=False):
+
+def run_lgb_pipeline(file_path, plot=False, tune=False):
     """
-    Complete pipeline to load data, train models, predict, evaluate, and visualize results.
+    Complete pipeline to load data, (optionally tune), train models, predict, evaluate, and visualize results.
     """
     df_long = load_processed_data(file_path)
     train, test, X_train, y_train, X_test, feature_cols = preprocess_and_split(df_long)
-    cluster_models = train_models(X_train, y_train, train)
+    
+    best_params = None
+    if tune:
+        best_params = tune_hyperparameters(X_train, y_train, train)
+    
+    cluster_models = train_models(X_train, y_train, train, params=best_params)
     test = predict_models(cluster_models, test, X_test)
     cluster_eval, summary = evaluate_models(test)
     
     sku_clusters = df_long.drop_duplicates(subset=['StockCode']).set_index('StockCode')['profile_cluster_id'].to_dict()
-    save_artifacts(cluster_models, feature_cols, sku_clusters, artifacts_dir=os.path.join(PROJECT_ROOT, 'agent', 'artifacts'))
+    artifacts_dir = os.path.join(PROJECT_ROOT, 'agent', 'artifacts')
+    save_artifacts(cluster_models, feature_cols, sku_clusters, best_params=best_params, artifacts_dir=artifacts_dir)
+    
+    # Save per-SKU metrics for the model selector
+    sku_wmape = {}
+    for sku, group in cluster_eval.groupby('StockCode'):
+        act = group['Actual_Qty'].values
+        prd = group['Predicted_Qty'].values
+        if act.sum() > 0:
+            sku_wmape[sku] = float(wmape(act, prd))
+    with open(os.path.join(artifacts_dir, "lgb_sku_wmape.json"), "w") as f:
+        json.dump(sku_wmape, f, indent=2)
     
     if plot:
         plot_cluster_portfolio(cluster_eval, summary, model_label="LightGBM Forecast")
@@ -237,6 +305,7 @@ def run_lgb_pipeline(file_path, plot=False):
 
 if __name__ == "__main__":
     DATA_PATH = os.path.join(PROJECT_ROOT, "data", "processed_retail_data.parquet")
-    _, _, _, summary = run_lgb_pipeline(DATA_PATH, plot=False)
-    print("\n=== LightGBM Evaluation Summary ===")
+    # By default, we run with tuning enabled when called directly from terminal
+    _, _, _, summary = run_lgb_pipeline(DATA_PATH, plot=False, tune=True)
+    print("\n=== LightGBM Evaluation Summary (Optuna Tuned) ===")
     print(summary.to_markdown())
