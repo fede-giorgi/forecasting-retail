@@ -10,11 +10,11 @@ import pandas as pd
 import numpy as np
 
 # Import our specialized pipeline tools via the centralized interface
-from src.config import TEST_CUTOFF
+from src.config import TEST_CUTOFF, TEST_CUTOFF_DT
 from src.tools import (
     load_raw_data,
     clean_and_split_transactions,
-    trim_inactive_periods,
+    prepare_modeling_panel,
     aggregate_weekly_sku,
     add_temporal_features,
     add_historical_features,
@@ -67,9 +67,14 @@ def process_data(input_path: str, output_path: str, test_cutoff: str = TEST_CUTO
     print("Aggregating transactions into weekly buckets per SKU (with zero-filling)...")
     weekly_sales = aggregate_weekly_sku(sales_df)
 
-    # 4. Trimming leading zeros and removing discontinued products
-    print("Trimming leading zeros and removing discontinued products...")
-    weekly_sales = trim_inactive_periods(weekly_sales, pd.to_datetime(test_cutoff))
+    # 4. Prepare Modeling Panel (Trimming & Selection)
+    print("Preparing modeling panel (trimming zeros and selecting top SKUs)...")
+    weekly_sales = prepare_modeling_panel(
+        weekly_sales, 
+        test_cutoff_dt=TEST_CUTOFF_DT,
+        top_n=1000, 
+        min_active_weeks=52
+    )
     
     # 5. Feature Engineering
     print("Adding temporal (calendar) features...")
@@ -98,7 +103,7 @@ def process_data(input_path: str, output_path: str, test_cutoff: str = TEST_CUTO
     
     # 9. Clustering (Strictly on Training Data)
     print("Creating Behavioral Clusters (52-Week Seasonal Profiles)...")
-    profile_clusters = create_seasonal_profile_clusters(weekly_sales_train, n_clusters=4)
+    profile_clusters = create_seasonal_profile_clusters(weekly_sales_train, n_clusters=5)
     
     print("Creating Semantic Categories from Text Embeddings...")
     semantic_clusters = create_semantic_clusters(embeddings_df, n_clusters=15)

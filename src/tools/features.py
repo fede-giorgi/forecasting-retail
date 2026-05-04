@@ -29,29 +29,6 @@ def median_price_per_sku(sales: pd.DataFrame) -> pd.DataFrame:
 
 
 
-def eligible_skus_by_revenue(
-    weekly_sku: pd.DataFrame,
-    top_n: int = 30,
-    min_active_weeks: int = 60,
-    min_recent_active: int = 6,
-    recent_window: int = 24,
-) -> list[str]:
-    """Top-N by lifetime revenue, restricted to SKUs with:
-       - `min_active_weeks` lifetime weeks of non-zero demand AND
-       - `min_recent_active` weeks of non-zero demand within the last `recent_window`.
-    The recency filter prevents 'zombie' SKUs (high lifetime revenue but dead now)
-    from collapsing block-level APE to vacuous zeros."""
-    rev = weekly_sku.groupby("StockCode")["Revenue"].sum().sort_values(ascending=False)
-    active = weekly_sku.groupby("StockCode")["Quantity"].apply(lambda s: (s > 0).sum())
-    cutoff = weekly_sku["Week"].max() - pd.Timedelta(weeks=recent_window)
-    recent = (
-        weekly_sku[weekly_sku["Week"] >= cutoff]
-        .groupby("StockCode")["Quantity"].apply(lambda s: (s > 0).sum())
-    )
-    keep = active[active >= min_active_weeks].index.intersection(
-        recent[recent >= min_recent_active].index
-    )
-    return rev[rev.index.isin(keep)].head(top_n).index.tolist()
 
 
 def build_series_for_sku(

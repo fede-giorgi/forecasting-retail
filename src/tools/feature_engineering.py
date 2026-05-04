@@ -218,6 +218,9 @@ def add_pricing_features(weekly_sales: pd.DataFrame, raw_sales: pd.DataFrame) ->
     return enriched_df
 
 
+
+
+
 def calculate_demand_profile(weekly_aggregated_sales: pd.DataFrame) -> pd.DataFrame:
     """
     Computes Syntetos-Boylan demand classification metrics for each SKU.
@@ -292,6 +295,9 @@ def calculate_demand_profile(weekly_aggregated_sales: pd.DataFrame) -> pd.DataFr
         profile_rows, 
         columns=["StockCode", "ADI", "CV2", "demand_class", "share_zero_weeks"]
     )
+
+
+
 
 
 def calculate_commercial_profile(raw_sales: pd.DataFrame) -> pd.DataFrame:

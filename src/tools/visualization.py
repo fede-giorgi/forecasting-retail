@@ -28,7 +28,7 @@ def plot_cluster_portfolio(
     representative products within their respective clusters.
     """
     unique_clusters = sorted(cluster_eval["Cluster"].unique())
-    fig, axes = plt.subplots(len(unique_clusters), 1, figsize=(15, 6 * len(unique_clusters)))
+    fig, axes = plt.subplots(len(unique_clusters), 1, figsize=(15, 4 * len(unique_clusters)))
 
     if len(unique_clusters) == 1:
         axes = [axes]
@@ -68,8 +68,8 @@ def plot_cluster_portfolio(
         
         # Title with all requested metrics
         title_str = (
-            f"Cluster {cluster_id} | Best SKU: {best_sku_id}\n"
-            f"SKU Metrics -> WMAPE: {best_sku_meta['SKU_WMAPE']:.1f}% | "
+            f"Cluster {cluster_id} | SKU: {best_sku_id} | "
+            f"WMAPE: {best_sku_meta['SKU_WMAPE']:.1f}% | "
             f"Median MAPE: {best_sku_meta['SKU_Median_APE']:.1f}% | "
             f"MAE: {best_sku_meta['SKU_MAE']:.2f}"
         )

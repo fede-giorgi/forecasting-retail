@@ -5,7 +5,7 @@ from .data_loader import (
 
 from .cleaning import (
     clean_and_split_transactions,
-    trim_inactive_periods
+    prepare_modeling_panel
 )
 
 
@@ -16,7 +16,6 @@ from .aggregation import (
 
 from .features import (
     median_price_per_sku,
-    eligible_skus_by_revenue,
 )
 
 from .feature_engineering import (
@@ -48,8 +47,8 @@ from .visualization import (
 )
 
 __all__ = [
-    "load_raw_data", "load_processed_data","clean_and_split_transactions", "trim_inactive_periods",
-    "median_price_per_sku", "eligible_skus_by_revenue",
+    "load_raw_data", "load_processed_data","clean_and_split_transactions", "prepare_modeling_panel",
+    "median_price_per_sku",
     "aggregate_weekly_sku", "add_historical_features", "add_pricing_features",
     "add_temporal_features",
     "calculate_demand_profile", "calculate_commercial_profile",

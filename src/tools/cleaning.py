@@ -164,21 +164,38 @@ def clean_and_split_transactions(raw_dataframe: pd.DataFrame, verbose: bool = Fa
     return valid_sales, valid_returns
 
 
-def trim_inactive_periods(weekly_sales: pd.DataFrame, test_cutoff_dt: pd.Timestamp = TEST_CUTOFF_DT) -> pd.DataFrame:
-    """ 
-    Cleans the weekly aggregated dataset by:
-    1. Trimming leading zeros (removing weeks before a product's first sale).
-    2. Removing inactive/discontinued products (0 sales in the last 4 weeks before cutoff).
+def prepare_modeling_panel(
+    weekly_sales: pd.DataFrame,
+    test_cutoff_dt: pd.Timestamp = TEST_CUTOFF_DT,
+    top_n: int = 100,
+    min_active_weeks: int = 52,
+    min_recent_active: int = 6,
+    recent_window: int = 24,
+    verbose: bool = True
+) -> pd.DataFrame:
+    """
+    Unified pipeline to prepare the weekly panel for modeling.
     
+    Steps:
+    1. Trims leading zeros (removes weeks before a product's first sale).
+    2. Filters for 'High-Value/Active' SKUs based on lifetime revenue and activity.
+    3. Prevents 'zombie' products (inactive near cutoff) from entering the models.
+
     Args:
-        weekly_sales (pd.DataFrame): The weekly aggregated panel dataset.
+        weekly_sales (pd.DataFrame): The weekly aggregated dataset.
         test_cutoff_dt (pd.Timestamp): The split date between train and test.
-        
+        top_n (int): Number of top revenue SKUs to keep.
+        min_active_weeks (int): Minimum weeks with sales > 0 over SKU's lifetime.
+        min_recent_active (int): Minimum weeks with sales > 0 in the recent window.
+        recent_window (int): Lookback window (weeks) for the recency check.
+        verbose (bool): If True, prints processing statistics.
+
     Returns:
-        pd.DataFrame: The cleaned weekly dataset.
+        pd.DataFrame: The filtered and trimmed weekly dataset.
     """
     df = weekly_sales.copy()
-    
+    initial_skus = df['StockCode'].nunique()
+
     # PART 1: TRIMMING LEADING ZEROS (Product Launch Date)
     print("Trimming leading zeros (finding actual launch date for each SKU)...")
     start_dates = df[df['Quantity'] > 0].groupby('StockCode', observed=True)['Week'].min().reset_index()
@@ -188,7 +205,7 @@ def trim_inactive_periods(weekly_sales: pd.DataFrame, test_cutoff_dt: pd.Timesta
     df = df[df['Week'] >= df['StartDate']].copy()
     df = df.drop(columns=['StartDate'])
     print(f"Trimmed pre-launch periods. Remaining rows: {len(df)}")
-    
+
     # PART 2: REMOVE INACTIVE PRODUCTS (Delisted / Discontinued)
     print("Removing inactive SKUs (0 sales in the 4 weeks prior to test cutoff)...")
     # We look at the 4 weeks immediately preceding the test cutoff
@@ -197,15 +214,42 @@ def trim_inactive_periods(weekly_sales: pd.DataFrame, test_cutoff_dt: pd.Timesta
     
     recent_sales = last_month_df.groupby('StockCode', observed=True)['Quantity'].sum()
     active_skus = recent_sales[recent_sales > 0].index
-    
+
     inactive_count = len(recent_sales) - len(active_skus)
     print(f"Detected {inactive_count} inactive SKUs in the 4 weeks before cutoff.")
     
     df = df[df['StockCode'].isin(active_skus)].copy()
+
+    # --- STEP 3: CALCULATE ELIGIBILITY METRICS (Top-N & Long-term Activity) ---
+    # We use the full available data up to the cutoff for stats
+    train_slice = df[df["Week"] < test_cutoff_dt]
     
+    # Revenue (Lifetime within training set)
+    rev = train_slice.groupby("StockCode")["Revenue"].sum().sort_values(ascending=False)
+    
+    # Activity (Lifetime weeks > 0)
+    active_count = train_slice.groupby("StockCode")["Quantity"].apply(lambda s: (s > 0).sum())
+    
+    # Recent Activity (General health check)
+    recency_cutoff = test_cutoff_dt - pd.Timedelta(weeks=recent_window)
+    recent_slice = train_slice[train_slice["Week"] >= recency_cutoff]
+    recent_count = recent_slice.groupby("StockCode")["Quantity"].apply(lambda s: (s > 0).sum())
+
+    # --- STEP 4: FINAL SELECTION ---
+    # SKUs must meet both lifetime and recency activity thresholds
+    eligible_mask = (active_count >= min_active_weeks) & (recent_count.reindex(active_count.index, fill_value=0) >= min_recent_active)
+    eligible_skus = active_count[eligible_mask].index
+    
+    # Select Top-N by revenue from the eligible set
+    final_skus = rev[rev.index.isin(eligible_skus)].head(top_n).index.tolist()
+
+    # Filter the dataframe
+    df = df[df['StockCode'].isin(final_skus)].copy()
+    
+    # Cleanup categorical categories if present
     if isinstance(df['StockCode'].dtype, pd.CategoricalDtype):
         df['StockCode'] = df['StockCode'].cat.remove_unused_categories()
-        
+
     print(f"Removed inactive products. Remaining rows: {len(df)}")
     
     return df
