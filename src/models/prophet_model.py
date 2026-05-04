@@ -1,23 +1,13 @@
-"""
-prophet_model.py
-----------------
-Modularized implementation of the retail forecasting model using Facebook Prophet.
-Trains one model per seasonal profile cluster (averaged shape) and un-scales for individual SKUs.
-
-Features:
-- UK holidays and seasonality.
-- Log1p scaling to handle intermittent demand and extreme outliers.
-- Performance evaluation at the portfolio level.
-"""
-
 import os
 import sys
+import json
 import numpy as np
 import pandas as pd
 from prophet import Prophet
 from tqdm import tqdm
 import joblib
 import logging
+import optuna
 
 # Mapping environment for modular execution
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -26,11 +16,12 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 from src.config import TEST_CUTOFF_DT
-from src.tools import load_processed_data, compute_cluster_metrics, plot_cluster_portfolio, analyze_time_periods
+from src.tools import compute_cluster_metrics, wmape, plot_cluster_portfolio, analyze_time_periods, load_processed_data
 
-# Suppress Prophet/cmdstanpy verbose logging
-logging.getLogger('cmdstanpy').setLevel(logging.WARNING)
-logging.getLogger('prophet').setLevel(logging.WARNING)
+# Suppress Prophet/cmdstanpy verbose logging (including during Optuna trials)
+logging.getLogger('cmdstanpy').setLevel(logging.ERROR)
+logging.getLogger('prophet').setLevel(logging.ERROR)
+logging.getLogger('stan').setLevel(logging.ERROR)
 
 
 def preprocess_and_split(df_long):
@@ -69,25 +60,101 @@ def preprocess_and_split(df_long):
     return train_agg, test_agg, test_raw, regressors
 
 
-def train_models(train_agg, regressors):
+def tune_hyperparameters(train_agg, regressors, n_trials=50):
+    """
+    Uses Optuna to find the best Prophet changepoint_prior_scale.
+    
+    Strategy: Time-aware validation split — the last 12 weeks of aggregated
+    cluster training data are held out. We train Prophet on the rest and evaluate WMAPE.
+    """
+    optuna.logging.set_verbosity(optuna.logging.WARNING)
+    
+    # Time-aware split: last 12 weeks as validation
+    val_cutoff = train_agg['ds'].max() - pd.Timedelta(weeks=12)
+    train_part = train_agg[train_agg['ds'] < val_cutoff]
+    val_part = train_agg[train_agg['ds'] >= val_cutoff]
+    
+    unique_clusters = sorted(train_part['Cluster'].dropna().unique())
+    
+    def objective(trial):
+        cps = trial.suggest_float("changepoint_prior_scale", 0.001, 0.5, log=True)
+        
+        # Re-suppress cmdstanpy inside Optuna trials: Prophet re-initializes
+        # the Stan logger on every fit() call, bypassing module-level settings.
+        logging.getLogger('cmdstanpy').setLevel(logging.ERROR)
+        logging.getLogger('prophet').setLevel(logging.ERROR)
+        
+        all_actual = []
+        all_predicted = []
+        
+        for cluster_id in unique_clusters:
+            df_c = train_part[train_part['Cluster'] == cluster_id]
+            val_c = val_part[val_part['Cluster'] == cluster_id]
+            
+            if len(df_c) < 20 or len(val_c) == 0:
+                continue
+            
+            m = Prophet(
+                changepoint_prior_scale=cps,
+                seasonality_mode='multiplicative',
+                uncertainty_samples=0,
+                daily_seasonality=False,
+                weekly_seasonality=False,
+                yearly_seasonality=True
+            )
+            m.add_country_holidays(country_name='UK')
+            for reg in regressors:
+                m.add_regressor(reg)
+            
+            m.fit(df_c)
+            
+            future = val_c[['ds'] + regressors].copy()
+            forecast = m.predict(future)
+            
+            pred_scaled = np.clip(forecast['yhat'].values, a_min=None, a_max=20.0)
+            pred_qty = np.maximum(np.expm1(pred_scaled), 0)
+            actual_qty = np.maximum(np.expm1(val_c['y'].values), 0)
+            
+            all_actual.extend(actual_qty)
+            all_predicted.extend(pred_qty)
+        
+        if len(all_actual) == 0:
+            return 999.0
+        
+        return wmape(np.array(all_actual), np.array(all_predicted))
+    
+    print(f"\nOptuna: Tuning Prophet ({n_trials} trials)...")
+    study = optuna.create_study(direction="minimize", sampler=optuna.samplers.TPESampler(seed=42))
+    study.optimize(objective, n_trials=n_trials, show_progress_bar=True)
+    
+    best = study.best_params
+    print(f"Best Prophet params (WMAPE={study.best_value:.2f}%): {best}")
+    
+    return best
+
+
+def train_models(train_agg, regressors, params=None):
     print(f"Training Prophet models for {train_agg['Cluster'].nunique()} clusters...")
     cluster_models = {}
     unique_clusters = sorted(train_agg['Cluster'].dropna().unique())
+
+    cps = 0.05  # default
+    if params and 'changepoint_prior_scale' in params:
+        cps = params['changepoint_prior_scale']
 
     for cluster_id in tqdm(unique_clusters, desc="Training"):
         df_cluster = train_agg[train_agg['Cluster'] == cluster_id]
         
         m = Prophet(
-            changepoint_prior_scale=0.05,
+            changepoint_prior_scale=cps,
             seasonality_mode='multiplicative',
             uncertainty_samples=0,
             daily_seasonality=False,
-            weekly_seasonality=False, # We are using weekly data
+            weekly_seasonality=False,
             yearly_seasonality=True
         )
         m.add_country_holidays(country_name='UK')
         
-        # Explicitly register external regressors with Prophet
         for reg in regressors:
             m.add_regressor(reg)
             
@@ -155,7 +222,7 @@ def evaluate_models(test_raw):
 
 
 
-def save_artifacts(cluster_models, regressors, sku_clusters, artifacts_dir="../agent/artifacts"):
+def save_artifacts(cluster_models, regressors, sku_clusters, best_params=None, artifacts_dir="../agent/artifacts"):
     print(f"Saving Cluster Prophet artifacts to {artifacts_dir}...")
     os.makedirs(artifacts_dir, exist_ok=True)
     
@@ -164,28 +231,48 @@ def save_artifacts(cluster_models, regressors, sku_clusters, artifacts_dir="../a
     
     artifact = {
         "cluster_models": cluster_models,
-        "regressors": list(regressors), # Equivalent to feature_cols for Prophet
-        "sku_clusters": {k: v for k, v in sku_clusters.items()}
+        "regressors": list(regressors),
+        "sku_clusters": {k: v for k, v in sku_clusters.items()},
+        "best_params": best_params,
     }
     
     joblib.dump(artifact, path)
     print(f"Successfully saved {path}")
 
+    if best_params:
+        json_path = os.path.join(artifacts_dir, "prophet_best_params.json")
+        with open(json_path, 'w') as f:
+            json.dump(best_params, f, indent=2)
+        print(f"Saved best params to {json_path}")
 
-def run_prophet_pipeline(file_path, plot=False):
+
+def run_prophet_pipeline(file_path, plot=False, tune=False):
     df_long = load_processed_data(file_path)
     
     train_agg, test_agg, test_raw, regressors = preprocess_and_split(df_long)
-    cluster_models = train_models(train_agg, regressors)
+    
+    best_params = None
+    if tune:
+        best_params = tune_hyperparameters(train_agg, regressors)
+    
+    cluster_models = train_models(train_agg, regressors, params=best_params)
     
     test_raw = predict_models(cluster_models, test_agg, test_raw, regressors)
     cluster_eval, summary = evaluate_models(test_raw)
     
-    # Extract the SKU mapping dictionary
     sku_clusters = df_long.drop_duplicates(subset=['StockCode']).set_index('StockCode')['profile_cluster_id'].to_dict()
+    artifacts_dir = os.path.join(PROJECT_ROOT, 'agent', 'artifacts')
+    save_artifacts(cluster_models, regressors, sku_clusters, best_params=best_params, artifacts_dir=artifacts_dir)
     
-    # Save artifacts with all necessary production context
-    save_artifacts(cluster_models, regressors, sku_clusters)
+    # Save per-SKU metrics for the model selector
+    sku_wmape = {}
+    for sku, group in cluster_eval.groupby('StockCode'):
+        act = group['Actual_Qty'].values
+        prd = group['Predicted_Qty'].values
+        if act.sum() > 0:
+            sku_wmape[sku] = float(wmape(act, prd))
+    with open(os.path.join(artifacts_dir, "prophet_sku_wmape.json"), "w") as f:
+        json.dump(sku_wmape, f, indent=2)
     
     if plot:
         plot_cluster_portfolio(cluster_eval, summary, model_label="Prophet (Yearly + Regressors)")
@@ -196,6 +283,7 @@ def run_prophet_pipeline(file_path, plot=False):
 
 if __name__ == "__main__":
     DATA_PATH = os.path.join(PROJECT_ROOT, "data", "processed_retail_data.parquet")
-    _, _, _, summary = run_prophet_pipeline(DATA_PATH, plot=False)
-    print("\n=== Prophet Evaluation Summary ===")
+    # By default, we run with tuning enabled when called directly from terminal
+    _, _, _, summary = run_prophet_pipeline(DATA_PATH, plot=False, tune=True)
+    print("\n=== Prophet Evaluation Summary (Optuna Tuned) ===")
     print(summary.to_markdown())

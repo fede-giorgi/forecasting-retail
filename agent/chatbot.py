@@ -8,6 +8,12 @@ from __future__ import annotations
 import os
 import sys
 
+# Ensure project root is in sys.path so that `agent.*` and `src.*` imports work
+# when running this script directly from the terminal (python agent/chatbot.py)
+_PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
+
 # CRITICAL FIX FOR MAC: Prevent LightGBM C++ Segmentation Faults in Langchain
 os.environ['OMP_NUM_THREADS'] = '1'
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
@@ -43,11 +49,11 @@ def get_df() -> pd.DataFrame:
 # TOOLS 
 
 @tool
-def run_forecast(stock_code: str, model: str = "lgb", horizon_weeks: int = 4) -> str:
+def run_forecast(stock_code: str, model: str = "auto", horizon_weeks: int = 4) -> str:
     """Forecast weekly retail demand for a specific product using a specified model.
     Args:
         stock_code: Product identifier (e.g., '85123A', '22423')
-        model: Model type ('lgb' for LightGBM, 'lr' for Ridge Regression, 'prophet' for Facebook Prophet)
+        model: Model type ('auto' for best model per SKU, 'lgb' for LightGBM, 'lr' for Ridge Regression, 'prophet' for Facebook Prophet)
         horizon_weeks: Number of weeks into the future to forecast (default 4)
     """
     stock_code = str(stock_code).strip().upper()
@@ -116,18 +122,18 @@ Your objective is to provide actionable demand forecasts and historical profilin
 
 TOOL USAGE STRATEGY:
 1. If a user asks for general information, historical sales, or the profile of a product, ALWAYS invoke the `get_product_info` tool first.
-2. If a user requests a forecast, ALWAYS invoke the `run_forecast` tool. Unless specified otherwise, run the tool TWICE to provide a comparative benchmark:
-- Run the LightGBM model (model='lgb') as the primary state-of-the-art benchmark.
-- Run the Ridge Regression (model='lr') or Prophet (model='prophet') for comparison.
+2. If a user requests a forecast, ALWAYS invoke the `run_forecast` tool. By default, use model='auto' which automatically selects the best-performing model for each specific product based on historical accuracy (WMAPE).
+3. If the user explicitly requests a specific model (e.g., 'use LightGBM'), override with the requested model.
 
 PARAMETERS:
 - `stock_code`: The unique identifier of the product (e.g., '85123A').
+- `model`: 'auto' (default, best per SKU), 'lgb' (LightGBM), 'lr' (Ridge), 'prophet' (Prophet).
 - `horizon_weeks`: Defaults to 4 weeks (1 month) for short/mid-term planning.
 
 RESPONSE FORMAT:
 - Use clean Markdown lists/tables.
 - Be analytical. If retrieving product info, explain what their "Seasonal Profile" means practically for inventory management.
-- If providing a forecast, compare the models. If Prophet captures a spike that LR misses, mention it might be due to holidays/seasonality.
+- When using 'auto' mode, mention which model was automatically selected for the product.
 """
 
 # Always load environment variables from .env

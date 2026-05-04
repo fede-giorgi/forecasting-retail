@@ -10,6 +10,7 @@ os.environ['OMP_NUM_THREADS'] = '1'
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
 import sys
+import json
 import warnings
 import joblib
 import numpy as np
@@ -78,8 +79,19 @@ def _load_artifact(model: str) -> dict:
 
 
 def predict_retail(stock_code: str, model_name: str, df_all: pd.DataFrame, horizon_weeks: int = 4) -> ForecastResult:
-    """Unified inference engine for Retail products."""
+    """Unified inference engine for Retail products. Supports 'auto' mode."""
     model_name = model_name.lower()
+    
+    # Auto-routing: load the best model lookup and resolve
+    if model_name == 'auto':
+        lookup_path = os.path.join(ARTIFACTS_DIR, "best_model_per_sku.json")
+        if os.path.exists(lookup_path):
+            with open(lookup_path, 'r') as f:
+                lookup = json.load(f)
+            entry = lookup.get(stock_code, {})
+            model_name = entry.get("model", "lgb")  # fallback to lgb
+        else:
+            model_name = "lgb"  # fallback if no selection has been run
     
     try:
         # 1. Fetch Cluster ID

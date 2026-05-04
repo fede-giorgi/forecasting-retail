@@ -1,0 +1,9 @@
+{
+  "tweedie_variance_power": 1.773949186772315,
+  "n_estimators": 403,
+  "learning_rate": 0.02319030984291627,
+  "num_leaves": 28,
+  "min_data_in_leaf": 11,
+  "reg_alpha": 0.20750670919082584,
+  "reg_lambda": 0.0036406143753283963
+}

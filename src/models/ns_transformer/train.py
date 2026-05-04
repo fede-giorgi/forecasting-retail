@@ -10,18 +10,26 @@ import gc
 import numpy as np
 import pandas as pd
 import os
+import sys
 import joblib
+import json
 
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
+
+# Ensure project root is in sys.path for absolute imports
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(CURRENT_DIR)))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
 
 from src.config import TEST_CUTOFF_DT
 from src.tools.evaluation import compute_cluster_metrics
 from src.tools.visualization import plot_cluster_portfolio, analyze_time_periods
 from src.tools import load_processed_data
 
-from .architecture import NonStationaryTransformer
+from src.models.ns_transformer.architecture import NonStationaryTransformer
 
 DEFAULT = {
     # --- Context & Horizon ---
@@ -334,7 +342,7 @@ def evaluate_models(test: pd.DataFrame):
     return cluster_eval, summary
 
 
-def save_artifacts(cluster_models: dict, sku_clusters: dict, artifacts_dir: str = "../agent/artifacts"):
+def save_artifacts(cluster_models: dict, sku_clusters: dict, best_params: dict = None, artifacts_dir: str = "../agent/artifacts"):
     """
     Saves the Transformer states and SKU mappings for the Agentic Layer.
     """
@@ -355,7 +363,8 @@ def save_artifacts(cluster_models: dict, sku_clusters: dict, artifacts_dir: str 
     
     artifact = {
         "cluster_models": safe_models,
-        "sku_clusters": {k: v for k, v in sku_clusters.items()}
+        "sku_clusters": {k: v for k, v in sku_clusters.items()},
+        "best_params": best_params,
     }
     
     joblib.dump(artifact, path)
@@ -382,9 +391,19 @@ def run_nst_pipeline(file_path: str, plot: bool = False):
     
     # 4. Save Artifacts for the Agent
     sku_clusters = df_long.drop_duplicates(subset=['StockCode']).set_index('StockCode')['profile_cluster_id'].to_dict()
-    # Path uses the same logic as your other files
-    agent_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'agent', 'artifacts')
-    save_artifacts(cluster_models, sku_clusters, artifacts_dir=agent_dir)
+    artifacts_dir = os.path.join(PROJECT_ROOT, 'agent', 'artifacts')
+    save_artifacts(cluster_models, sku_clusters, best_params=None, artifacts_dir=artifacts_dir)
+    
+    # Save per-SKU metrics for the model selector
+    from src.tools.evaluation import wmape
+    sku_wmape = {}
+    for sku, group in cluster_eval.groupby('StockCode'):
+        act = group['Actual_Qty'].values
+        prd = group['Predicted_Qty'].values
+        if act.sum() > 0:
+            sku_wmape[sku] = float(wmape(act, prd))
+    with open(os.path.join(artifacts_dir, "nst_sku_wmape.json"), "w") as f:
+        json.dump(sku_wmape, f, indent=2)
 
     if plot:
         plot_cluster_portfolio(cluster_eval, summary, model_label="NS-Transformer Forecast")
@@ -395,7 +414,7 @@ def run_nst_pipeline(file_path: str, plot: bool = False):
 
 if __name__ == "__main__":
     # Ensure correct project root path resolution
-    PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
     DATA_PATH = os.path.join(PROJECT_ROOT, "data", "processed_retail_data.parquet")
     
     _, _, _, summary = run_nst_pipeline(DATA_PATH, plot=False)
