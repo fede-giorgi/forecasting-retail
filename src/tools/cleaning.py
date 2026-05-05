@@ -101,6 +101,8 @@ def clean_and_split_transactions(raw_dataframe: pd.DataFrame, verbose: bool = Fa
     cleaned_df = cleaned_df[is_valid_product]
     
     # 5. Filter out warehouse operational notes (like "damaged" or "lost")
+    # mask = cleaned_df["Description"].str.lower().isin(OPERATIONAL_NOTES)
+    # cleaned_df[mask]["Description"].value_counts()
     is_not_operational_note = ~cleaned_df["Description"].str.lower().isin(OPERATIONAL_NOTES)
     if verbose:
         print(f"Removing {len(cleaned_df) - is_not_operational_note.sum()} rows with operational notes.")
