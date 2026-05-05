@@ -1,2167 +1,723 @@
 {
-  "21363": {
-    "model": "lgb",
-    "wmape": 94.85
-  },
-  "22672": {
-    "model": "lgb",
-    "wmape": 53.81
-  },
-  "20983": {
-    "model": "lr",
-    "wmape": 61.75
-  },
-  "84519A": {
-    "model": "nst",
-    "wmape": 95.52
-  },
-  "22412": {
-    "model": "nst",
-    "wmape": 89.59
-  },
-  "22445": {
-    "model": "lgb",
-    "wmape": 71.64
-  },
-  "22138": {
-    "model": "nst",
-    "wmape": 51.25
-  },
-  "22556": {
-    "model": "lgb",
-    "wmape": 31.37
-  },
-  "47590A": {
-    "model": "lr",
-    "wmape": 45.4
-  },
-  "21557": {
-    "model": "lgb",
-    "wmape": 69.58
-  },
-  "20985": {
-    "model": "lr",
-    "wmape": 71.95
-  },
-  "21327": {
-    "model": "lgb",
-    "wmape": 49.7
-  },
-  "21976": {
-    "model": "nst",
-    "wmape": 49.63
-  },
-  "21889": {
-    "model": "nst",
-    "wmape": 41.92
-  },
-  "22046": {
-    "model": "prophet",
-    "wmape": 56.01
-  },
-  "21385": {
-    "model": "lgb",
-    "wmape": 41.59
-  },
-  "22360": {
-    "model": "lgb",
-    "wmape": 63.19
-  },
-  "15044C": {
-    "model": "lgb",
-    "wmape": 58.97
-  },
-  "21755": {
-    "model": "nst",
-    "wmape": 46.35
-  },
-  "84818": {
-    "model": "lr",
-    "wmape": 91.04
-  },
-  "84510A": {
-    "model": "lgb",
-    "wmape": 40.62
-  },
-  "20886": {
-    "model": "nst",
-    "wmape": 92.21
-  },
-  "84279P": {
-    "model": "lgb",
-    "wmape": 46.7
-  },
-  "84598": {
-    "model": "lr",
-    "wmape": 80.85
-  },
-  "20668": {
-    "model": "lgb",
-    "wmape": 46.91
-  },
-  "21260": {
-    "model": "nst",
-    "wmape": 78.23
-  },
-  "21215": {
-    "model": "lgb",
-    "wmape": 70.99
-  },
-  "21175": {
-    "model": "nst",
-    "wmape": 30.33
-  },
-  "21707": {
-    "model": "lr",
-    "wmape": 56.56
-  },
-  "22279": {
-    "model": "lgb",
-    "wmape": 53.16
-  },
-  "22355": {
-    "model": "nst",
-    "wmape": 33.1
-  },
-  "22204": {
-    "model": "lr",
-    "wmape": 115.05
-  },
-  "22321": {
-    "model": "lgb",
-    "wmape": 92.27
-  },
-  "22499": {
-    "model": "prophet",
-    "wmape": 47.04
-  },
-  "21892": {
-    "model": "lgb",
-    "wmape": 44.5
-  },
-  "22324": {
-    "model": "lgb",
-    "wmape": 71.06
-  },
-  "22570": {
-    "model": "lgb",
-    "wmape": 61.07
-  },
-  "21533": {
-    "model": "nst",
-    "wmape": 41.93
-  },
-  "21462": {
-    "model": "lgb",
-    "wmape": 86.47
-  },
-  "21916": {
-    "model": "lr",
-    "wmape": 60.46
-  },
-  "20711": {
-    "model": "lgb",
-    "wmape": 67.1
-  },
-  "22637": {
-    "model": "nst",
-    "wmape": 73.66
-  },
-  "20752": {
-    "model": "nst",
-    "wmape": 80.59
-  },
-  "84568": {
-    "model": "sarimax",
-    "wmape": 85.01
-  },
-  "21211": {
-    "model": "lgb",
-    "wmape": 90.42
-  },
-  "21670": {
-    "model": "nst",
-    "wmape": 52.95
-  },
-  "20973": {
-    "model": "lgb",
-    "wmape": 63.03
-  },
-  "20748": {
-    "model": "lgb",
-    "wmape": 46.32
-  },
-  "22513": {
-    "model": "nst",
-    "wmape": 65.31
-  },
-  "21648": {
-    "model": "nst",
-    "wmape": 96.78
-  },
-  "21829": {
-    "model": "lgb",
-    "wmape": 52.16
-  },
-  "22251": {
-    "model": "lgb",
-    "wmape": 52.36
-  },
-  "22086": {
-    "model": "lgb",
-    "wmape": 59.07
-  },
-  "22313": {
-    "model": "lgb",
-    "wmape": 88.68
-  },
-  "85049A": {
-    "model": "lgb",
-    "wmape": 49.67
-  },
-  "22626": {
-    "model": "lgb",
-    "wmape": 62.59
-  },
-  "21989": {
-    "model": "lr",
-    "wmape": 31.31
-  },
-  "22501": {
-    "model": "nst",
-    "wmape": 89.65
-  },
-  "22584": {
-    "model": "prophet",
-    "wmape": 62.46
-  },
-  "22565": {
-    "model": "lgb",
-    "wmape": 61.87
-  },
-  "22047": {
-    "model": "nst",
-    "wmape": 51.61
-  },
-  "22561": {
-    "model": "lgb",
-    "wmape": 25.11
-  },
-  "47566": {
-    "model": "lr",
-    "wmape": 41.79
-  },
-  "22610": {
-    "model": "nst",
-    "wmape": 50.11
-  },
-  "21467": {
-    "model": "nst",
-    "wmape": 87.0
-  },
-  "85049G": {
-    "model": "lgb",
-    "wmape": 57.49
-  },
-  "21411": {
-    "model": "nst",
-    "wmape": 56.74
-  },
-  "22308": {
-    "model": "lgb",
-    "wmape": 72.94
-  },
-  "22309": {
-    "model": "lgb",
-    "wmape": 78.1
-  },
-  "21042": {
-    "model": "lgb",
-    "wmape": 64.14
-  },
-  "37495": {
-    "model": "lr",
-    "wmape": 48.61
-  },
-  "21499": {
-    "model": "nst",
-    "wmape": 51.72
-  },
-  "21987": {
-    "model": "lr",
-    "wmape": 48.07
-  },
-  "22414": {
-    "model": "lgb",
-    "wmape": 75.77
-  },
-  "21703": {
-    "model": "nst",
-    "wmape": 73.95
-  },
-  "20675": {
-    "model": "nst",
-    "wmape": 61.12
-  },
-  "21790": {
-    "model": "nst",
-    "wmape": 39.24
-  },
-  "22660": {
-    "model": "lr",
-    "wmape": 83.71
-  },
-  "21231": {
-    "model": "lgb",
-    "wmape": 36.23
-  },
-  "84970S": {
-    "model": "lgb",
-    "wmape": 55.41
-  },
-  "21244": {
-    "model": "nst",
-    "wmape": 81.21
-  },
-  "22611": {
-    "model": "lgb",
-    "wmape": 77.28
-  },
-  "20750": {
-    "model": "nst",
-    "wmape": 41.35
-  },
-  "22057": {
-    "model": "lgb",
-    "wmape": 66.27
-  },
-  "21126": {
-    "model": "lgb",
-    "wmape": 43.42
-  },
-  "82484": {
-    "model": "sarimax",
-    "wmape": 67.61
-  },
-  "72799E": {
-    "model": "lgb",
-    "wmape": 49.89
-  },
-  "21700": {
-    "model": "nst",
-    "wmape": 106.59
-  },
-  "85035C": {
-    "model": "lgb",
-    "wmape": 68.39
-  },
-  "21068": {
-    "model": "lgb",
-    "wmape": 83.33
-  },
-  "21539": {
-    "model": "lgb",
-    "wmape": 70.45
-  },
-  "21507": {
-    "model": "lgb",
-    "wmape": 40.41
-  },
-  "48188": {
-    "model": "lr",
-    "wmape": 76.82
-  },
-  "21788": {
-    "model": "lgb",
-    "wmape": 70.5
-  },
-  "21794": {
-    "model": "lgb",
-    "wmape": 57.57
-  },
-  "21592": {
-    "model": "lgb",
-    "wmape": 61.33
-  },
-  "21868": {
-    "model": "lgb",
-    "wmape": 85.58
-  },
-  "22487": {
-    "model": "nst",
-    "wmape": 34.5
-  },
-  "82552": {
-    "model": "lgb",
-    "wmape": 71.01
-  },
-  "22382": {
-    "model": "nst",
-    "wmape": 32.39
-  },
-  "22488": {
-    "model": "nst",
-    "wmape": 38.48
-  },
-  "21907": {
-    "model": "lgb",
-    "wmape": 39.2
-  },
-  "20846": {
-    "model": "lgb",
-    "wmape": 40.75
-  },
-  "21812": {
-    "model": "lr",
-    "wmape": 71.2
-  },
-  "21096": {
-    "model": "lr",
-    "wmape": 100.17
-  },
-  "21355": {
-    "model": "nst",
-    "wmape": 88.03
-  },
-  "22406": {
-    "model": "nst",
-    "wmape": 74.56
-  },
-  "22169": {
-    "model": "nst",
-    "wmape": 63.31
-  },
-  "21509": {
-    "model": "lgb",
-    "wmape": 40.66
-  },
-  "22341": {
-    "model": "lgb",
-    "wmape": 76.09
-  },
-  "84029G": {
-    "model": "lgb",
-    "wmape": 41.51
-  },
-  "85049C": {
-    "model": "lgb",
-    "wmape": 64.54
-  },
-  "22207": {
-    "model": "prophet",
-    "wmape": 74.48
-  },
-  "21383": {
-    "model": "lr",
-    "wmape": 85.49
-  },
-  "22179": {
-    "model": "nst",
-    "wmape": 50.55
-  },
-  "22301": {
-    "model": "nst",
-    "wmape": 78.87
-  },
-  "22646": {
-    "model": "lgb",
-    "wmape": 68.87
-  },
-  "47599A": {
-    "model": "lr",
-    "wmape": 66.27
-  },
-  "21786": {
-    "model": "prophet",
-    "wmape": 53.9
-  },
-  "85150": {
-    "model": "lgb",
-    "wmape": 60.89
-  },
-  "21930": {
-    "model": "lgb",
-    "wmape": 47.3
-  },
-  "21872": {
-    "model": "prophet",
-    "wmape": 86.94
-  },
-  "21974": {
-    "model": "lgb",
-    "wmape": 44.31
-  },
-  "21556": {
-    "model": "nst",
-    "wmape": 162.78
-  },
-  "21033": {
-    "model": "nst",
-    "wmape": 188.16
-  },
-  "20685": {
-    "model": "lgb",
-    "wmape": 45.85
-  },
-  "22385": {
-    "model": "nst",
-    "wmape": 46.33
-  },
-  "21245": {
-    "model": "lgb",
-    "wmape": 71.51
-  },
-  "21544": {
-    "model": "sarimax",
-    "wmape": 51.75
-  },
-  "22304": {
-    "model": "lgb",
-    "wmape": 91.6
-  },
-  "48187": {
-    "model": "lgb",
-    "wmape": 76.54
-  },
-  "20725": {
-    "model": "nst",
-    "wmape": 24.37
-  },
-  "21993": {
-    "model": "lr",
-    "wmape": 23.9
-  },
-  "21559": {
-    "model": "lr",
-    "wmape": 55.58
-  },
-  "21718": {
-    "model": "lgb",
-    "wmape": 76.15
-  },
-  "22371": {
-    "model": "prophet",
-    "wmape": 30.79
-  },
-  "22452": {
-    "model": "nst",
-    "wmape": 71.7
-  },
-  "22564": {
-    "model": "prophet",
-    "wmape": 84.57
-  },
-  "21422": {
-    "model": "lgb",
-    "wmape": 86.52
-  },
-  "71477": {
-    "model": "lgb",
-    "wmape": 52.03
-  },
-  "22335": {
-    "model": "prophet",
-    "wmape": 62.25
-  },
-  "47585A": {
-    "model": "lgb",
-    "wmape": 67.78
-  },
-  "85035A": {
-    "model": "lgb",
-    "wmape": 65.36
-  },
-  "22410": {
-    "model": "lgb",
-    "wmape": 80.91
-  },
-  "22082": {
-    "model": "nst",
-    "wmape": 38.45
-  },
-  "22663": {
-    "model": "lr",
-    "wmape": 43.11
-  },
-  "22470": {
-    "model": "nst",
-    "wmape": 58.23
-  },
-  "21626": {
-    "model": "lgb",
-    "wmape": 61.87
-  },
-  "21201": {
-    "model": "lgb",
-    "wmape": 83.49
-  },
-  "21877": {
-    "model": "nst",
-    "wmape": 71.18
-  },
-  "21288": {
-    "model": "lgb",
-    "wmape": 63.79
-  },
-  "85114B": {
-    "model": "lgb",
-    "wmape": 81.95
-  },
-  "84012": {
-    "model": "lgb",
-    "wmape": 40.46
-  },
-  "22045": {
-    "model": "lgb",
-    "wmape": 58.94
-  },
-  "22438": {
-    "model": "lgb",
-    "wmape": 85.79
-  },
-  "21058": {
-    "model": "lgb",
-    "wmape": 61.53
-  },
-  "22409": {
-    "model": "sarimax",
-    "wmape": 88.68
-  },
-  "84356": {
-    "model": "lr",
-    "wmape": 77.02
-  },
-  "22432": {
-    "model": "lgb",
-    "wmape": 66.54
-  },
-  "20674": {
-    "model": "lgb",
-    "wmape": 52.15
-  },
-  "47559B": {
-    "model": "lr",
-    "wmape": 53.78
-  },
-  "22526": {
-    "model": "lgb",
-    "wmape": 34.78
-  },
-  "22037": {
-    "model": "lgb",
-    "wmape": 53.67
-  },
-  "22224": {
-    "model": "lgb",
-    "wmape": 61.0
-  },
-  "22381": {
-    "model": "prophet",
-    "wmape": 65.79
-  },
-  "20726": {
-    "model": "nst",
-    "wmape": 28.7
-  },
-  "22190": {
-    "model": "lgb",
-    "wmape": 88.33
-  },
-  "22136": {
-    "model": "nst",
-    "wmape": 93.34
-  },
-  "22613": {
-    "model": "lgb",
-    "wmape": 42.98
-  },
-  "21257": {
-    "model": "lgb",
-    "wmape": 48.09
-  },
-  "21094": {
-    "model": "nst",
-    "wmape": 48.56
-  },
-  "82486": {
-    "model": "lgb",
-    "wmape": 29.39
-  },
-  "84912A": {
-    "model": "lgb",
-    "wmape": 46.89
-  },
-  "20764": {
-    "model": "lgb",
-    "wmape": 51.45
-  },
-  "22530": {
-    "model": "nst",
-    "wmape": 39.5
-  },
-  "21121": {
-    "model": "nst",
-    "wmape": 59.98
-  },
-  "21508": {
-    "model": "nst",
-    "wmape": 35.68
-  },
-  "21356": {
-    "model": "prophet",
-    "wmape": 39.72
-  },
-  "22336": {
-    "model": "lgb",
-    "wmape": 47.97
-  },
-  "21706": {
-    "model": "lgb",
-    "wmape": 63.33
-  },
-  "21888": {
-    "model": "nst",
-    "wmape": 38.61
-  },
-  "21216": {
-    "model": "prophet",
-    "wmape": 52.98
-  },
-  "22667": {
-    "model": "lgb",
-    "wmape": 50.54
-  },
-  "22063": {
-    "model": "lr",
-    "wmape": 81.4
-  },
-  "21484": {
-    "model": "lr",
-    "wmape": 48.74
-  },
-  "84950": {
-    "model": "lr",
-    "wmape": 54.8
-  },
-  "22627": {
-    "model": "lgb",
-    "wmape": 36.33
-  },
-  "21179": {
-    "model": "lgb",
-    "wmape": 103.06
-  },
-  "22297": {
-    "model": "nst",
-    "wmape": 49.13
-  },
-  "22630": {
-    "model": "lr",
-    "wmape": 41.92
-  },
-  "72351B": {
-    "model": "nst",
-    "wmape": 72.51
-  },
-  "22378": {
-    "model": "prophet",
-    "wmape": 68.35
-  },
-  "22074": {
-    "model": "lgb",
-    "wmape": 50.23
-  },
-  "21389": {
-    "model": "lgb",
-    "wmape": 66.73
-  },
-  "22431": {
-    "model": "prophet",
-    "wmape": 67.31
-  },
-  "72800E": {
-    "model": "nst",
-    "wmape": 51.37
-  },
-  "21730": {
-    "model": "lr",
-    "wmape": 66.28
-  },
-  "84596B": {
-    "model": "nst",
-    "wmape": 28.6
-  },
-  "84792": {
-    "model": "lgb",
-    "wmape": 59.61
-  },
-  "85038": {
-    "model": "prophet",
-    "wmape": 72.65
-  },
-  "21716": {
-    "model": "nst",
-    "wmape": 87.02
-  },
-  "84459A": {
-    "model": "nst",
-    "wmape": 127.07
-  },
-  "62018": {
-    "model": "lgb",
-    "wmape": 61.69
-  },
-  "22639": {
-    "model": "lgb",
-    "wmape": 54.83
-  },
-  "22704": {
-    "model": "nst",
-    "wmape": 32.3
-  },
-  "22475": {
-    "model": "lgb",
-    "wmape": 64.58
-  },
-  "22188": {
-    "model": "nst",
-    "wmape": 92.69
-  },
-  "48138": {
-    "model": "lgb",
-    "wmape": 72.53
-  },
-  "82551": {
-    "model": "nst",
-    "wmape": 79.29
-  },
-  "22278": {
-    "model": "lgb",
-    "wmape": 42.46
-  },
-  "84347": {
-    "model": "lgb",
-    "wmape": 54.17
-  },
-  "21982": {
-    "model": "nst",
-    "wmape": 66.9
-  },
-  "22027": {
-    "model": "lr",
-    "wmape": 48.97
-  },
-  "22540": {
-    "model": "lgb",
-    "wmape": 72.38
-  },
-  "84997C": {
-    "model": "lgb",
-    "wmape": 58.49
-  },
-  "84519B": {
-    "model": "sarimax",
-    "wmape": 72.66
-  },
-  "37450": {
-    "model": "nst",
-    "wmape": 67.97
-  },
-  "22634": {
-    "model": "lgb",
-    "wmape": 47.21
-  },
-  "22348": {
-    "model": "lgb",
-    "wmape": 42.47
-  },
-  "21787": {
-    "model": "nst",
-    "wmape": 79.09
-  },
-  "22558": {
-    "model": "nst",
-    "wmape": 39.12
-  },
-  "84032A": {
-    "model": "lgb",
-    "wmape": 30.18
-  },
-  "85049D": {
-    "model": "nst",
-    "wmape": 103.48
-  },
-  "22583": {
-    "model": "nst",
-    "wmape": 38.85
-  },
-  "21447": {
-    "model": "lgb",
-    "wmape": 24.91
-  },
-  "22365": {
-    "model": "lr",
-    "wmape": 85.79
-  },
-  "47580": {
-    "model": "lgb",
-    "wmape": 79.49
-  },
-  "21714": {
-    "model": "lgb",
-    "wmape": 56.34
-  },
-  "22402": {
-    "model": "nst",
-    "wmape": 63.22
-  },
-  "21259": {
-    "model": "lgb",
-    "wmape": 42.38
-  },
-  "21164": {
-    "model": "nst",
-    "wmape": 44.58
-  },
-  "21313": {
-    "model": "lgb",
-    "wmape": 54.65
-  },
-  "21452": {
-    "model": "lgb",
-    "wmape": 32.28
-  },
-  "22399": {
-    "model": "nst",
-    "wmape": 79.41
-  },
-  "22457": {
-    "model": "lgb",
-    "wmape": 31.37
-  },
-  "22560": {
-    "model": "lgb",
-    "wmape": 56.41
-  },
-  "22091": {
-    "model": "lr",
-    "wmape": 77.53
-  },
-  "21617": {
-    "model": "lgb",
-    "wmape": 66.97
-  },
-  "21407": {
-    "model": "nst",
-    "wmape": 77.87
-  },
-  "21967": {
-    "model": "lgb",
-    "wmape": 41.02
-  },
-  "22196": {
-    "model": "lr",
-    "wmape": 57.45
-  },
-  "21471": {
-    "model": "nst",
-    "wmape": 49.0
-  },
-  "21680": {
-    "model": "lgb",
-    "wmape": 63.48
-  },
-  "21709": {
-    "model": "lgb",
-    "wmape": 53.04
-  },
-  "21154": {
-    "model": "nst",
-    "wmape": 37.6
-  },
-  "84509G": {
-    "model": "lr",
-    "wmape": 86.33
-  },
-  "84949": {
-    "model": "lgb",
-    "wmape": 58.97
-  },
-  "16016": {
-    "model": "lgb",
-    "wmape": 59.87
-  },
-  "22533": {
-    "model": "lgb",
-    "wmape": 81.55
-  },
-  "21640": {
-    "model": "lgb",
-    "wmape": 87.36
-  },
-  "37446": {
-    "model": "nst",
-    "wmape": 62.26
-  },
-  "72802A": {
-    "model": "lgb",
-    "wmape": 68.26
-  },
-  "21947": {
-    "model": "lr",
-    "wmape": 59.16
-  },
-  "22554": {
-    "model": "nst",
-    "wmape": 38.38
-  },
-  "84406B": {
-    "model": "nst",
-    "wmape": 71.61
-  },
-  "22221": {
-    "model": "lgb",
-    "wmape": 51.14
-  },
-  "21035": {
-    "model": "sarimax",
-    "wmape": 58.49
-  },
-  "22199": {
-    "model": "lgb",
-    "wmape": 44.6
-  },
-  "22208": {
-    "model": "nst",
-    "wmape": 63.19
-  },
-  "22035": {
-    "model": "nst",
-    "wmape": 112.76
-  },
-  "85036A": {
-    "model": "lgb",
-    "wmape": 76.84
-  },
-  "48173C": {
-    "model": "lr",
-    "wmape": 74.96
-  },
-  "22676": {
-    "model": "lgb",
-    "wmape": 72.15
-  },
-  "21955": {
-    "model": "nst",
-    "wmape": 85.04
-  },
-  "22356": {
-    "model": "lgb",
-    "wmape": 30.64
-  },
-  "82494L": {
-    "model": "nst",
-    "wmape": 28.21
-  },
-  "21124": {
-    "model": "lr",
-    "wmape": 58.54
-  },
-  "22075": {
-    "model": "lgb",
-    "wmape": 55.09
-  },
-  "21671": {
-    "model": "lgb",
-    "wmape": 52.19
-  },
-  "22531": {
-    "model": "lgb",
-    "wmape": 47.09
-  },
-  "22211": {
-    "model": "lr",
-    "wmape": 39.86
-  },
-  "85062": {
-    "model": "lgb",
-    "wmape": 60.61
-  },
-  "22710": {
-    "model": "lgb",
-    "wmape": 67.7
-  },
-  "21249": {
-    "model": "nst",
-    "wmape": 65.42
-  },
-  "22567": {
-    "model": "lgb",
-    "wmape": 73.93
-  },
-  "21871": {
-    "model": "sarimax",
-    "wmape": 72.85
-  },
-  "22379": {
-    "model": "lgb",
-    "wmape": 57.87
-  },
-  "22624": {
-    "model": "sarimax",
-    "wmape": 42.54
-  },
-  "21534": {
-    "model": "nst",
-    "wmape": 55.04
-  },
-  "21576": {
-    "model": "lgb",
-    "wmape": 64.51
-  },
-  "21791": {
-    "model": "lr",
-    "wmape": 43.94
-  },
-  "22691": {
-    "model": "lgb",
-    "wmape": 75.48
-  },
-  "22606": {
-    "model": "lgb",
-    "wmape": 95.53
-  },
-  "37500": {
-    "model": "lgb",
-    "wmape": 52.72
-  },
-  "22380": {
-    "model": "nst",
-    "wmape": 44.43
-  },
-  "72802C": {
-    "model": "lgb",
-    "wmape": 89.48
-  },
-  "22231": {
-    "model": "lr",
-    "wmape": 67.63
-  },
-  "20970": {
-    "model": "lr",
-    "wmape": 39.75
-  },
-  "84947": {
-    "model": "lgb",
-    "wmape": 50.35
-  },
-  "79000": {
-    "model": "nst",
-    "wmape": 191.88
-  },
-  "21561": {
-    "model": "nst",
-    "wmape": 76.89
-  },
-  "22460": {
-    "model": "lgb",
-    "wmape": 41.03
-  },
-  "84828": {
-    "model": "lgb",
-    "wmape": 71.35
-  },
-  "22024": {
-    "model": "lgb",
-    "wmape": 63.64
-  },
-  "22713": {
-    "model": "prophet",
-    "wmape": 77.5
-  },
-  "22614": {
-    "model": "nst",
-    "wmape": 43.16
-  },
-  "22492": {
-    "model": "nst",
-    "wmape": 54.77
-  },
-  "84997A": {
-    "model": "lgb",
-    "wmape": 68.74
-  },
-  "21224": {
-    "model": "lgb",
-    "wmape": 47.99
-  },
-  "21623": {
-    "model": "nst",
-    "wmape": 85.28
-  },
-  "22059": {
-    "model": "lgb",
-    "wmape": 86.03
-  },
-  "22376": {
-    "model": "lgb",
-    "wmape": 45.8
-  },
-  "21116": {
-    "model": "nst",
-    "wmape": 52.75
-  },
-  "21985": {
-    "model": "nst",
-    "wmape": 51.03
-  },
-  "22535": {
-    "model": "lgb",
-    "wmape": 65.81
-  },
-  "15056P": {
-    "model": "nst",
-    "wmape": 65.8
-  },
-  "22616": {
-    "model": "lgb",
-    "wmape": 58.46
-  },
-  "21672": {
-    "model": "nst",
-    "wmape": 51.47
-  },
-  "21903": {
-    "model": "lgb",
-    "wmape": 47.19
-  },
-  "79321": {
-    "model": "lgb",
-    "wmape": 54.53
-  },
-  "72760B": {
-    "model": "lgb",
-    "wmape": 41.28
-  },
-  "22623": {
-    "model": "nst",
-    "wmape": 24.0
-  },
-  "20751": {
-    "model": "sarimax",
-    "wmape": 71.88
-  },
-  "22505": {
-    "model": "lr",
-    "wmape": 46.69
-  },
-  "22625": {
-    "model": "prophet",
-    "wmape": 49.55
-  },
-  "20971": {
-    "model": "lr",
-    "wmape": 76.7
-  },
-  "21906": {
-    "model": "nst",
-    "wmape": 75.72
-  },
-  "21973": {
-    "model": "nst",
-    "wmape": 100.21
-  },
-  "22139": {
-    "model": "lgb",
-    "wmape": 35.67
-  },
-  "21041": {
-    "model": "nst",
-    "wmape": 78.48
-  },
-  "16237": {
-    "model": "lgb",
-    "wmape": 46.4
-  },
-  "84880": {
-    "model": "lgb",
-    "wmape": 90.48
-  },
-  "22064": {
-    "model": "nst",
-    "wmape": 59.71
-  },
-  "22507": {
-    "model": "prophet",
-    "wmape": 63.76
-  },
-  "22645": {
-    "model": "lr",
-    "wmape": 41.78
-  },
-  "22569": {
-    "model": "lgb",
-    "wmape": 58.16
-  },
-  "84946": {
-    "model": "lgb",
-    "wmape": 37.45
-  },
-  "22294": {
-    "model": "nst",
-    "wmape": 50.94
-  },
-  "22363": {
-    "model": "lgb",
-    "wmape": 54.78
-  },
-  "21463": {
-    "model": "nst",
-    "wmape": 63.27
-  },
-  "22107": {
-    "model": "lgb",
-    "wmape": 32.32
-  },
-  "22508": {
-    "model": "prophet",
-    "wmape": 96.24
-  },
-  "47590B": {
-    "model": "lgb",
-    "wmape": 43.46
-  },
-  "85175": {
-    "model": "lgb",
-    "wmape": 46.73
-  },
-  "15044A": {
-    "model": "lgb",
-    "wmape": 72.59
-  },
-  "22076": {
-    "model": "nst",
-    "wmape": 36.79
-  },
-  "85114C": {
-    "model": "lgb",
-    "wmape": 67.03
-  },
-  "22069": {
-    "model": "nst",
-    "wmape": 70.19
-  },
-  "22276": {
-    "model": "nst",
-    "wmape": 87.91
-  },
-  "21845": {
-    "model": "lgb",
-    "wmape": 50.71
-  },
-  "22352": {
-    "model": "lr",
-    "wmape": 45.2
-  },
-  "72741": {
-    "model": "lgb",
-    "wmape": 42.71
-  },
-  "21890": {
-    "model": "prophet",
-    "wmape": 39.36
-  },
-  "22423": {
-    "model": "lgb",
-    "wmape": 27.21
-  },
-  "21613": {
-    "model": "lgb",
-    "wmape": 86.26
-  },
-  "21535": {
-    "model": "nst",
-    "wmape": 52.82
-  },
-  "47599B": {
-    "model": "lgb",
-    "wmape": 76.78
-  },
-  "48194": {
-    "model": "nst",
-    "wmape": 77.99
-  },
-  "21688": {
-    "model": "lgb",
-    "wmape": 44.99
-  },
-  "21577": {
-    "model": "lgb",
-    "wmape": 44.73
-  },
-  "22109": {
-    "model": "lgb",
-    "wmape": 41.79
-  },
-  "21756": {
-    "model": "nst",
-    "wmape": 43.19
-  },
-  "22220": {
-    "model": "nst",
-    "wmape": 57.29
-  },
-  "22366": {
-    "model": "lr",
-    "wmape": 64.68
-  },
-  "22449": {
-    "model": "lgb",
-    "wmape": 61.92
-  },
-  "22498": {
-    "model": "lgb",
-    "wmape": 65.98
-  },
-  "22427": {
-    "model": "lgb",
-    "wmape": 46.39
-  },
-  "22128": {
-    "model": "lgb",
-    "wmape": 85.96
-  },
-  "21900": {
-    "model": "nst",
-    "wmape": 35.04
-  },
-  "22227": {
-    "model": "prophet",
-    "wmape": 48.86
-  },
-  "84380": {
-    "model": "lgb",
-    "wmape": 43.57
-  },
-  "21078": {
-    "model": "lgb",
-    "wmape": 66.88
-  },
-  "10135": {
-    "model": "lgb",
-    "wmape": 47.49
-  },
-  "21642": {
-    "model": "lr",
-    "wmape": 68.85
-  },
-  "21156": {
-    "model": "lgb",
-    "wmape": 47.77
-  },
-  "21110": {
-    "model": "lgb",
-    "wmape": 86.0
-  },
-  "15036": {
-    "model": "lgb",
-    "wmape": 54.71
-  },
-  "22699": {
-    "model": "lgb",
-    "wmape": 37.25
-  },
-  "51014A": {
-    "model": "nst",
-    "wmape": 39.87
-  },
   "22312": {
     "model": "lgb",
     "wmape": 56.94
   },
-  "37449": {
-    "model": "lgb",
-    "wmape": 76.46
+  "85049C": {
+    "model": "nst",
+    "wmape": 62.98
   },
-  "71459": {
+  "22061": {
     "model": "lr",
-    "wmape": 52.75
-  },
-  "22078": {
-    "model": "nst",
-    "wmape": 44.13
-  },
-  "21279": {
-    "model": "lgb",
-    "wmape": 37.61
-  },
-  "22555": {
-    "model": "lgb",
-    "wmape": 27.36
-  },
-  "22661": {
-    "model": "nst",
-    "wmape": 49.36
-  },
-  "84969": {
-    "model": "lgb",
-    "wmape": 70.52
-  },
-  "22697": {
-    "model": "nst",
-    "wmape": 37.05
-  },
-  "35971": {
-    "model": "lr",
-    "wmape": 77.2
-  },
-  "22494": {
-    "model": "nst",
-    "wmape": 58.82
-  },
-  "84509B": {
-    "model": "lgb",
-    "wmape": 55.29
-  },
-  "51014L": {
-    "model": "nst",
-    "wmape": 39.87
-  },
-  "20754": {
-    "model": "nst",
-    "wmape": 74.9
-  },
-  "22292": {
-    "model": "nst",
-    "wmape": 100.65
-  },
-  "21114": {
-    "model": "lgb",
-    "wmape": 62.16
-  },
-  "22650": {
-    "model": "lgb",
-    "wmape": 54.59
-  },
-  "22433": {
-    "model": "lgb",
-    "wmape": 66.53
-  },
-  "21240": {
-    "model": "lr",
-    "wmape": 53.16
-  },
-  "22333": {
-    "model": "nst",
-    "wmape": 54.75
-  },
-  "15060B": {
-    "model": "lgb",
-    "wmape": 32.9
-  },
-  "85066": {
-    "model": "lgb",
-    "wmape": 48.7
-  },
-  "22200": {
-    "model": "lgb",
-    "wmape": 57.35
-  },
-  "75049L": {
-    "model": "nst",
-    "wmape": 85.21
-  },
-  "85183A": {
-    "model": "sarimax",
-    "wmape": 74.23
-  },
-  "22302": {
-    "model": "lgb",
-    "wmape": 66.58
-  },
-  "21914": {
-    "model": "lgb",
-    "wmape": 36.27
-  },
-  "22439": {
-    "model": "lgb",
-    "wmape": 52.81
-  },
-  "22653": {
-    "model": "sarimax",
-    "wmape": 48.55
-  },
-  "22384": {
-    "model": "lr",
-    "wmape": 31.5
-  },
-  "48184": {
-    "model": "lr",
-    "wmape": 77.84
-  },
-  "21495": {
-    "model": "lr",
-    "wmape": 60.87
-  },
-  "21012": {
-    "model": "nst",
-    "wmape": 48.55
-  },
-  "22244": {
-    "model": "nst",
-    "wmape": 115.64
-  },
-  "22659": {
-    "model": "lr",
-    "wmape": 62.43
-  },
-  "22178": {
-    "model": "lgb",
-    "wmape": 49.26
-  },
-  "22067": {
-    "model": "lgb",
-    "wmape": 74.14
-  },
-  "22284": {
-    "model": "lgb",
-    "wmape": 75.78
-  },
-  "21204": {
-    "model": "lgb",
-    "wmape": 51.31
-  },
-  "21242": {
-    "model": "lgb",
-    "wmape": 69.55
-  },
-  "21108": {
-    "model": "lr",
-    "wmape": 61.75
-  },
-  "15039": {
-    "model": "nst",
-    "wmape": 79.49
-  },
-  "85061W": {
-    "model": "sarimax",
-    "wmape": 56.68
-  },
-  "21913": {
-    "model": "lgb",
-    "wmape": 50.93
-  },
-  "22557": {
-    "model": "lgb",
-    "wmape": 38.81
-  },
-  "22674": {
-    "model": "nst",
-    "wmape": 77.1
-  },
-  "22375": {
-    "model": "nst",
-    "wmape": 47.85
-  },
-  "21205": {
-    "model": "lgb",
-    "wmape": 96.6
-  },
-  "22539": {
-    "model": "sarimax",
-    "wmape": 75.08
-  },
-  "21624": {
-    "model": "nst",
-    "wmape": 70.12
-  },
-  "20665": {
-    "model": "nst",
-    "wmape": 86.47
-  },
-  "22118": {
-    "model": "nst",
-    "wmape": 58.45
-  },
-  "21908": {
-    "model": "lgb",
-    "wmape": 63.93
-  },
-  "22277": {
-    "model": "nst",
-    "wmape": 84.5
-  },
-  "22383": {
-    "model": "nst",
-    "wmape": 20.91
-  },
-  "20702": {
-    "model": "nst",
-    "wmape": 108.42
-  },
-  "21165": {
-    "model": "lgb",
-    "wmape": 70.38
-  },
-  "22523": {
-    "model": "lr",
-    "wmape": 87.82
-  },
-  "82001S": {
-    "model": "lgb",
-    "wmape": 73.26
-  },
-  "21749": {
-    "model": "nst",
-    "wmape": 90.73
-  },
-  "22295": {
-    "model": "prophet",
-    "wmape": 67.12
-  },
-  "21891": {
-    "model": "lgb",
-    "wmape": 68.01
-  },
-  "84375": {
-    "model": "nst",
-    "wmape": 30.77
-  },
-  "20972": {
-    "model": "lr",
-    "wmape": 34.77
-  },
-  "22084": {
-    "model": "lgb",
-    "wmape": 36.05
-  },
-  "22485": {
-    "model": "lgb",
-    "wmape": 50.08
-  },
-  "22165": {
-    "model": "nst",
-    "wmape": 49.66
-  },
-  "21504": {
-    "model": "lgb",
-    "wmape": 56.18
-  },
-  "22759": {
-    "model": "nst",
-    "wmape": 63.51
-  },
-  "21106": {
-    "model": "lgb",
-    "wmape": 56.56
-  },
-  "22055": {
-    "model": "lgb",
-    "wmape": 85.62
-  },
-  "22465": {
-    "model": "lgb",
-    "wmape": 58.37
-  },
-  "22362": {
-    "model": "sarimax",
-    "wmape": 29.6
-  },
-  "84968F": {
-    "model": "lgb",
-    "wmape": 74.64
-  },
-  "22551": {
-    "model": "lgb",
-    "wmape": 27.7
-  },
-  "22474": {
-    "model": "lgb",
-    "wmape": 42.21
-  },
-  "20978": {
-    "model": "lgb",
-    "wmape": 43.16
-  },
-  "21218": {
-    "model": "lgb",
-    "wmape": 55.51
-  },
-  "22441": {
-    "model": "nst",
-    "wmape": 45.31
-  },
-  "22522": {
-    "model": "nst",
-    "wmape": 97.86
-  },
-  "21055": {
-    "model": "lgb",
-    "wmape": 67.2
-  },
-  "21743": {
-    "model": "nst",
-    "wmape": 179.01
-  },
-  "20992": {
-    "model": "nst",
-    "wmape": 50.97
-  },
-  "21166": {
-    "model": "nst",
-    "wmape": 54.33
-  },
-  "21578": {
-    "model": "nst",
-    "wmape": 109.06
-  },
-  "21564": {
-    "model": "nst",
-    "wmape": 83.29
-  },
-  "22377": {
-    "model": "lgb",
-    "wmape": 72.23
-  },
-  "22544": {
-    "model": "lgb",
-    "wmape": 71.01
-  },
-  "22708": {
-    "model": "lgb",
-    "wmape": 46.38
-  },
-  "21710": {
-    "model": "lgb",
-    "wmape": 45.38
-  },
-  "48111": {
-    "model": "prophet",
-    "wmape": 87.91
-  },
-  "20728": {
-    "model": "lgb",
-    "wmape": 28.47
-  },
-  "37340": {
-    "model": "lr",
-    "wmape": 61.32
-  },
-  "22479": {
-    "model": "lgb",
-    "wmape": 62.8
-  },
-  "22174": {
-    "model": "sarimax",
-    "wmape": 43.01
-  },
-  "85054": {
-    "model": "lgb",
-    "wmape": 61.52
-  },
-  "20984": {
-    "model": "lgb",
-    "wmape": 78.99
-  },
-  "21811": {
-    "model": "lgb",
-    "wmape": 56.88
-  },
-  "22327": {
-    "model": "lgb",
-    "wmape": 35.86
-  },
-  "22690": {
-    "model": "prophet",
-    "wmape": 74.19
-  },
-  "21905": {
-    "model": "nst",
-    "wmape": 61.57
-  },
-  "21990": {
-    "model": "lr",
-    "wmape": 24.22
-  },
-  "84030E": {
-    "model": "lgb",
-    "wmape": 37.81
-  },
-  "22562": {
-    "model": "prophet",
-    "wmape": 45.84
-  },
-  "21977": {
-    "model": "nst",
-    "wmape": 46.92
-  },
-  "21713": {
-    "model": "lgb",
-    "wmape": 63.91
-  },
-  "22631": {
-    "model": "lgb",
-    "wmape": 52.81
-  },
-  "72807A": {
-    "model": "lgb",
-    "wmape": 72.17
-  },
-  "22236": {
-    "model": "nst",
-    "wmape": 86.75
-  },
-  "22243": {
-    "model": "nst",
-    "wmape": 104.43
-  },
-  "21485": {
-    "model": "lr",
-    "wmape": 52.01
-  },
-  "21874": {
-    "model": "prophet",
-    "wmape": 86.51
-  },
-  "21981": {
-    "model": "nst",
-    "wmape": 56.86
-  },
-  "21864": {
-    "model": "nst",
-    "wmape": 78.45
-  },
-  "22203": {
-    "model": "lgb",
-    "wmape": 35.83
-  },
-  "22296": {
-    "model": "nst",
-    "wmape": 53.85
-  },
-  "22694": {
-    "model": "lr",
-    "wmape": 47.6
-  },
-  "21191": {
-    "model": "lr",
-    "wmape": 74.97
-  },
-  "85015": {
-    "model": "lgb",
-    "wmape": 60.73
-  },
-  "22147": {
-    "model": "lgb",
-    "wmape": 79.61
-  },
-  "85059": {
-    "model": "lgb",
-    "wmape": 41.13
-  },
-  "21213": {
-    "model": "lr",
-    "wmape": 49.19
-  },
-  "22112": {
-    "model": "lgb",
-    "wmape": 45.1
-  },
-  "16161P": {
-    "model": "lgb",
-    "wmape": 55.43
-  },
-  "82581": {
-    "model": "lgb",
-    "wmape": 35.23
-  },
-  "85049F": {
-    "model": "nst",
-    "wmape": 104.88
+    "wmape": 76.55
   },
   "85178": {
     "model": "lgb",
     "wmape": 80.05
   },
-  "21172": {
-    "model": "lgb",
-    "wmape": 42.37
+  "22207": {
+    "model": "prophet",
+    "wmape": 74.48
   },
-  "21991": {
+  "20978": {
     "model": "lgb",
-    "wmape": 39.76
+    "wmape": 43.16
   },
-  "20676": {
+  "22467": {
+    "model": "lgb",
+    "wmape": 43.44
+  },
+  "22069": {
     "model": "lr",
-    "wmape": 45.25
+    "wmape": 72.64
   },
-  "21524": {
+  "22075": {
+    "model": "lgb",
+    "wmape": 55.09
+  },
+  "22384": {
     "model": "lr",
-    "wmape": 56.92
+    "wmape": 31.5
   },
-  "21802": {
+  "21908": {
     "model": "lgb",
-    "wmape": 64.23
+    "wmape": 63.93
   },
-  "22322": {
-    "model": "lgb",
-    "wmape": 76.1
-  },
-  "72802B": {
-    "model": "lgb",
-    "wmape": 83.72
-  },
-  "22291": {
-    "model": "lgb",
-    "wmape": 76.18
-  },
-  "21846": {
-    "model": "lgb",
-    "wmape": 72.65
-  },
-  "22271": {
-    "model": "lgb",
-    "wmape": 34.84
-  },
-  "21232": {
+  "22333": {
     "model": "nst",
-    "wmape": 37.1
+    "wmape": 52.57
+  },
+  "21794": {
+    "model": "lgb",
+    "wmape": 57.57
+  },
+  "22191": {
+    "model": "nst",
+    "wmape": 36.09
+  },
+  "22079": {
+    "model": "lgb",
+    "wmape": 38.96
+  },
+  "22711": {
+    "model": "lgb",
+    "wmape": 49.94
   },
   "85199S": {
     "model": "lgb",
     "wmape": 39.76
   },
-  "22436": {
-    "model": "nst",
-    "wmape": 36.86
-  },
-  "85173": {
-    "model": "nst",
-    "wmape": 75.82
-  },
-  "37447": {
+  "21640": {
     "model": "lgb",
-    "wmape": 68.09
+    "wmape": 87.36
   },
-  "21669": {
-    "model": "nst",
-    "wmape": 45.97
-  },
-  "22472": {
+  "22314": {
     "model": "lgb",
-    "wmape": 50.34
+    "wmape": 68.94
   },
-  "21137": {
+  "22553": {
+    "model": "lgb",
+    "wmape": 25.3
+  },
+  "35961": {
+    "model": "lgb",
+    "wmape": 35.71
+  },
+  "84032A": {
+    "model": "lgb",
+    "wmape": 30.18
+  },
+  "21564": {
     "model": "nst",
-    "wmape": 58.49
+    "wmape": 88.54
   },
-  "21986": {
-    "model": "nst",
-    "wmape": 62.75
+  "84971S": {
+    "model": "lgb",
+    "wmape": 76.53
   },
-  "21918": {
+  "22327": {
+    "model": "lgb",
+    "wmape": 35.86
+  },
+  "21890": {
+    "model": "prophet",
+    "wmape": 39.36
+  },
+  "22716": {
+    "model": "lgb",
+    "wmape": 45.89
+  },
+  "85176": {
+    "model": "lgb",
+    "wmape": 57.46
+  },
+  "22185": {
+    "model": "lgb",
+    "wmape": 76.22
+  },
+  "22507": {
+    "model": "prophet",
+    "wmape": 63.76
+  },
+  "21383": {
     "model": "lr",
-    "wmape": 39.98
+    "wmape": 85.49
   },
-  "21902": {
+  "22386": {
     "model": "nst",
-    "wmape": 59.89
+    "wmape": 37.26
   },
-  "22083": {
-    "model": "nst",
-    "wmape": 37.32
-  },
-  "82482": {
-    "model": "lr",
-    "wmape": 37.97
-  },
-  "21284": {
+  "22419": {
     "model": "lgb",
-    "wmape": 43.3
+    "wmape": 51.84
   },
-  "22311": {
+  "22508": {
+    "model": "nst",
+    "wmape": 86.32
+  },
+  "72802C": {
+    "model": "lgb",
+    "wmape": 89.48
+  },
+  "21500": {
+    "model": "nst",
+    "wmape": 49.44
+  },
+  "21217": {
+    "model": "lgb",
+    "wmape": 53.32
+  },
+  "21626": {
+    "model": "lgb",
+    "wmape": 61.87
+  },
+  "22620": {
+    "model": "lgb",
+    "wmape": 35.74
+  },
+  "21205": {
+    "model": "lgb",
+    "wmape": 96.6
+  },
+  "22223": {
+    "model": "lgb",
+    "wmape": 50.62
+  },
+  "20846": {
+    "model": "lgb",
+    "wmape": 40.75
+  },
+  "21716": {
     "model": "sarimax",
-    "wmape": 75.7
+    "wmape": 95.19
   },
-  "20727": {
-    "model": "lgb",
-    "wmape": 36.24
+  "22132": {
+    "model": "lr",
+    "wmape": 83.99
   },
-  "21679": {
+  "22217": {
     "model": "lgb",
-    "wmape": 64.65
+    "wmape": 74.14
+  },
+  "22477": {
+    "model": "lgb",
+    "wmape": 69.99
+  },
+  "22046": {
+    "model": "prophet",
+    "wmape": 56.01
+  },
+  "21617": {
+    "model": "lgb",
+    "wmape": 66.97
+  },
+  "21239": {
+    "model": "nst",
+    "wmape": 58.03
+  },
+  "21534": {
+    "model": "nst",
+    "wmape": 55.38
+  },
+  "21955": {
+    "model": "nst",
+    "wmape": 86.79
+  },
+  "48111": {
+    "model": "prophet",
+    "wmape": 87.91
+  },
+  "22325": {
+    "model": "nst",
+    "wmape": 82.68
+  },
+  "72802B": {
+    "model": "lgb",
+    "wmape": 83.72
+  },
+  "22417": {
+    "model": "nst",
+    "wmape": 46.6
+  },
+  "22381": {
+    "model": "prophet",
+    "wmape": 65.79
+  },
+  "22328": {
+    "model": "nst",
+    "wmape": 46.19
   },
   "22176": {
     "model": "lgb",
     "wmape": 65.54
   },
-  "22260": {
-    "model": "lgb",
-    "wmape": 51.77
+  "22431": {
+    "model": "prophet",
+    "wmape": 67.31
   },
-  "72807C": {
-    "model": "lgb",
-    "wmape": 69.07
+  "22617": {
+    "model": "lr",
+    "wmape": 49.74
   },
-  "21731": {
+  "22334": {
     "model": "lgb",
-    "wmape": 39.87
+    "wmape": 51.74
   },
-  "20974": {
-    "model": "lgb",
-    "wmape": 70.41
-  },
-  "47480": {
+  "22398": {
     "model": "nst",
-    "wmape": 73.36
+    "wmape": 48.52
+  },
+  "22483": {
+    "model": "lr",
+    "wmape": 57.64
+  },
+  "84568": {
+    "model": "sarimax",
+    "wmape": 85.01
+  },
+  "22222": {
+    "model": "lgb",
+    "wmape": 30.89
+  },
+  "22301": {
+    "model": "prophet",
+    "wmape": 82.09
+  },
+  "22445": {
+    "model": "nst",
+    "wmape": 68.7
+  },
+  "21424": {
+    "model": "lgb",
+    "wmape": 60.04
+  },
+  "22429": {
+    "model": "nst",
+    "wmape": 45.59
+  },
+  "84212": {
+    "model": "lgb",
+    "wmape": 76.54
+  },
+  "20828": {
+    "model": "lgb",
+    "wmape": 44.74
+  },
+  "20985": {
+    "model": "lr",
+    "wmape": 71.95
+  },
+  "21497": {
+    "model": "lgb",
+    "wmape": 57.04
+  },
+  "21668": {
+    "model": "lr",
+    "wmape": 46.97
+  },
+  "21933": {
+    "model": "lgb",
+    "wmape": 53.57
+  },
+  "22554": {
+    "model": "nst",
+    "wmape": 40.11
+  },
+  "22150": {
+    "model": "lgb",
+    "wmape": 40.4
+  },
+  "20674": {
+    "model": "lgb",
+    "wmape": 52.15
+  },
+  "21949": {
+    "model": "lgb",
+    "wmape": 52.59
+  },
+  "22227": {
+    "model": "prophet",
+    "wmape": 48.86
+  },
+  "21531": {
+    "model": "nst",
+    "wmape": 74.9
+  },
+  "21749": {
+    "model": "lgb",
+    "wmape": 157.63
+  },
+  "21257": {
+    "model": "lgb",
+    "wmape": 48.09
+  },
+  "22474": {
+    "model": "lgb",
+    "wmape": 42.21
+  },
+  "22630": {
+    "model": "lr",
+    "wmape": 41.92
+  },
+  "20675": {
+    "model": "nst",
+    "wmape": 62.07
+  },
+  "22851": {
+    "model": "lgb",
+    "wmape": 61.47
+  },
+  "22024": {
+    "model": "lgb",
+    "wmape": 63.64
+  },
+  "22664": {
+    "model": "nst",
+    "wmape": 79.11
+  },
+  "21787": {
+    "model": "nst",
+    "wmape": 81.22
+  },
+  "22090": {
+    "model": "lr",
+    "wmape": 30.86
+  },
+  "21504": {
+    "model": "lgb",
+    "wmape": 56.18
+  },
+  "21381": {
+    "model": "nst",
+    "wmape": 69.1
+  },
+  "47599B": {
+    "model": "lgb",
+    "wmape": 76.78
+  },
+  "21179": {
+    "model": "lgb",
+    "wmape": 103.06
+  },
+  "85152": {
+    "model": "lgb",
+    "wmape": 64.08
+  },
+  "21391": {
+    "model": "lr",
+    "wmape": 166.11
+  },
+  "22418": {
+    "model": "lr",
+    "wmape": 41.92
+  },
+  "22502": {
+    "model": "lgb",
+    "wmape": 1066.07
+  },
+  "84978": {
+    "model": "lr",
+    "wmape": 43.39
+  },
+  "22076": {
+    "model": "lgb",
+    "wmape": 52.21
+  },
+  "21714": {
+    "model": "lgb",
+    "wmape": 56.34
+  },
+  "21249": {
+    "model": "nst",
+    "wmape": 73.09
+  },
+  "22614": {
+    "model": "lgb",
+    "wmape": 50.09
+  },
+  "22699": {
+    "model": "lgb",
+    "wmape": 37.25
+  },
+  "21218": {
+    "model": "lgb",
+    "wmape": 55.51
+  },
+  "21581": {
+    "model": "lgb",
+    "wmape": 64.46
   },
   "35924": {
     "model": "nst",
-    "wmape": 95.86
+    "wmape": 118.14
   },
-  "84968C": {
+  "18097C": {
     "model": "lgb",
-    "wmape": 55.48
+    "wmape": 72.18
   },
-  "84029E": {
-    "model": "nst",
-    "wmape": 63.06
-  },
-  "22320": {
+  "22676": {
     "model": "lgb",
-    "wmape": 84.5
+    "wmape": 72.15
   },
-  "21643": {
+  "22693": {
     "model": "lgb",
-    "wmape": 71.27
+    "wmape": 52.28
   },
-  "22364": {
-    "model": "nst",
-    "wmape": 54.65
-  },
-  "82582": {
-    "model": "nst",
-    "wmape": 61.27
-  },
-  "22666": {
+  "72349B": {
     "model": "lgb",
-    "wmape": 57.84
+    "wmape": 59.16
   },
-  "22468": {
+  "22196": {
+    "model": "lr",
+    "wmape": 57.45
+  },
+  "22402": {
     "model": "nst",
-    "wmape": 62.8
+    "wmape": 66.43
   },
-  "21830": {
-    "model": "nst",
-    "wmape": 103.9
-  },
-  "21080": {
-    "model": "nst",
-    "wmape": 27.61
-  },
-  "22350": {
+  "22449": {
     "model": "lgb",
-    "wmape": 58.69
+    "wmape": 61.92
+  },
+  "21917": {
+    "model": "lgb",
+    "wmape": 63.59
+  },
+  "21624": {
+    "model": "lr",
+    "wmape": 71.95
+  },
+  "48185": {
+    "model": "lgb",
+    "wmape": 78.77
+  },
+  "85014B": {
+    "model": "lgb",
+    "wmape": 47.79
+  },
+  "22220": {
+    "model": "lgb",
+    "wmape": 77.74
+  },
+  "22167": {
+    "model": "nst",
+    "wmape": 71.43
+  },
+  "84945": {
+    "model": "lgb",
+    "wmape": 55.42
+  },
+  "16161P": {
+    "model": "lgb",
+    "wmape": 55.43
+  },
+  "22441": {
+    "model": "lgb",
+    "wmape": 51.22
+  },
+  "22708": {
+    "model": "lgb",
+    "wmape": 46.38
+  },
+  "22439": {
+    "model": "lgb",
+    "wmape": 52.81
+  },
+  "20658": {
+    "model": "lgb",
+    "wmape": 190.89
+  },
+  "20676": {
+    "model": "lr",
+    "wmape": 45.25
+  },
+  "84997A": {
+    "model": "lgb",
+    "wmape": 68.74
+  },
+  "21864": {
+    "model": "nst",
+    "wmape": 79.2
+  },
+  "47590B": {
+    "model": "lgb",
+    "wmape": 43.46
+  },
+  "22300": {
+    "model": "nst",
+    "wmape": 83.74
+  },
+  "21877": {
+    "model": "nst",
+    "wmape": 71.83
+  },
+  "48184": {
+    "model": "lr",
+    "wmape": 77.84
+  },
+  "21260": {
+    "model": "nst",
+    "wmape": 78.22
+  },
+  "22551": {
+    "model": "lgb",
+    "wmape": 27.7
+  },
+  "84050": {
+    "model": "lgb",
+    "wmape": 88.35
+  },
+  "22074": {
+    "model": "lgb",
+    "wmape": 50.23
+  },
+  "21703": {
+    "model": "nst",
+    "wmape": 70.72
+  },
+  "21987": {
+    "model": "lr",
+    "wmape": 48.07
+  },
+  "82483": {
+    "model": "lr",
+    "wmape": 49.04
+  },
+  "84378": {
+    "model": "lgb",
+    "wmape": 61.25
+  },
+  "85227": {
+    "model": "lgb",
+    "wmape": 42.08
+  },
+  "21733": {
+    "model": "lgb",
+    "wmape": 50.35
+  },
+  "22115": {
+    "model": "lgb",
+    "wmape": 47.45
+  },
+  "22586": {
+    "model": "lgb",
+    "wmape": 42.28
+  },
+  "22385": {
+    "model": "nst",
+    "wmape": 49.34
+  },
+  "15060B": {
+    "model": "lgb",
+    "wmape": 32.9
+  },
+  "37340": {
+    "model": "lr",
+    "wmape": 61.32
+  },
+  "82580": {
+    "model": "nst",
+    "wmape": 48.62
+  },
+  "84406B": {
+    "model": "lgb",
+    "wmape": 99.84
+  },
+  "21469": {
+    "model": "lgb",
+    "wmape": 95.23
+  },
+  "22081": {
+    "model": "lgb",
+    "wmape": 48.02
+  },
+  "21213": {
+    "model": "lr",
+    "wmape": 49.19
+  },
+  "22026": {
+    "model": "lgb",
+    "wmape": 34.29
+  },
+  "22485": {
+    "model": "lgb",
+    "wmape": 50.08
+  },
+  "22491": {
+    "model": "lr",
+    "wmape": 49.46
+  },
+  "21243": {
+    "model": "prophet",
+    "wmape": 84.88
+  },
+  "22628": {
+    "model": "lgb",
+    "wmape": 53.27
+  },
+  "21906": {
+    "model": "sarimax",
+    "wmape": 77.91
+  },
+  "22622": {
+    "model": "nst",
+    "wmape": 64.21
+  },
+  "22405": {
+    "model": "nst",
+    "wmape": 80.34
+  },
+  "22283": {
+    "model": "lgb",
+    "wmape": 34.26
+  },
+  "20829": {
+    "model": "lr",
+    "wmape": 35.07
+  },
+  "21896": {
+    "model": "lgb",
+    "wmape": 110.74
+  },
+  "22611": {
+    "model": "lgb",
+    "wmape": 77.28
+  },
+  "21125": {
+    "model": "lr",
+    "wmape": 67.04
+  },
+  "22367": {
+    "model": "lgb",
+    "wmape": 42.76
+  },
+  "22650": {
+    "model": "lgb",
+    "wmape": 54.59
+  },
+  "21126": {
+    "model": "lgb",
+    "wmape": 43.42
+  },
+  "22310": {
+    "model": "lr",
+    "wmape": 79.97
+  },
+  "82494L": {
+    "model": "lgb",
+    "wmape": 30.31
+  },
+  "84078A": {
+    "model": "lgb",
+    "wmape": 78.24
+  },
+  "21709": {
+    "model": "lgb",
+    "wmape": 53.04
+  },
+  "22129": {
+    "model": "sarimax",
+    "wmape": 75.91
+  },
+  "21981": {
+    "model": "nst",
+    "wmape": 49.9
+  },
+  "71459": {
+    "model": "lr",
+    "wmape": 52.75
+  },
+  "21918": {
+    "model": "lr",
+    "wmape": 39.98
+  },
+  "21245": {
+    "model": "lgb",
+    "wmape": 71.51
+  },
+  "22071": {
+    "model": "lr",
+    "wmape": 80.41
   },
   "20961": {
     "model": "lgb",
@@ -2171,1764 +727,3208 @@
     "model": "lgb",
     "wmape": 59.59
   },
-  "22342": {
-    "model": "lgb",
-    "wmape": 64.81
-  },
-  "22068": {
-    "model": "nst",
-    "wmape": 68.04
-  },
-  "84991": {
-    "model": "nst",
-    "wmape": 51.41
-  },
-  "85014A": {
-    "model": "nst",
-    "wmape": 47.37
-  },
-  "22621": {
-    "model": "nst",
-    "wmape": 40.75
-  },
-  "85053": {
-    "model": "nst",
-    "wmape": 42.39
-  },
-  "21934": {
-    "model": "lgb",
-    "wmape": 36.98
-  },
-  "21428": {
-    "model": "nst",
-    "wmape": 55.09
-  },
-  "22428": {
-    "model": "nst",
-    "wmape": 65.79
-  },
-  "85185B": {
-    "model": "lgb",
-    "wmape": 47.31
-  },
-  "21174": {
-    "model": "nst",
-    "wmape": 60.94
-  },
-  "21207": {
-    "model": "lr",
-    "wmape": 66.14
-  },
-  "35810A": {
-    "model": "lr",
-    "wmape": 75.39
-  },
-  "21915": {
-    "model": "lgb",
-    "wmape": 68.24
-  },
   "85040A": {
-    "model": "nst",
-    "wmape": 68.56
-  },
-  "22023": {
-    "model": "lgb",
-    "wmape": 62.67
-  },
-  "22426": {
     "model": "lr",
-    "wmape": 38.8
+    "wmape": 69.82
   },
-  "22496": {
-    "model": "nst",
-    "wmape": 47.48
-  },
-  "85172": {
+  "21506": {
     "model": "lgb",
-    "wmape": 81.86
+    "wmape": 47.66
   },
-  "85183B": {
+  "20971": {
     "model": "lr",
-    "wmape": 50.37
+    "wmape": 76.7
   },
-  "22149": {
-    "model": "lgb",
-    "wmape": 70.34
-  },
-  "22629": {
-    "model": "lgb",
-    "wmape": 36.2
-  },
-  "84978": {
-    "model": "lr",
-    "wmape": 43.39
-  },
-  "84078A": {
+  "22165": {
     "model": "nst",
-    "wmape": 68.14
-  },
-  "21112": {
-    "model": "lgb",
-    "wmape": 93.19
-  },
-  "22222": {
-    "model": "lgb",
-    "wmape": 30.89
-  },
-  "84849D": {
-    "model": "nst",
-    "wmape": 81.75
-  },
-  "22028": {
-    "model": "lgb",
-    "wmape": 43.73
-  },
-  "15044D": {
-    "model": "lgb",
-    "wmape": 81.15
-  },
-  "22549": {
-    "model": "lr",
-    "wmape": 48.47
-  },
-  "21465": {
-    "model": "lgb",
-    "wmape": 63.45
-  },
-  "21866": {
-    "model": "lgb",
-    "wmape": 59.88
-  },
-  "21875": {
-    "model": "nst",
-    "wmape": 67.36
-  },
-  "22514": {
-    "model": "lgb",
-    "wmape": 89.41
-  },
-  "82583": {
-    "model": "nst",
-    "wmape": 52.52
-  },
-  "84913A": {
-    "model": "lgb",
-    "wmape": 109.06
-  },
-  "84997D": {
-    "model": "lgb",
-    "wmape": 56.2
-  },
-  "22483": {
-    "model": "lr",
-    "wmape": 57.64
-  },
-  "84755": {
-    "model": "nst",
-    "wmape": 52.7
-  },
-  "22497": {
-    "model": "lgb",
-    "wmape": 94.75
-  },
-  "85152": {
-    "model": "lgb",
-    "wmape": 64.08
-  },
-  "22425": {
-    "model": "nst",
-    "wmape": 62.91
-  },
-  "21992": {
-    "model": "lgb",
-    "wmape": 73.14
-  },
-  "21430": {
-    "model": "prophet",
-    "wmape": 49.99
-  },
-  "22079": {
-    "model": "lgb",
-    "wmape": 38.96
-  },
-  "21917": {
-    "model": "lgb",
-    "wmape": 63.59
-  },
-  "21896": {
-    "model": "nst",
-    "wmape": 96.81
-  },
-  "82483": {
-    "model": "lr",
-    "wmape": 49.04
-  },
-  "21470": {
-    "model": "lgb",
-    "wmape": 57.6
-  },
-  "84968A": {
-    "model": "nst",
-    "wmape": 78.66
-  },
-  "22315": {
-    "model": "nst",
-    "wmape": 82.8
-  },
-  "22537": {
-    "model": "nst",
-    "wmape": 45.26
-  },
-  "22493": {
-    "model": "prophet",
-    "wmape": 39.21
-  },
-  "22398": {
-    "model": "lr",
-    "wmape": 50.88
-  },
-  "22029": {
-    "model": "nst",
-    "wmape": 33.63
-  },
-  "22334": {
-    "model": "lgb",
-    "wmape": 51.74
-  },
-  "21774": {
-    "model": "lr",
-    "wmape": 54.38
-  },
-  "21563": {
-    "model": "lgb",
-    "wmape": 81.46
-  },
-  "21865": {
-    "model": "nst",
-    "wmape": 87.17
-  },
-  "21733": {
-    "model": "lgb",
-    "wmape": 50.35
-  },
-  "85099C": {
-    "model": "nst",
-    "wmape": 41.42
-  },
-  "85123A": {
-    "model": "lgb",
-    "wmape": 40.03
-  },
-  "85099F": {
-    "model": "nst",
-    "wmape": 61.73
-  },
-  "21125": {
-    "model": "lr",
-    "wmape": 67.04
-  },
-  "22566": {
-    "model": "lgb",
-    "wmape": 55.22
-  },
-  "22635": {
-    "model": "nst",
-    "wmape": 48.18
-  },
-  "21498": {
-    "model": "nst",
-    "wmape": 29.17
-  },
-  "21239": {
-    "model": "nst",
-    "wmape": 58.1
-  },
-  "84507B": {
-    "model": "lgb",
-    "wmape": 31.74
-  },
-  "21135": {
-    "model": "nst",
-    "wmape": 86.09
-  },
-  "22171": {
-    "model": "lgb",
-    "wmape": 66.42
-  },
-  "22223": {
-    "model": "lgb",
-    "wmape": 50.62
-  },
-  "22300": {
-    "model": "nst",
-    "wmape": 80.63
-  },
-  "22471": {
-    "model": "lgb",
-    "wmape": 45.01
-  },
-  "22619": {
-    "model": "lgb",
-    "wmape": 28.04
-  },
-  "85231B": {
-    "model": "lgb",
-    "wmape": 54.3
-  },
-  "20979": {
-    "model": "nst",
-    "wmape": 51.4
-  },
-  "22429": {
-    "model": "lgb",
-    "wmape": 47.27
-  },
-  "21948": {
-    "model": "sarimax",
-    "wmape": 68.35
-  },
-  "22310": {
-    "model": "lr",
-    "wmape": 79.97
-  },
-  "47566B": {
-    "model": "nst",
-    "wmape": 50.91
-  },
-  "82580": {
-    "model": "nst",
-    "wmape": 47.87
-  },
-  "84884A": {
-    "model": "lgb",
-    "wmape": 73.69
-  },
-  "22219": {
-    "model": "lr",
-    "wmape": 52.74
-  },
-  "22386": {
-    "model": "nst",
-    "wmape": 36.44
-  },
-  "22374": {
-    "model": "lgb",
-    "wmape": 37.81
-  },
-  "22161": {
-    "model": "lr",
-    "wmape": 43.04
-  },
-  "21935": {
-    "model": "lgb",
-    "wmape": 29.77
-  },
-  "20982": {
-    "model": "lr",
-    "wmape": 49.56
-  },
-  "21789": {
-    "model": "lr",
-    "wmape": 70.33
-  },
-  "20969": {
-    "model": "lgb",
-    "wmape": 58.29
-  },
-  "84692": {
-    "model": "nst",
-    "wmape": 32.63
-  },
-  "22111": {
-    "model": "lgb",
-    "wmape": 46.91
-  },
-  "84558A": {
-    "model": "lr",
-    "wmape": 86.0
-  },
-  "21746": {
-    "model": "nst",
-    "wmape": 81.32
-  },
-  "22413": {
-    "model": "nst",
-    "wmape": 71.62
-  },
-  "72351A": {
-    "model": "lgb",
-    "wmape": 70.16
-  },
-  "21925": {
-    "model": "nst",
-    "wmape": 96.52
-  },
-  "22652": {
-    "model": "nst",
-    "wmape": 86.72
-  },
-  "22665": {
-    "model": "lgb",
-    "wmape": 58.08
-  },
-  "22332": {
-    "model": "lr",
-    "wmape": 48.73
-  },
-  "35961": {
-    "model": "lgb",
-    "wmape": 35.71
-  },
-  "21122": {
-    "model": "nst",
-    "wmape": 46.91
-  },
-  "21708": {
-    "model": "lgb",
-    "wmape": 72.83
-  },
-  "21163": {
-    "model": "lr",
-    "wmape": 93.29
-  },
-  "21928": {
-    "model": "lgb",
-    "wmape": 35.73
-  },
-  "84032B": {
-    "model": "lgb",
-    "wmape": 54.41
-  },
-  "21741": {
-    "model": "lgb",
-    "wmape": 84.08
-  },
-  "37370": {
-    "model": "nst",
-    "wmape": 105.69
-  },
-  "21833": {
-    "model": "lgb",
-    "wmape": 70.53
-  },
-  "22285": {
-    "model": "lgb",
-    "wmape": 68.44
-  },
-  "17003": {
-    "model": "lr",
-    "wmape": 70.87
-  },
-  "22434": {
-    "model": "lgb",
-    "wmape": 52.39
-  },
-  "21291": {
-    "model": "lgb",
-    "wmape": 85.4
-  },
-  "22716": {
-    "model": "lgb",
-    "wmape": 45.89
-  },
-  "84031A": {
-    "model": "nst",
-    "wmape": 49.61
-  },
-  "21735": {
-    "model": "nst",
-    "wmape": 211.36
-  },
-  "21210": {
-    "model": "lgb",
-    "wmape": 49.55
-  },
-  "21481": {
-    "model": "lgb",
-    "wmape": 35.29
-  },
-  "21754": {
-    "model": "nst",
-    "wmape": 31.2
-  },
-  "72349B": {
-    "model": "lgb",
-    "wmape": 59.16
-  },
-  "21683": {
-    "model": "lgb",
-    "wmape": 62.43
-  },
-  "22559": {
-    "model": "lgb",
-    "wmape": 63.97
-  },
-  "22419": {
-    "model": "lgb",
-    "wmape": 51.84
-  },
-  "21591": {
-    "model": "lgb",
-    "wmape": 62.27
-  },
-  "21627": {
-    "model": "nst",
-    "wmape": 88.94
-  },
-  "22095": {
-    "model": "prophet",
-    "wmape": 71.54
-  },
-  "15058B": {
-    "model": "nst",
-    "wmape": 125.91
-  },
-  "22668": {
-    "model": "lgb",
-    "wmape": 60.72
-  },
-  "21586": {
-    "model": "lgb",
-    "wmape": 74.39
-  },
-  "21673": {
-    "model": "nst",
-    "wmape": 42.88
-  },
-  "22212": {
-    "model": "nst",
-    "wmape": 40.7
-  },
-  "22712": {
-    "model": "lgb",
-    "wmape": 48.99
-  },
-  "20717": {
-    "model": "lr",
-    "wmape": 37.05
-  },
-  "21497": {
-    "model": "lgb",
-    "wmape": 57.04
-  },
-  "22110": {
-    "model": "prophet",
-    "wmape": 36.2
-  },
-  "22132": {
-    "model": "lr",
-    "wmape": 83.99
-  },
-  "22354": {
-    "model": "lgb",
-    "wmape": 75.58
-  },
-  "22349": {
-    "model": "sarimax",
-    "wmape": 65.89
-  },
-  "22649": {
-    "model": "nst",
-    "wmape": 65.84
-  },
-  "22241": {
-    "model": "lgb",
-    "wmape": 34.6
-  },
-  "22293": {
-    "model": "nst",
-    "wmape": 99.37
-  },
-  "21682": {
-    "model": "lgb",
-    "wmape": 64.84
-  },
-  "22568": {
-    "model": "lr",
-    "wmape": 56.81
-  },
-  "22440": {
-    "model": "lgb",
-    "wmape": 52.58
-  },
-  "84832": {
-    "model": "lgb",
-    "wmape": 50.72
-  },
-  "22357": {
-    "model": "lr",
-    "wmape": 57.19
-  },
-  "22166": {
-    "model": "nst",
-    "wmape": 42.34
-  },
-  "22246": {
-    "model": "lgb",
-    "wmape": 65.47
-  },
-  "21704": {
-    "model": "lgb",
-    "wmape": 53.68
-  },
-  "21949": {
-    "model": "lgb",
-    "wmape": 52.59
-  },
-  "20713": {
-    "model": "lgb",
-    "wmape": 46.28
-  },
-  "71053": {
-    "model": "nst",
-    "wmape": 42.45
-  },
-  "20770": {
-    "model": "nst",
-    "wmape": 109.77
-  },
-  "21581": {
-    "model": "lgb",
-    "wmape": 64.46
-  },
-  "84987": {
-    "model": "nst",
-    "wmape": 58.46
-  },
-  "21408": {
-    "model": "nst",
-    "wmape": 52.15
-  },
-  "21468": {
-    "model": "lgb",
-    "wmape": 65.28
-  },
-  "21212": {
-    "model": "lr",
-    "wmape": 34.84
-  },
-  "22693": {
-    "model": "lgb",
-    "wmape": 52.28
-  },
-  "22081": {
-    "model": "lgb",
-    "wmape": 48.02
-  },
-  "48116": {
-    "model": "lgb",
-    "wmape": 93.29
-  },
-  "21936": {
-    "model": "lgb",
-    "wmape": 63.27
-  },
-  "22500": {
-    "model": "nst",
-    "wmape": 38.12
-  },
-  "84378": {
-    "model": "nst",
-    "wmape": 56.29
-  },
-  "22170": {
-    "model": "nst",
-    "wmape": 82.58
-  },
-  "84970L": {
-    "model": "lgb",
-    "wmape": 57.27
-  },
-  "21448": {
-    "model": "nst",
-    "wmape": 105.71
-  },
-  "22424": {
-    "model": "lr",
-    "wmape": 41.3
-  },
-  "22636": {
-    "model": "lgb",
-    "wmape": 38.08
-  },
-  "22437": {
-    "model": "lr",
-    "wmape": 25.07
-  },
-  "22714": {
-    "model": "nst",
-    "wmape": 70.08
-  },
-  "21584": {
-    "model": "lr",
-    "wmape": 50.13
-  },
-  "22197": {
-    "model": "lr",
-    "wmape": 53.75
-  },
-  "22329": {
-    "model": "lr",
-    "wmape": 69.9
-  },
-  "21039": {
-    "model": "lgb",
-    "wmape": 62.65
-  },
-  "22167": {
-    "model": "nst",
-    "wmape": 67.29
-  },
-  "16161U": {
-    "model": "lgb",
-    "wmape": 64.35
-  },
-  "21523": {
-    "model": "nst",
-    "wmape": 61.81
-  },
-  "22072": {
-    "model": "lgb",
-    "wmape": 50.46
-  },
-  "85199L": {
-    "model": "nst",
-    "wmape": 58.35
-  },
-  "21071": {
-    "model": "lgb",
-    "wmape": 81.65
-  },
-  "20719": {
-    "model": "lgb",
-    "wmape": 31.39
-  },
-  "21326": {
-    "model": "nst",
-    "wmape": 55.44
-  },
-  "20686": {
-    "model": "nst",
-    "wmape": 82.55
-  },
-  "22089": {
-    "model": "lgb",
-    "wmape": 60.27
-  },
-  "85116": {
-    "model": "nst",
-    "wmape": 102.26
-  },
-  "22115": {
-    "model": "nst",
-    "wmape": 40.27
-  },
-  "84879": {
-    "model": "lr",
-    "wmape": 26.06
-  },
-  "21500": {
-    "model": "nst",
-    "wmape": 54.82
-  },
-  "20828": {
-    "model": "nst",
-    "wmape": 42.41
-  },
-  "84581": {
-    "model": "lgb",
-    "wmape": 47.84
-  },
-  "47504K": {
-    "model": "lgb",
-    "wmape": 70.94
-  },
-  "22516": {
-    "model": "lgb",
-    "wmape": 67.08
-  },
-  "22173": {
-    "model": "lgb",
-    "wmape": 43.05
-  },
-  "21984": {
-    "model": "lgb",
-    "wmape": 43.75
-  },
-  "84508A": {
-    "model": "lgb",
-    "wmape": 60.48
-  },
-  "84912B": {
-    "model": "lgb",
-    "wmape": 60.43
-  },
-  "21899": {
-    "model": "prophet",
-    "wmape": 46.81
-  },
-  "22416": {
-    "model": "lgb",
-    "wmape": 75.71
-  },
-  "21901": {
-    "model": "nst",
-    "wmape": 55.87
-  },
-  "84971S": {
-    "model": "lgb",
-    "wmape": 76.53
-  },
-  "20723": {
-    "model": "nst",
-    "wmape": 34.01
-  },
-  "18097C": {
-    "model": "lgb",
-    "wmape": 72.18
-  },
-  "22582": {
-    "model": "lgb",
-    "wmape": 70.27
-  },
-  "22417": {
-    "model": "nst",
-    "wmape": 43.52
-  },
-  "22026": {
-    "model": "lgb",
-    "wmape": 34.29
-  },
-  "21929": {
-    "model": "nst",
-    "wmape": 70.69
-  },
-  "22478": {
-    "model": "lgb",
-    "wmape": 70.55
+    "wmape": 40.57
   },
   "22343": {
     "model": "lgb",
     "wmape": 96.5
   },
-  "21086": {
-    "model": "nst",
-    "wmape": 58.97
-  },
-  "21975": {
-    "model": "nst",
-    "wmape": 51.98
-  },
-  "22477": {
-    "model": "lgb",
-    "wmape": 69.99
-  },
-  "84077": {
-    "model": "nst",
-    "wmape": 42.91
-  },
-  "22201": {
+  "20725": {
     "model": "lr",
-    "wmape": 83.44
+    "wmape": 27.01
   },
-  "22331": {
+  "21845": {
+    "model": "lgb",
+    "wmape": 50.71
+  },
+  "22382": {
+    "model": "nst",
+    "wmape": 33.71
+  },
+  "21114": {
+    "model": "lgb",
+    "wmape": 62.16
+  },
+  "22470": {
     "model": "lr",
-    "wmape": 66.92
+    "wmape": 71.0
   },
-  "21381": {
+  "82567": {
     "model": "nst",
-    "wmape": 72.4
+    "wmape": 39.33
   },
-  "21931": {
-    "model": "nst",
-    "wmape": 24.74
-  },
-  "22090": {
-    "model": "nst",
-    "wmape": 24.73
-  },
-  "21980": {
-    "model": "lr",
-    "wmape": 56.0
-  },
-  "22030": {
+  "21930": {
     "model": "lgb",
-    "wmape": 64.4
+    "wmape": 47.3
   },
-  "22162": {
+  "21974": {
     "model": "lgb",
-    "wmape": 105.92
+    "wmape": 44.31
   },
-  "85014B": {
-    "model": "nst",
-    "wmape": 45.38
-  },
-  "22400": {
-    "model": "lr",
-    "wmape": 52.62
-  },
-  "21217": {
+  "22621": {
     "model": "lgb",
-    "wmape": 53.32
+    "wmape": 59.43
   },
-  "22150": {
-    "model": "nst",
-    "wmape": 39.09
-  },
-  "22644": {
-    "model": "nst",
-    "wmape": 71.03
-  },
-  "21192": {
+  "22356": {
     "model": "lgb",
-    "wmape": 86.36
-  },
-  "40016": {
-    "model": "lgb",
-    "wmape": 83.69
-  },
-  "85184C": {
-    "model": "nst",
-    "wmape": 53.64
-  },
-  "21878": {
-    "model": "nst",
-    "wmape": 82.3
-  },
-  "22299": {
-    "model": "nst",
-    "wmape": 68.17
-  },
-  "22491": {
-    "model": "lr",
-    "wmape": 49.46
-  },
-  "22670": {
-    "model": "lgb",
-    "wmape": 46.91
-  },
-  "11001": {
-    "model": "nst",
-    "wmape": 65.69
-  },
-  "20679": {
-    "model": "nst",
-    "wmape": 47.38
-  },
-  "21773": {
-    "model": "lr",
-    "wmape": 75.76
-  },
-  "22061": {
-    "model": "nst",
-    "wmape": 70.4
-  },
-  "21677": {
-    "model": "lgb",
-    "wmape": 48.6
-  },
-  "22418": {
-    "model": "lr",
-    "wmape": 41.92
-  },
-  "84536A": {
-    "model": "lgb",
-    "wmape": 38.76
-  },
-  "21329": {
-    "model": "prophet",
-    "wmape": 53.28
-  },
-  "84596F": {
-    "model": "nst",
-    "wmape": 33.53
-  },
-  "21169": {
-    "model": "lgb",
-    "wmape": 51.55
-  },
-  "21294": {
-    "model": "lr",
-    "wmape": 77.78
-  },
-  "85039B": {
-    "model": "nst",
-    "wmape": 64.2
-  },
-  "37448": {
-    "model": "lgb",
-    "wmape": 56.4
-  },
-  "20977": {
-    "model": "lgb",
-    "wmape": 68.56
-  },
-  "22085": {
-    "model": "lgb",
-    "wmape": 56.01
-  },
-  "22152": {
-    "model": "lgb",
-    "wmape": 69.8
-  },
-  "22193": {
-    "model": "lgb",
-    "wmape": 40.99
-  },
-  "84945": {
-    "model": "lgb",
-    "wmape": 55.42
-  },
-  "22318": {
-    "model": "nst",
-    "wmape": 79.03
-  },
-  "22195": {
-    "model": "sarimax",
-    "wmape": 48.14
-  },
-  "21622": {
-    "model": "nst",
-    "wmape": 87.21
-  },
-  "21832": {
-    "model": "lgb",
-    "wmape": 51.72
+    "wmape": 30.64
   },
   "21340": {
-    "model": "nst",
-    "wmape": 53.32
-  },
-  "21843": {
-    "model": "prophet",
-    "wmape": 57.99
-  },
-  "22185": {
-    "model": "lgb",
-    "wmape": 76.22
-  },
-  "22041": {
-    "model": "lgb",
-    "wmape": 44.66
-  },
-  "22586": {
-    "model": "lgb",
-    "wmape": 42.28
-  },
-  "22628": {
-    "model": "lgb",
-    "wmape": 53.27
-  },
-  "21390": {
     "model": "lr",
-    "wmape": 69.94
+    "wmape": 58.11
   },
-  "21429": {
-    "model": "nst",
-    "wmape": 41.53
-  },
-  "22664": {
-    "model": "lgb",
-    "wmape": 79.68
-  },
-  "84997B": {
-    "model": "lgb",
-    "wmape": 69.84
-  },
-  "21466": {
-    "model": "lgb",
-    "wmape": 66.79
-  },
-  "21380": {
-    "model": "nst",
-    "wmape": 61.26
-  },
-  "22151": {
+  "21191": {
     "model": "lr",
-    "wmape": 56.57
+    "wmape": 74.97
   },
-  "21469": {
+  "21137": {
     "model": "lgb",
-    "wmape": 95.23
+    "wmape": 67.54
   },
-  "21115": {
+  "84380": {
     "model": "lgb",
-    "wmape": 81.38
+    "wmape": 43.57
   },
-  "21715": {
-    "model": "sarimax",
-    "wmape": 57.11
-  },
-  "22192": {
-    "model": "nst",
-    "wmape": 40.05
-  },
-  "22550": {
-    "model": "nst",
-    "wmape": 48.87
-  },
-  "21528": {
+  "22712": {
     "model": "lgb",
-    "wmape": 58.65
-  },
-  "21439": {
-    "model": "lgb",
-    "wmape": 89.59
-  },
-  "22367": {
-    "model": "nst",
-    "wmape": 42.31
-  },
-  "22476": {
-    "model": "nst",
-    "wmape": 77.46
-  },
-  "22325": {
-    "model": "lgb",
-    "wmape": 83.86
-  },
-  "22282": {
-    "model": "nst",
-    "wmape": 52.81
-  },
-  "22305": {
-    "model": "lgb",
-    "wmape": 74.2
-  },
-  "22456": {
-    "model": "nst",
-    "wmape": 27.63
-  },
-  "22175": {
-    "model": "lr",
-    "wmape": 64.95
-  },
-  "22317": {
-    "model": "lgb",
-    "wmape": 66.46
-  },
-  "21155": {
-    "model": "lgb",
-    "wmape": 27.39
-  },
-  "22180": {
-    "model": "lgb",
-    "wmape": 56.68
-  },
-  "22156": {
-    "model": "prophet",
-    "wmape": 45.88
-  },
-  "22662": {
-    "model": "nst",
-    "wmape": 40.34
-  },
-  "22117": {
-    "model": "nst",
-    "wmape": 98.77
-  },
-  "22654": {
-    "model": "prophet",
-    "wmape": 66.98
-  },
-  "85049E": {
-    "model": "nst",
-    "wmape": 22.5
-  },
-  "20682": {
-    "model": "sarimax",
-    "wmape": 41.69
-  },
-  "84509A": {
-    "model": "nst",
-    "wmape": 47.22
-  },
-  "20914": {
-    "model": "lr",
-    "wmape": 40.05
-  },
-  "84992": {
-    "model": "nst",
-    "wmape": 47.55
-  },
-  "21034": {
-    "model": "lr",
-    "wmape": 24.73
-  },
-  "84580": {
-    "model": "lgb",
-    "wmape": 60.24
-  },
-  "82600": {
-    "model": "lgb",
-    "wmape": 87.83
-  },
-  "21745": {
-    "model": "lgb",
-    "wmape": 45.66
-  },
-  "22120": {
-    "model": "lgb",
-    "wmape": 69.89
-  },
-  "22752": {
-    "model": "lgb",
-    "wmape": 55.51
-  },
-  "21932": {
-    "model": "nst",
-    "wmape": 45.17
-  },
-  "22469": {
-    "model": "lgb",
-    "wmape": 58.86
-  },
-  "84050": {
-    "model": "lgb",
-    "wmape": 88.35
-  },
-  "22502": {
-    "model": "nst",
-    "wmape": 262.6
+    "wmape": 48.99
   },
   "20981": {
     "model": "lr",
     "wmape": 40.41
   },
-  "21206": {
+  "62018": {
     "model": "lgb",
-    "wmape": 52.94
+    "wmape": 61.69
   },
-  "21983": {
-    "model": "lgb",
-    "wmape": 76.12
-  },
-  "48185": {
-    "model": "lgb",
-    "wmape": 78.77
-  },
-  "15056N": {
-    "model": "lgb",
-    "wmape": 49.19
-  },
-  "22066": {
+  "21124": {
     "model": "nst",
-    "wmape": 52.87
+    "wmape": 53.63
   },
-  "22077": {
-    "model": "nst",
-    "wmape": 26.23
-  },
-  "84031B": {
-    "model": "lr",
-    "wmape": 50.01
-  },
-  "21588": {
+  "20770": {
     "model": "lgb",
-    "wmape": 75.59
+    "wmape": 311.83
   },
-  "22755": {
-    "model": "lr",
-    "wmape": 66.93
+  "20712": {
+    "model": "nst",
+    "wmape": 29.17
   },
-  "85227": {
+  "22489": {
+    "model": "nst",
+    "wmape": 44.53
+  },
+  "22691": {
     "model": "lgb",
-    "wmape": 42.08
+    "wmape": 75.48
   },
-  "21123": {
-    "model": "sarimax",
-    "wmape": 69.19
-  },
-  "22464": {
+  "21754": {
     "model": "nst",
-    "wmape": 52.21
+    "wmape": 30.39
   },
-  "22358": {
+  "22241": {
     "model": "lgb",
-    "wmape": 39.57
-  },
-  "22421": {
-    "model": "nst",
-    "wmape": 70.37
-  },
-  "22080": {
-    "model": "lgb",
-    "wmape": 39.29
-  },
-  "22467": {
-    "model": "nst",
-    "wmape": 38.53
-  },
-  "21933": {
-    "model": "nst",
-    "wmape": 35.36
+    "wmape": 34.6
   },
   "21354": {
     "model": "lgb",
     "wmape": 61.46
   },
-  "20963": {
+  "22501": {
     "model": "lgb",
-    "wmape": 51.14
-  },
-  "20749": {
-    "model": "prophet",
-    "wmape": 53.9
-  },
-  "22273": {
-    "model": "lr",
-    "wmape": 85.14
-  },
-  "22274": {
-    "model": "prophet",
-    "wmape": 40.38
-  },
-  "22405": {
-    "model": "nst",
-    "wmape": 80.19
-  },
-  "21181": {
-    "model": "nst",
-    "wmape": 66.88
-  },
-  "17091J": {
-    "model": "lgb",
-    "wmape": 59.13
-  },
-  "21328": {
-    "model": "prophet",
-    "wmape": 49.02
-  },
-  "21927": {
-    "model": "lgb",
-    "wmape": 56.35
-  },
-  "21988": {
-    "model": "lr",
-    "wmape": 46.56
-  },
-  "22430": {
-    "model": "lgb",
-    "wmape": 50.28
-  },
-  "48129": {
-    "model": "sarimax",
-    "wmape": 88.98
-  },
-  "72807B": {
-    "model": "lgb",
-    "wmape": 64.96
-  },
-  "20658": {
-    "model": "nst",
-    "wmape": 121.96
-  },
-  "22754": {
-    "model": "nst",
-    "wmape": 65.34
-  },
-  "20724": {
-    "model": "lgb",
-    "wmape": 27.73
-  },
-  "21625": {
-    "model": "lgb",
-    "wmape": 64.38
-  },
-  "22534": {
-    "model": "nst",
-    "wmape": 40.15
-  },
-  "22515": {
-    "model": "lgb",
-    "wmape": 78.47
-  },
-  "20767": {
-    "model": "lgb",
-    "wmape": 51.28
-  },
-  "46000S": {
-    "model": "nst",
-    "wmape": 53.82
-  },
-  "21424": {
-    "model": "lgb",
-    "wmape": 60.04
-  },
-  "21464": {
-    "model": "nst",
-    "wmape": 46.51
-  },
-  "85099B": {
-    "model": "lgb",
-    "wmape": 40.38
-  },
-  "17129F": {
-    "model": "lgb",
-    "wmape": 56.75
-  },
-  "22254": {
-    "model": "lgb",
-    "wmape": 58.2
-  },
-  "21107": {
-    "model": "nst",
-    "wmape": 84.24
-  },
-  "22851": {
-    "model": "lgb",
-    "wmape": 61.47
-  },
-  "22215": {
-    "model": "lgb",
-    "wmape": 72.9
-  },
-  "20956": {
-    "model": "nst",
-    "wmape": 52.71
-  },
-  "21519": {
-    "model": "lgb",
-    "wmape": 57.95
-  },
-  "82578": {
-    "model": "nst",
-    "wmape": 47.56
+    "wmape": 101.06
   },
   "22158": {
     "model": "lgb",
     "wmape": 59.25
   },
-  "21531": {
-    "model": "nst",
-    "wmape": 80.23
-  },
-  "22303": {
+  "22064": {
     "model": "lgb",
-    "wmape": 61.57
-  },
-  "46000M": {
-    "model": "nst",
-    "wmape": 58.73
+    "wmape": 64.32
   },
   "22509": {
     "model": "lgb",
     "wmape": 82.4
   },
-  "22602": {
+  "84581": {
     "model": "lgb",
-    "wmape": 34.9
+    "wmape": 47.84
   },
-  "35970": {
+  "22379": {
     "model": "nst",
-    "wmape": 62.0
+    "wmape": 54.78
   },
-  "51014C": {
+  "21907": {
     "model": "lgb",
-    "wmape": 53.37
+    "wmape": 39.2
   },
-  "21693": {
-    "model": "lgb",
-    "wmape": 62.68
-  },
-  "22411": {
-    "model": "lgb",
-    "wmape": 42.12
-  },
-  "22191": {
+  "21448": {
     "model": "nst",
-    "wmape": 31.19
+    "wmape": 110.9
   },
-  "22359": {
+  "21901": {
     "model": "nst",
-    "wmape": 77.32
+    "wmape": 64.9
   },
-  "22262": {
+  "22313": {
     "model": "lgb",
-    "wmape": 76.34
+    "wmape": 88.68
   },
-  "21742": {
-    "model": "lgb",
-    "wmape": 52.19
+  "22133": {
+    "model": "lr",
+    "wmape": 73.16
   },
-  "21558": {
+  "22282": {
     "model": "lgb",
-    "wmape": 38.59
+    "wmape": 59.25
+  },
+  "21913": {
+    "model": "lgb",
+    "wmape": 50.93
+  },
+  "85183A": {
+    "model": "sarimax",
+    "wmape": 74.23
+  },
+  "17129F": {
+    "model": "lgb",
+    "wmape": 56.75
   },
   "22070": {
     "model": "lr",
     "wmape": 87.92
   },
-  "22620": {
-    "model": "lgb",
-    "wmape": 35.74
-  },
-  "21747": {
-    "model": "lgb",
-    "wmape": 43.27
-  },
-  "20718": {
+  "22358": {
     "model": "nst",
-    "wmape": 55.95
+    "wmape": 39.56
   },
-  "22585": {
+  "85114B": {
+    "model": "nst",
+    "wmape": 77.12
+  },
+  "85175": {
+    "model": "lgb",
+    "wmape": 46.73
+  },
+  "22357": {
     "model": "lr",
-    "wmape": 49.04
+    "wmape": 57.19
+  },
+  "22531": {
+    "model": "lgb",
+    "wmape": 47.09
+  },
+  "21925": {
+    "model": "lr",
+    "wmape": 104.25
+  },
+  "22246": {
+    "model": "lgb",
+    "wmape": 65.47
+  },
+  "21447": {
+    "model": "lgb",
+    "wmape": 24.91
+  },
+  "20723": {
+    "model": "nst",
+    "wmape": 36.35
+  },
+  "20969": {
+    "model": "lgb",
+    "wmape": 58.29
+  },
+  "22131": {
+    "model": "nst",
+    "wmape": 74.04
+  },
+  "47599A": {
+    "model": "lr",
+    "wmape": 66.27
+  },
+  "22645": {
+    "model": "nst",
+    "wmape": 34.62
+  },
+  "82583": {
+    "model": "lgb",
+    "wmape": 65.26
+  },
+  "22175": {
+    "model": "lr",
+    "wmape": 64.95
+  },
+  "21244": {
+    "model": "lr",
+    "wmape": 251.79
+  },
+  "21986": {
+    "model": "nst",
+    "wmape": 55.76
+  },
+  "22037": {
+    "model": "lgb",
+    "wmape": 53.67
+  },
+  "22653": {
+    "model": "sarimax",
+    "wmape": 48.55
+  },
+  "21169": {
+    "model": "lgb",
+    "wmape": 51.55
+  },
+  "21035": {
+    "model": "sarimax",
+    "wmape": 58.49
+  },
+  "21544": {
+    "model": "sarimax",
+    "wmape": 51.75
   },
   "21876": {
     "model": "lgb",
+    "wmape": 67.47
+  },
+  "21039": {
+    "model": "lgb",
+    "wmape": 62.65
+  },
+  "21509": {
+    "model": "lgb",
+    "wmape": 40.66
+  },
+  "21122": {
+    "model": "lr",
+    "wmape": 56.11
+  },
+  "21790": {
+    "model": "lr",
+    "wmape": 45.41
+  },
+  "82486": {
+    "model": "nst",
+    "wmape": 25.8
+  },
+  "84970L": {
+    "model": "lgb",
+    "wmape": 57.27
+  },
+  "22754": {
+    "model": "nst",
+    "wmape": 64.78
+  },
+  "20665": {
+    "model": "lgb",
+    "wmape": 97.39
+  },
+  "22322": {
+    "model": "lgb",
+    "wmape": 76.1
+  },
+  "84997B": {
+    "model": "lgb",
+    "wmape": 69.84
+  },
+  "21584": {
+    "model": "lr",
+    "wmape": 50.13
+  },
+  "22156": {
+    "model": "prophet",
+    "wmape": 45.88
+  },
+  "84792": {
+    "model": "lgb",
+    "wmape": 59.61
+  },
+  "47566": {
+    "model": "lr",
+    "wmape": 41.79
+  },
+  "22500": {
+    "model": "nst",
+    "wmape": 70.95
+  },
+  "22568": {
+    "model": "lr",
+    "wmape": 56.81
+  },
+  "22251": {
+    "model": "lgb",
+    "wmape": 52.36
+  },
+  "22416": {
+    "model": "lgb",
+    "wmape": 75.71
+  },
+  "85049D": {
+    "model": "lgb",
+    "wmape": 1028.08
+  },
+  "22276": {
+    "model": "nst",
+    "wmape": 86.21
+  },
+  "21385": {
+    "model": "lgb",
+    "wmape": 41.59
+  },
+  "22296": {
+    "model": "lr",
+    "wmape": 55.71
+  },
+  "21586": {
+    "model": "lgb",
+    "wmape": 74.39
+  },
+  "22089": {
+    "model": "lgb",
+    "wmape": 60.27
+  },
+  "21012": {
+    "model": "nst",
+    "wmape": 30.09
+  },
+  "20685": {
+    "model": "lgb",
+    "wmape": 45.85
+  },
+  "22236": {
+    "model": "nst",
+    "wmape": 86.96
+  },
+  "11001": {
+    "model": "lr",
+    "wmape": 67.27
+  },
+  "21756": {
+    "model": "nst",
+    "wmape": 47.55
+  },
+  "20754": {
+    "model": "nst",
+    "wmape": 101.07
+  },
+  "22564": {
+    "model": "prophet",
+    "wmape": 84.57
+  },
+  "84510A": {
+    "model": "lgb",
+    "wmape": 40.62
+  },
+  "85059": {
+    "model": "lgb",
+    "wmape": 41.13
+  },
+  "72807A": {
+    "model": "lgb",
+    "wmape": 72.17
+  },
+  "84029G": {
+    "model": "lgb",
+    "wmape": 41.51
+  },
+  "84031B": {
+    "model": "lr",
+    "wmape": 50.01
+  },
+  "21746": {
+    "model": "prophet",
+    "wmape": 94.82
+  },
+  "21708": {
+    "model": "lgb",
+    "wmape": 72.83
+  },
+  "72351A": {
+    "model": "nst",
+    "wmape": 66.49
+  },
+  "22030": {
+    "model": "lgb",
+    "wmape": 64.4
+  },
+  "22161": {
+    "model": "lr",
+    "wmape": 43.04
+  },
+  "35970": {
+    "model": "lgb",
+    "wmape": 63.7
+  },
+  "22274": {
+    "model": "prophet",
+    "wmape": 40.38
+  },
+  "22374": {
+    "model": "lgb",
+    "wmape": 37.81
+  },
+  "22665": {
+    "model": "lgb",
+    "wmape": 58.08
+  },
+  "84509G": {
+    "model": "lr",
+    "wmape": 86.33
+  },
+  "22299": {
+    "model": "lgb",
+    "wmape": 76.6
+  },
+  "20992": {
+    "model": "lr",
+    "wmape": 51.86
+  },
+  "21900": {
+    "model": "prophet",
+    "wmape": 38.04
+  },
+  "21078": {
+    "model": "lgb",
+    "wmape": 66.88
+  },
+  "47580": {
+    "model": "lgb",
+    "wmape": 79.49
+  },
+  "21558": {
+    "model": "lgb",
+    "wmape": 38.59
+  },
+  "85150": {
+    "model": "lgb",
+    "wmape": 60.89
+  },
+  "21291": {
+    "model": "lgb",
+    "wmape": 85.4
+  },
+  "22635": {
+    "model": "lgb",
+    "wmape": 52.84
+  },
+  "22427": {
+    "model": "lgb",
+    "wmape": 46.39
+  },
+  "22558": {
+    "model": "lgb",
+    "wmape": 47.77
+  },
+  "21135": {
+    "model": "nst",
+    "wmape": 84.7
+  },
+  "21715": {
+    "model": "sarimax",
+    "wmape": 57.11
+  },
+  "21682": {
+    "model": "lgb",
+    "wmape": 64.84
+  },
+  "22318": {
+    "model": "nst",
+    "wmape": 84.89
+  },
+  "21224": {
+    "model": "lgb",
+    "wmape": 47.99
+  },
+  "21592": {
+    "model": "lgb",
+    "wmape": 61.33
+  },
+  "85116": {
+    "model": "lr",
+    "wmape": 213.57
+  },
+  "21672": {
+    "model": "lr",
+    "wmape": 55.21
+  },
+  "22080": {
+    "model": "lgb",
+    "wmape": 39.29
+  },
+  "22305": {
+    "model": "lgb",
+    "wmape": 74.2
+  },
+  "22208": {
+    "model": "lr",
+    "wmape": 64.21
+  },
+  "22471": {
+    "model": "lgb",
+    "wmape": 45.01
+  },
+  "21844": {
+    "model": "nst",
+    "wmape": 77.73
+  },
+  "22526": {
+    "model": "lgb",
+    "wmape": 34.78
+  },
+  "22201": {
+    "model": "lr",
+    "wmape": 83.44
+  },
+  "21467": {
+    "model": "lgb",
+    "wmape": 112.66
+  },
+  "22284": {
+    "model": "lgb",
+    "wmape": 75.78
+  },
+  "22565": {
+    "model": "lgb",
+    "wmape": 61.87
+  },
+  "21832": {
+    "model": "lgb",
+    "wmape": 51.72
+  },
+  "85015": {
+    "model": "lgb",
+    "wmape": 60.73
+  },
+  "85049G": {
+    "model": "lgb",
+    "wmape": 57.49
+  },
+  "20751": {
+    "model": "nst",
+    "wmape": 57.73
+  },
+  "21201": {
+    "model": "lgb",
+    "wmape": 83.49
+  },
+  "37450": {
+    "model": "nst",
     "wmape": 67.47
   },
   "21894": {
     "model": "prophet",
     "wmape": 54.69
   },
-  "22314": {
+  "21591": {
     "model": "lgb",
-    "wmape": 68.94
+    "wmape": 62.27
   },
-  "22669": {
+  "22086": {
     "model": "lgb",
-    "wmape": 60.66
+    "wmape": 59.07
   },
-  "84836": {
+  "22219": {
     "model": "lr",
-    "wmape": 42.61
-  },
-  "21391": {
-    "model": "nst",
-    "wmape": 97.61
-  },
-  "21506": {
-    "model": "nst",
-    "wmape": 45.91
-  },
-  "21090": {
-    "model": "lr",
-    "wmape": 60.52
-  },
-  "22071": {
-    "model": "lr",
-    "wmape": 80.41
-  },
-  "22119": {
-    "model": "lgb",
-    "wmape": 53.96
-  },
-  "22435": {
-    "model": "lgb",
-    "wmape": 41.37
-  },
-  "21251": {
-    "model": "lgb",
-    "wmape": 69.01
-  },
-  "22548": {
-    "model": "lgb",
-    "wmape": 64.89
-  },
-  "22094": {
-    "model": "lr",
-    "wmape": 74.63
-  },
-  "22326": {
-    "model": "lgb",
-    "wmape": 47.49
-  },
-  "22372": {
-    "model": "lgb",
-    "wmape": 41.95
-  },
-  "82567": {
-    "model": "nst",
-    "wmape": 37.18
-  },
-  "22101": {
-    "model": "lr",
-    "wmape": 93.14
-  },
-  "21844": {
-    "model": "lr",
-    "wmape": 82.65
-  },
-  "22489": {
-    "model": "lgb",
-    "wmape": 48.66
-  },
-  "21494": {
-    "model": "lr",
-    "wmape": 43.26
-  },
-  "22536": {
-    "model": "prophet",
-    "wmape": 78.11
-  },
-  "21136": {
-    "model": "nst",
-    "wmape": 28.71
-  },
-  "22605": {
-    "model": "lgb",
-    "wmape": 50.66
-  },
-  "16156S": {
-    "model": "nst",
-    "wmape": 56.09
-  },
-  "22711": {
-    "model": "lgb",
-    "wmape": 49.94
-  },
-  "22133": {
-    "model": "lr",
-    "wmape": 73.16
-  },
-  "47567B": {
-    "model": "nst",
-    "wmape": 71.2
-  },
-  "22692": {
-    "model": "lr",
-    "wmape": 73.49
-  },
-  "21243": {
-    "model": "prophet",
-    "wmape": 84.88
-  },
-  "21238": {
-    "model": "lgb",
-    "wmape": 46.2
-  },
-  "22622": {
-    "model": "nst",
-    "wmape": 60.74
-  },
-  "21314": {
-    "model": "nst",
-    "wmape": 48.52
-  },
-  "22617": {
-    "model": "lr",
-    "wmape": 49.74
-  },
-  "21621": {
-    "model": "nst",
-    "wmape": 33.29
-  },
-  "22607": {
-    "model": "prophet",
-    "wmape": 54.59
-  },
-  "10133": {
-    "model": "nst",
-    "wmape": 192.37
-  },
-  "22189": {
-    "model": "sarimax",
-    "wmape": 71.34
-  },
-  "22361": {
-    "model": "nst",
-    "wmape": 28.85
-  },
-  "21912": {
-    "model": "nst",
-    "wmape": 38.12
+    "wmape": 52.74
   },
   "22466": {
     "model": "lgb",
     "wmape": 51.32
   },
-  "21922": {
-    "model": "nst",
-    "wmape": 62.48
-  },
-  "22553": {
-    "model": "lgb",
-    "wmape": 25.3
-  },
-  "20712": {
-    "model": "nst",
-    "wmape": 27.61
-  },
   "22563": {
-    "model": "nst",
-    "wmape": 63.09
-  },
-  "85176": {
     "model": "lgb",
-    "wmape": 57.46
+    "wmape": 63.73
   },
-  "20677": {
-    "model": "nst",
-    "wmape": 59.64
-  },
-  "22328": {
-    "model": "nst",
-    "wmape": 41.78
-  },
-  "22217": {
+  "22646": {
     "model": "lgb",
-    "wmape": 74.14
+    "wmape": 68.87
   },
-  "22675": {
-    "model": "nst",
-    "wmape": 75.2
-  },
-  "21668": {
-    "model": "nst",
-    "wmape": 43.76
-  },
-  "84212": {
-    "model": "lgb",
-    "wmape": 76.54
-  },
-  "85049H": {
-    "model": "nst",
-    "wmape": 31.39
-  },
-  "22595": {
+  "22211": {
     "model": "lr",
-    "wmape": 62.21
+    "wmape": 39.86
   },
-  "20829": {
+  "22091": {
     "model": "lr",
-    "wmape": 35.07
+    "wmape": 77.53
   },
-  "22129": {
-    "model": "sarimax",
-    "wmape": 75.91
-  },
-  "85174": {
-    "model": "lgb",
-    "wmape": 80.01
-  },
-  "22283": {
-    "model": "lgb",
-    "wmape": 34.26
-  },
-  "47591D": {
-    "model": "lgb",
-    "wmape": 50.42
-  },
-  "79160": {
+  "21559": {
     "model": "nst",
-    "wmape": 94.66
+    "wmape": 51.51
   },
-  "21638": {
+  "21735": {
     "model": "lgb",
-    "wmape": 86.22
+    "wmape": 268.7
+  },
+  "22570": {
+    "model": "lgb",
+    "wmape": 61.07
+  },
+  "48173C": {
+    "model": "lr",
+    "wmape": 74.96
+  },
+  "21110": {
+    "model": "lgb",
+    "wmape": 86.0
+  },
+  "22626": {
+    "model": "lgb",
+    "wmape": 62.59
+  },
+  "21238": {
+    "model": "lgb",
+    "wmape": 46.2
+  },
+  "21932": {
+    "model": "lgb",
+    "wmape": 63.01
+  },
+  "21204": {
+    "model": "lgb",
+    "wmape": 51.31
+  },
+  "84692": {
+    "model": "lr",
+    "wmape": 36.15
+  },
+  "22566": {
+    "model": "lgb",
+    "wmape": 55.22
+  },
+  "84913A": {
+    "model": "lgb",
+    "wmape": 109.06
+  },
+  "20970": {
+    "model": "lr",
+    "wmape": 39.75
+  },
+  "21156": {
+    "model": "lgb",
+    "wmape": 47.77
+  },
+  "22412": {
+    "model": "lgb",
+    "wmape": 96.32
+  },
+  "22179": {
+    "model": "prophet",
+    "wmape": 52.98
+  },
+  "22714": {
+    "model": "nst",
+    "wmape": 69.37
+  },
+  "22180": {
+    "model": "lgb",
+    "wmape": 56.68
+  },
+  "22559": {
+    "model": "lgb",
+    "wmape": 63.97
+  },
+  "20963": {
+    "model": "lgb",
+    "wmape": 51.14
+  },
+  "22231": {
+    "model": "lr",
+    "wmape": 67.63
+  },
+  "22170": {
+    "model": "nst",
+    "wmape": 81.58
+  },
+  "21577": {
+    "model": "lgb",
+    "wmape": 44.73
+  },
+  "22652": {
+    "model": "prophet",
+    "wmape": 101.38
+  },
+  "22117": {
+    "model": "nst",
+    "wmape": 99.14
+  },
+  "84509A": {
+    "model": "nst",
+    "wmape": 53.27
+  },
+  "22605": {
+    "model": "lgb",
+    "wmape": 50.66
+  },
+  "21843": {
+    "model": "prophet",
+    "wmape": 57.99
+  },
+  "21107": {
+    "model": "lgb",
+    "wmape": 85.53
+  },
+  "85099B": {
+    "model": "nst",
+    "wmape": 39.75
+  },
+  "21680": {
+    "model": "lgb",
+    "wmape": 63.48
+  },
+  "22406": {
+    "model": "nst",
+    "wmape": 72.37
+  },
+  "22162": {
+    "model": "lgb",
+    "wmape": 105.92
+  },
+  "15058B": {
+    "model": "lr",
+    "wmape": 162.06
+  },
+  "22149": {
+    "model": "lgb",
+    "wmape": 70.34
+  },
+  "22631": {
+    "model": "lgb",
+    "wmape": 52.81
+  },
+  "22487": {
+    "model": "nst",
+    "wmape": 32.3
+  },
+  "22549": {
+    "model": "lr",
+    "wmape": 48.47
+  },
+  "84279P": {
+    "model": "lgb",
+    "wmape": 46.7
+  },
+  "22629": {
+    "model": "lgb",
+    "wmape": 36.2
+  },
+  "21905": {
+    "model": "nst",
+    "wmape": 73.32
+  },
+  "22432": {
+    "model": "lgb",
+    "wmape": 66.54
+  },
+  "84968A": {
+    "model": "nst",
+    "wmape": 83.05
+  },
+  "22544": {
+    "model": "lgb",
+    "wmape": 71.01
+  },
+  "84997D": {
+    "model": "lgb",
+    "wmape": 56.2
+  },
+  "21355": {
+    "model": "nst",
+    "wmape": 84.25
+  },
+  "21495": {
+    "model": "lr",
+    "wmape": 60.87
+  },
+  "22271": {
+    "model": "lgb",
+    "wmape": 34.84
+  },
+  "21094": {
+    "model": "nst",
+    "wmape": 54.58
+  },
+  "22085": {
+    "model": "lgb",
+    "wmape": 56.01
+  },
+  "20979": {
+    "model": "lgb",
+    "wmape": 54.95
+  },
+  "21934": {
+    "model": "lgb",
+    "wmape": 36.98
+  },
+  "72351B": {
+    "model": "nst",
+    "wmape": 78.62
+  },
+  "21172": {
+    "model": "nst",
+    "wmape": 41.32
+  },
+  "21788": {
+    "model": "lgb",
+    "wmape": 70.5
+  },
+  "22375": {
+    "model": "lgb",
+    "wmape": 49.21
+  },
+  "40016": {
+    "model": "lgb",
+    "wmape": 83.69
+  },
+  "22352": {
+    "model": "lr",
+    "wmape": 45.2
+  },
+  "20752": {
+    "model": "nst",
+    "wmape": 95.48
+  },
+  "21912": {
+    "model": "nst",
+    "wmape": 46.87
+  },
+  "21916": {
+    "model": "nst",
+    "wmape": 57.81
+  },
+  "22585": {
+    "model": "lr",
+    "wmape": 49.04
+  },
+  "46000M": {
+    "model": "lgb",
+    "wmape": 60.13
+  },
+  "20748": {
+    "model": "lgb",
+    "wmape": 46.32
+  },
+  "20956": {
+    "model": "lgb",
+    "wmape": 57.63
   },
   "40001": {
     "model": "lgb",
     "wmape": 67.85
   },
-  "22131": {
+  "79000": {
+    "model": "lgb",
+    "wmape": 488.53
+  },
+  "22329": {
     "model": "nst",
-    "wmape": 74.68
+    "wmape": 68.51
+  },
+  "84849D": {
+    "model": "nst",
+    "wmape": 81.99
+  },
+  "22478": {
+    "model": "lgb",
+    "wmape": 70.55
+  },
+  "21891": {
+    "model": "lgb",
+    "wmape": 68.01
+  },
+  "22066": {
+    "model": "lgb",
+    "wmape": 63.96
+  },
+  "22166": {
+    "model": "nst",
+    "wmape": 55.23
+  },
+  "84912B": {
+    "model": "lgb",
+    "wmape": 60.43
+  },
+  "22535": {
+    "model": "lgb",
+    "wmape": 65.81
+  },
+  "85035C": {
+    "model": "lgb",
+    "wmape": 68.39
+  },
+  "21215": {
+    "model": "lgb",
+    "wmape": 70.99
+  },
+  "22171": {
+    "model": "lgb",
+    "wmape": 66.42
+  },
+  "21833": {
+    "model": "lgb",
+    "wmape": 70.53
+  },
+  "47591D": {
+    "model": "lgb",
+    "wmape": 50.42
+  },
+  "21259": {
+    "model": "lgb",
+    "wmape": 42.38
+  },
+  "21871": {
+    "model": "sarimax",
+    "wmape": 72.85
+  },
+  "84879": {
+    "model": "lr",
+    "wmape": 26.06
+  },
+  "22136": {
+    "model": "nst",
+    "wmape": 95.45
+  },
+  "21123": {
+    "model": "nst",
+    "wmape": 67.72
+  },
+  "20727": {
+    "model": "nst",
+    "wmape": 32.07
+  },
+  "21638": {
+    "model": "lgb",
+    "wmape": 86.22
+  },
+  "21648": {
+    "model": "nst",
+    "wmape": 96.4
+  },
+  "21096": {
+    "model": "lr",
+    "wmape": 100.17
+  },
+  "21975": {
+    "model": "nst",
+    "wmape": 53.2
+  },
+  "22224": {
+    "model": "lgb",
+    "wmape": 61.0
+  },
+  "22400": {
+    "model": "lr",
+    "wmape": 52.62
+  },
+  "22634": {
+    "model": "lgb",
+    "wmape": 47.21
+  },
+  "20668": {
+    "model": "lgb",
+    "wmape": 46.91
+  },
+  "22361": {
+    "model": "nst",
+    "wmape": 29.19
+  },
+  "21166": {
+    "model": "nst",
+    "wmape": 72.46
+  },
+  "22619": {
+    "model": "lgb",
+    "wmape": 28.04
+  },
+  "22690": {
+    "model": "prophet",
+    "wmape": 74.19
+  },
+  "22321": {
+    "model": "lgb",
+    "wmape": 92.27
+  },
+  "21155": {
+    "model": "lgb",
+    "wmape": 27.39
+  },
+  "21055": {
+    "model": "lgb",
+    "wmape": 67.2
+  },
+  "16237": {
+    "model": "lgb",
+    "wmape": 46.4
+  },
+  "21484": {
+    "model": "lr",
+    "wmape": 48.74
+  },
+  "22197": {
+    "model": "lr",
+    "wmape": 53.75
+  },
+  "22468": {
+    "model": "lgb",
+    "wmape": 67.28
+  },
+  "22479": {
+    "model": "lgb",
+    "wmape": 62.8
+  },
+  "21389": {
+    "model": "lgb",
+    "wmape": 66.73
+  },
+  "21116": {
+    "model": "lgb",
+    "wmape": 65.71
+  },
+  "21313": {
+    "model": "lgb",
+    "wmape": 54.65
+  },
+  "21669": {
+    "model": "nst",
+    "wmape": 41.18
+  },
+  "21989": {
+    "model": "lr",
+    "wmape": 31.31
+  },
+  "84992": {
+    "model": "lgb",
+    "wmape": 49.83
+  },
+  "22522": {
+    "model": "nst",
+    "wmape": 102.33
+  },
+  "21642": {
+    "model": "lr",
+    "wmape": 68.85
+  },
+  "20977": {
+    "model": "lgb",
+    "wmape": 68.56
+  },
+  "21718": {
+    "model": "lgb",
+    "wmape": 76.15
+  },
+  "21524": {
+    "model": "lr",
+    "wmape": 56.92
+  },
+  "21875": {
+    "model": "lr",
+    "wmape": 70.87
+  },
+  "20914": {
+    "model": "nst",
+    "wmape": 34.73
+  },
+  "20973": {
+    "model": "lgb",
+    "wmape": 63.03
+  },
+  "22279": {
+    "model": "lgb",
+    "wmape": 53.16
+  },
+  "85036A": {
+    "model": "lgb",
+    "wmape": 76.84
+  },
+  "21058": {
+    "model": "lgb",
+    "wmape": 61.53
+  },
+  "21557": {
+    "model": "lgb",
+    "wmape": 69.58
+  },
+  "22488": {
+    "model": "nst",
+    "wmape": 41.06
+  },
+  "22498": {
+    "model": "lgb",
+    "wmape": 65.98
+  },
+  "22260": {
+    "model": "lgb",
+    "wmape": 51.77
+  },
+  "15039": {
+    "model": "lgb",
+    "wmape": 83.13
+  },
+  "21812": {
+    "model": "lr",
+    "wmape": 71.2
+  },
+  "21112": {
+    "model": "lgb",
+    "wmape": 93.19
+  },
+  "21498": {
+    "model": "lgb",
+    "wmape": 31.56
+  },
+  "47559B": {
+    "model": "lr",
+    "wmape": 53.78
+  },
+  "47585A": {
+    "model": "lgb",
+    "wmape": 67.78
+  },
+  "21627": {
+    "model": "nst",
+    "wmape": 84.97
+  },
+  "20677": {
+    "model": "nst",
+    "wmape": 56.19
+  },
+  "22649": {
+    "model": "lgb",
+    "wmape": 66.16
+  },
+  "21990": {
+    "model": "lr",
+    "wmape": 24.22
+  },
+  "22409": {
+    "model": "sarimax",
+    "wmape": 88.68
+  },
+  "21468": {
+    "model": "lgb",
+    "wmape": 65.28
+  },
+  "22335": {
+    "model": "prophet",
+    "wmape": 62.25
+  },
+  "20974": {
+    "model": "lgb",
+    "wmape": 70.41
+  },
+  "72802A": {
+    "model": "lgb",
+    "wmape": 68.26
+  },
+  "21211": {
+    "model": "lgb",
+    "wmape": 90.42
+  },
+  "21576": {
+    "model": "lgb",
+    "wmape": 64.51
+  },
+  "22023": {
+    "model": "lgb",
+    "wmape": 62.67
+  },
+  "16161U": {
+    "model": "lgb",
+    "wmape": 64.35
+  },
+  "22047": {
+    "model": "nst",
+    "wmape": 61.36
+  },
+  "22426": {
+    "model": "lr",
+    "wmape": 38.8
+  },
+  "22465": {
+    "model": "lgb",
+    "wmape": 58.37
+  },
+  "85199L": {
+    "model": "prophet",
+    "wmape": 62.72
+  },
+  "22188": {
+    "model": "nst",
+    "wmape": 90.65
+  },
+  "22364": {
+    "model": "prophet",
+    "wmape": 56.61
+  },
+  "85049E": {
+    "model": "lr",
+    "wmape": 27.48
+  },
+  "22515": {
+    "model": "lgb",
+    "wmape": 78.47
+  },
+  "85183B": {
+    "model": "lr",
+    "wmape": 50.37
+  },
+  "21578": {
+    "model": "lgb",
+    "wmape": 515.0
+  },
+  "15044C": {
+    "model": "lgb",
+    "wmape": 58.97
+  },
+  "22421": {
+    "model": "nst",
+    "wmape": 74.16
+  },
+  "84912A": {
+    "model": "lgb",
+    "wmape": 46.89
+  },
+  "22636": {
+    "model": "lgb",
+    "wmape": 38.08
+  },
+  "22082": {
+    "model": "lr",
+    "wmape": 40.62
+  },
+  "47480": {
+    "model": "nst",
+    "wmape": 73.61
+  },
+  "84755": {
+    "model": "lgb",
+    "wmape": 52.73
+  },
+  "22112": {
+    "model": "lgb",
+    "wmape": 45.1
+  },
+  "84508A": {
+    "model": "lgb",
+    "wmape": 60.48
+  },
+  "21774": {
+    "model": "lr",
+    "wmape": 54.38
+  },
+  "22309": {
+    "model": "lgb",
+    "wmape": 78.1
+  },
+  "84950": {
+    "model": "lr",
+    "wmape": 54.8
+  },
+  "22027": {
+    "model": "lr",
+    "wmape": 48.97
+  },
+  "22505": {
+    "model": "lr",
+    "wmape": 46.69
+  },
+  "22759": {
+    "model": "lgb",
+    "wmape": 65.67
+  },
+  "72807B": {
+    "model": "lgb",
+    "wmape": 64.96
+  },
+  "22668": {
+    "model": "lgb",
+    "wmape": 60.72
+  },
+  "22118": {
+    "model": "lr",
+    "wmape": 66.66
+  },
+  "22624": {
+    "model": "sarimax",
+    "wmape": 42.54
+  },
+  "21730": {
+    "model": "lr",
+    "wmape": 66.28
+  },
+  "84030E": {
+    "model": "lgb",
+    "wmape": 37.81
+  },
+  "22675": {
+    "model": "lgb",
+    "wmape": 94.68
+  },
+  "21622": {
+    "model": "nst",
+    "wmape": 83.81
+  },
+  "22755": {
+    "model": "lr",
+    "wmape": 66.93
+  },
+  "16016": {
+    "model": "lgb",
+    "wmape": 59.87
+  },
+  "21080": {
+    "model": "nst",
+    "wmape": 28.21
+  },
+  "21802": {
+    "model": "lgb",
+    "wmape": 64.23
+  },
+  "22713": {
+    "model": "prophet",
+    "wmape": 77.5
+  },
+  "21915": {
+    "model": "nst",
+    "wmape": 66.28
+  },
+  "21121": {
+    "model": "nst",
+    "wmape": 56.51
+  },
+  "22273": {
+    "model": "lr",
+    "wmape": 85.14
+  },
+  "22111": {
+    "model": "lgb",
+    "wmape": 46.91
+  },
+  "22348": {
+    "model": "lgb",
+    "wmape": 42.47
+  },
+  "21251": {
+    "model": "lgb",
+    "wmape": 69.01
+  },
+  "22569": {
+    "model": "lgb",
+    "wmape": 58.16
+  },
+  "21523": {
+    "model": "lgb",
+    "wmape": 64.5
+  },
+  "85099F": {
+    "model": "nst",
+    "wmape": 62.51
+  },
+  "22666": {
+    "model": "lgb",
+    "wmape": 57.84
+  },
+  "22221": {
+    "model": "lgb",
+    "wmape": 51.14
+  },
+  "22674": {
+    "model": "nst",
+    "wmape": 100.61
+  },
+  "21743": {
+    "model": "lgb",
+    "wmape": 319.73
+  },
+  "21528": {
+    "model": "lgb",
+    "wmape": 58.65
+  },
+  "21508": {
+    "model": "nst",
+    "wmape": 32.95
+  },
+  "71477": {
+    "model": "lgb",
+    "wmape": 52.03
+  },
+  "21390": {
+    "model": "lr",
+    "wmape": 69.94
+  },
+  "82552": {
+    "model": "lgb",
+    "wmape": 71.01
+  },
+  "20982": {
+    "model": "lr",
+    "wmape": 49.56
+  },
+  "84509B": {
+    "model": "lgb",
+    "wmape": 55.29
+  },
+  "22354": {
+    "model": "lgb",
+    "wmape": 75.58
+  },
+  "21922": {
+    "model": "lgb",
+    "wmape": 75.49
+  },
+  "22128": {
+    "model": "lgb",
+    "wmape": 85.96
+  },
+  "22582": {
+    "model": "nst",
+    "wmape": 69.41
+  },
+  "21992": {
+    "model": "nst",
+    "wmape": 61.42
+  },
+  "22667": {
+    "model": "nst",
+    "wmape": 40.88
+  },
+  "22602": {
+    "model": "lgb",
+    "wmape": 34.9
+  },
+  "21865": {
+    "model": "nst",
+    "wmape": 92.1
+  },
+  "21071": {
+    "model": "lgb",
+    "wmape": 81.65
+  },
+  "22045": {
+    "model": "lgb",
+    "wmape": 58.94
+  },
+  "21561": {
+    "model": "nst",
+    "wmape": 71.18
+  },
+  "21106": {
+    "model": "lgb",
+    "wmape": 56.56
+  },
+  "21985": {
+    "model": "nst",
+    "wmape": 49.22
+  },
+  "22434": {
+    "model": "lgb",
+    "wmape": 52.39
+  },
+  "22435": {
+    "model": "lgb",
+    "wmape": 41.37
+  },
+  "37447": {
+    "model": "lgb",
+    "wmape": 68.09
+  },
+  "20749": {
+    "model": "prophet",
+    "wmape": 53.9
+  },
+  "21181": {
+    "model": "lgb",
+    "wmape": 72.57
+  },
+  "48138": {
+    "model": "lgb",
+    "wmape": 72.53
+  },
+  "21164": {
+    "model": "nst",
+    "wmape": 43.61
+  },
+  "85174": {
+    "model": "lgb",
+    "wmape": 80.01
+  },
+  "21982": {
+    "model": "nst",
+    "wmape": 61.62
+  },
+  "21327": {
+    "model": "lgb",
+    "wmape": 49.7
+  },
+  "84596B": {
+    "model": "lgb",
+    "wmape": 29.13
+  },
+  "85173": {
+    "model": "lgb",
+    "wmape": 78.06
+  },
+  "21874": {
+    "model": "prophet",
+    "wmape": 86.51
+  },
+  "22704": {
+    "model": "lgb",
+    "wmape": 38.73
+  },
+  "21242": {
+    "model": "lgb",
+    "wmape": 69.55
+  },
+  "22320": {
+    "model": "nst",
+    "wmape": 84.1
+  },
+  "22315": {
+    "model": "nst",
+    "wmape": 80.34
+  },
+  "21206": {
+    "model": "lgb",
+    "wmape": 52.94
+  },
+  "21326": {
+    "model": "nst",
+    "wmape": 55.81
+  },
+  "22295": {
+    "model": "nst",
+    "wmape": 64.26
+  },
+  "21707": {
+    "model": "lr",
+    "wmape": 56.56
+  },
+  "84519B": {
+    "model": "sarimax",
+    "wmape": 72.66
+  },
+  "20717": {
+    "model": "lr",
+    "wmape": 37.05
+  },
+  "84997C": {
+    "model": "lgb",
+    "wmape": 58.49
+  },
+  "21928": {
+    "model": "nst",
+    "wmape": 35.69
+  },
+  "21683": {
+    "model": "lgb",
+    "wmape": 62.43
+  },
+  "22294": {
+    "model": "lgb",
+    "wmape": 55.83
+  },
+  "85123A": {
+    "model": "lgb",
+    "wmape": 40.03
+  },
+  "22539": {
+    "model": "sarimax",
+    "wmape": 75.08
+  },
+  "21539": {
+    "model": "lgb",
+    "wmape": 70.45
+  },
+  "21068": {
+    "model": "lgb",
+    "wmape": 83.33
+  },
+  "21625": {
+    "model": "nst",
+    "wmape": 63.64
+  },
+  "22540": {
+    "model": "lgb",
+    "wmape": 72.38
+  },
+  "21892": {
+    "model": "lgb",
+    "wmape": 44.5
+  },
+  "20726": {
+    "model": "lr",
+    "wmape": 29.42
+  },
+  "22324": {
+    "model": "lgb",
+    "wmape": 71.06
+  },
+  "22556": {
+    "model": "lgb",
+    "wmape": 31.37
+  },
+  "22663": {
+    "model": "lr",
+    "wmape": 43.11
+  },
+  "22411": {
+    "model": "lgb",
+    "wmape": 42.12
+  },
+  "82001S": {
+    "model": "nst",
+    "wmape": 72.31
+  },
+  "84356": {
+    "model": "lr",
+    "wmape": 77.02
+  },
+  "22424": {
+    "model": "lr",
+    "wmape": 41.3
+  },
+  "21428": {
+    "model": "nst",
+    "wmape": 66.09
+  },
+  "22497": {
+    "model": "lgb",
+    "wmape": 94.75
+  },
+  "22584": {
+    "model": "prophet",
+    "wmape": 62.46
+  },
+  "35971": {
+    "model": "lr",
+    "wmape": 77.2
+  },
+  "85231B": {
+    "model": "lgb",
+    "wmape": 54.3
+  },
+  "84031A": {
+    "model": "lgb",
+    "wmape": 52.27
+  },
+  "22278": {
+    "model": "lgb",
+    "wmape": 42.46
+  },
+  "22215": {
+    "model": "lgb",
+    "wmape": 72.9
+  },
+  "15044A": {
+    "model": "lgb",
+    "wmape": 72.59
+  },
+  "85185B": {
+    "model": "lgb",
+    "wmape": 47.31
+  },
+  "22523": {
+    "model": "lr",
+    "wmape": 87.82
+  },
+  "22212": {
+    "model": "nst",
+    "wmape": 43.52
+  },
+  "15056N": {
+    "model": "lgb",
+    "wmape": 49.19
+  },
+  "51014L": {
+    "model": "lgb",
+    "wmape": 48.86
+  },
+  "22383": {
+    "model": "lr",
+    "wmape": 24.74
+  },
+  "21704": {
+    "model": "lgb",
+    "wmape": 53.68
+  },
+  "51014C": {
+    "model": "lgb",
+    "wmape": 53.37
+  },
+  "22077": {
+    "model": "lr",
+    "wmape": 28.62
+  },
+  "21240": {
+    "model": "lr",
+    "wmape": 53.16
+  },
+  "21983": {
+    "model": "lgb",
+    "wmape": 76.12
+  },
+  "21175": {
+    "model": "nst",
+    "wmape": 46.24
+  },
+  "21535": {
+    "model": "prophet",
+    "wmape": 57.49
+  },
+  "21977": {
+    "model": "lr",
+    "wmape": 51.7
+  },
+  "21868": {
+    "model": "lgb",
+    "wmape": 85.58
+  },
+  "22193": {
+    "model": "lgb",
+    "wmape": 40.99
+  },
+  "22244": {
+    "model": "lgb",
+    "wmape": 121.28
+  },
+  "22555": {
+    "model": "lgb",
+    "wmape": 27.36
+  },
+  "21314": {
+    "model": "lr",
+    "wmape": 51.4
+  },
+  "21935": {
+    "model": "lgb",
+    "wmape": 29.77
+  },
+  "21688": {
+    "model": "lgb",
+    "wmape": 44.99
+  },
+  "82484": {
+    "model": "sarimax",
+    "wmape": 67.61
+  },
+  "22623": {
+    "model": "lr",
+    "wmape": 30.16
+  },
+  "21328": {
+    "model": "prophet",
+    "wmape": 49.02
+  },
+  "21485": {
+    "model": "lr",
+    "wmape": 52.01
+  },
+  "21988": {
+    "model": "lr",
+    "wmape": 46.56
+  },
+  "22692": {
+    "model": "lr",
+    "wmape": 73.49
+  },
+  "22174": {
+    "model": "sarimax",
+    "wmape": 43.01
+  },
+  "21356": {
+    "model": "prophet",
+    "wmape": 39.72
+  },
+  "22548": {
+    "model": "lgb",
+    "wmape": 64.89
+  },
+  "85014A": {
+    "model": "lgb",
+    "wmape": 58.05
+  },
+  "21288": {
+    "model": "lgb",
+    "wmape": 63.79
+  },
+  "21671": {
+    "model": "lgb",
+    "wmape": 52.19
+  },
+  "22380": {
+    "model": "lgb",
+    "wmape": 48.15
+  },
+  "84969": {
+    "model": "lgb",
+    "wmape": 70.52
+  },
+  "84968F": {
+    "model": "lgb",
+    "wmape": 74.64
+  },
+  "48129": {
+    "model": "sarimax",
+    "wmape": 88.98
+  },
+  "84580": {
+    "model": "lgb",
+    "wmape": 60.24
+  },
+  "22147": {
+    "model": "lgb",
+    "wmape": 79.61
+  },
+  "21643": {
+    "model": "lgb",
+    "wmape": 71.27
+  },
+  "21363": {
+    "model": "lgb",
+    "wmape": 94.85
+  },
+  "22083": {
+    "model": "lgb",
+    "wmape": 38.01
+  },
+  "37448": {
+    "model": "lgb",
+    "wmape": 56.4
+  },
+  "22041": {
+    "model": "lgb",
+    "wmape": 44.66
+  },
+  "21976": {
+    "model": "nst",
+    "wmape": 50.84
+  },
+  "22562": {
+    "model": "prophet",
+    "wmape": 45.84
+  },
+  "48116": {
+    "model": "lgb",
+    "wmape": 93.29
+  },
+  "20728": {
+    "model": "lgb",
+    "wmape": 28.47
+  },
+  "21216": {
+    "model": "prophet",
+    "wmape": 52.98
+  },
+  "84536A": {
+    "model": "lgb",
+    "wmape": 38.76
+  },
+  "22200": {
+    "model": "lgb",
+    "wmape": 57.35
+  },
+  "22560": {
+    "model": "nst",
+    "wmape": 49.99
+  },
+  "84987": {
+    "model": "prophet",
+    "wmape": 59.93
+  },
+  "21207": {
+    "model": "lr",
+    "wmape": 66.14
+  },
+  "22659": {
+    "model": "nst",
+    "wmape": 62.29
+  },
+  "82581": {
+    "model": "lgb",
+    "wmape": 35.23
+  },
+  "21888": {
+    "model": "sarimax",
+    "wmape": 50.63
+  },
+  "21563": {
+    "model": "lgb",
+    "wmape": 81.46
+  },
+  "82582": {
+    "model": "nst",
+    "wmape": 62.25
+  },
+  "84375": {
+    "model": "lgb",
+    "wmape": 40.78
+  },
+  "84459A": {
+    "model": "lgb",
+    "wmape": 152.53
+  },
+  "21470": {
+    "model": "lgb",
+    "wmape": 57.6
+  },
+  "21846": {
+    "model": "lgb",
+    "wmape": 72.65
+  },
+  "21993": {
+    "model": "lr",
+    "wmape": 23.9
+  },
+  "21903": {
+    "model": "lgb",
+    "wmape": 47.19
+  },
+  "22138": {
+    "model": "lgb",
+    "wmape": 62.47
+  },
+  "85049F": {
+    "model": "lgb",
+    "wmape": 144.56
+  },
+  "21706": {
+    "model": "lgb",
+    "wmape": 63.33
+  },
+  "21623": {
+    "model": "nst",
+    "wmape": 84.89
+  },
+  "21811": {
+    "model": "lgb",
+    "wmape": 56.88
+  },
+  "21174": {
+    "model": "lgb",
+    "wmape": 64.26
+  },
+  "22644": {
+    "model": "lgb",
+    "wmape": 72.98
+  },
+  "22430": {
+    "model": "lgb",
+    "wmape": 50.28
+  },
+  "20686": {
+    "model": "nst",
+    "wmape": 78.98
+  },
+  "22363": {
+    "model": "lgb",
+    "wmape": 54.78
+  },
+  "20972": {
+    "model": "nst",
+    "wmape": 34.67
+  },
+  "79321": {
+    "model": "lgb",
+    "wmape": 54.53
+  },
+  "22139": {
+    "model": "lgb",
+    "wmape": 35.67
+  },
+  "17003": {
+    "model": "lr",
+    "wmape": 70.87
+  },
+  "22423": {
+    "model": "lgb",
+    "wmape": 27.21
+  },
+  "22710": {
+    "model": "lgb",
+    "wmape": 67.7
+  },
+  "21929": {
+    "model": "lr",
+    "wmape": 70.94
+  },
+  "22595": {
+    "model": "lr",
+    "wmape": 62.21
+  },
+  "21507": {
+    "model": "lgb",
+    "wmape": 40.41
+  },
+  "22109": {
+    "model": "lgb",
+    "wmape": 41.79
+  },
+  "21422": {
+    "model": "lgb",
+    "wmape": 86.52
+  },
+  "21279": {
+    "model": "lgb",
+    "wmape": 37.61
+  },
+  "21042": {
+    "model": "lgb",
+    "wmape": 64.14
+  },
+  "84880": {
+    "model": "lgb",
+    "wmape": 90.48
+  },
+  "17091J": {
+    "model": "lgb",
+    "wmape": 59.13
+  },
+  "21742": {
+    "model": "lgb",
+    "wmape": 52.19
+  },
+  "21967": {
+    "model": "lgb",
+    "wmape": 41.02
+  },
+  "46000S": {
+    "model": "lgb",
+    "wmape": 62.8
+  },
+  "21588": {
+    "model": "lgb",
+    "wmape": 75.59
+  },
+  "85039B": {
+    "model": "nst",
+    "wmape": 65.88
+  },
+  "21931": {
+    "model": "nst",
+    "wmape": 28.81
+  },
+  "21791": {
+    "model": "lr",
+    "wmape": 43.94
+  },
+  "21499": {
+    "model": "nst",
+    "wmape": 52.28
+  },
+  "21713": {
+    "model": "lgb",
+    "wmape": 63.91
+  },
+  "22055": {
+    "model": "lgb",
+    "wmape": 85.62
+  },
+  "84077": {
+    "model": "lr",
+    "wmape": 43.11
+  },
+  "22173": {
+    "model": "lgb",
+    "wmape": 43.05
+  },
+  "22456": {
+    "model": "lr",
+    "wmape": 32.37
+  },
+  "85038": {
+    "model": "prophet",
+    "wmape": 72.65
+  },
+  "22425": {
+    "model": "nst",
+    "wmape": 64.31
+  },
+  "20886": {
+    "model": "lgb",
+    "wmape": 141.04
+  },
+  "21991": {
+    "model": "lgb",
+    "wmape": 39.76
+  },
+  "72800E": {
+    "model": "lr",
+    "wmape": 55.13
+  },
+  "22537": {
+    "model": "lgb",
+    "wmape": 59.06
+  },
+  "22697": {
+    "model": "lgb",
+    "wmape": 37.8
+  },
+  "85053": {
+    "model": "lgb",
+    "wmape": 62.32
+  },
+  "21165": {
+    "model": "lgb",
+    "wmape": 70.38
+  },
+  "48194": {
+    "model": "nst",
+    "wmape": 77.97
+  },
+  "22378": {
+    "model": "prophet",
+    "wmape": 68.35
+  },
+  "84991": {
+    "model": "nst",
+    "wmape": 52.47
+  },
+  "10135": {
+    "model": "nst",
+    "wmape": 45.42
+  },
+  "21163": {
+    "model": "nst",
+    "wmape": 86.8
+  },
+  "22317": {
+    "model": "lgb",
+    "wmape": 66.46
+  },
+  "21465": {
+    "model": "lgb",
+    "wmape": 63.45
+  },
+  "85049H": {
+    "model": "lgb",
+    "wmape": 58.97
+  },
+  "84519A": {
+    "model": "nst",
+    "wmape": 95.21
+  },
+  "21429": {
+    "model": "lgb",
+    "wmape": 44.67
+  },
+  "22428": {
+    "model": "nst",
+    "wmape": 66.98
+  },
+  "21210": {
+    "model": "lgb",
+    "wmape": 49.55
+  },
+  "21212": {
+    "model": "nst",
+    "wmape": 33.55
+  },
+  "37449": {
+    "model": "lgb",
+    "wmape": 76.46
+  },
+  "22350": {
+    "model": "lgb",
+    "wmape": 58.69
+  },
+  "22311": {
+    "model": "sarimax",
+    "wmape": 75.7
+  },
+  "20679": {
+    "model": "lr",
+    "wmape": 55.16
+  },
+  "84968C": {
+    "model": "lgb",
+    "wmape": 55.48
+  },
+  "21452": {
+    "model": "lgb",
+    "wmape": 32.28
+  },
+  "22303": {
+    "model": "lgb",
+    "wmape": 61.57
+  },
+  "35810A": {
+    "model": "lr",
+    "wmape": 75.39
+  },
+  "21086": {
+    "model": "lr",
+    "wmape": 64.6
+  },
+  "72741": {
+    "model": "lgb",
+    "wmape": 42.71
+  },
+  "22189": {
+    "model": "sarimax",
+    "wmape": 71.34
+  },
+  "22440": {
+    "model": "lgb",
+    "wmape": 52.58
+  },
+  "22496": {
+    "model": "lgb",
+    "wmape": 71.29
+  },
+  "22332": {
+    "model": "lr",
+    "wmape": 48.73
+  },
+  "21829": {
+    "model": "lgb",
+    "wmape": 52.16
+  },
+  "22178": {
+    "model": "lgb",
+    "wmape": 49.26
+  },
+  "21284": {
+    "model": "lgb",
+    "wmape": 43.3
+  },
+  "22376": {
+    "model": "lgb",
+    "wmape": 45.8
+  },
+  "82578": {
+    "model": "nst",
+    "wmape": 49.53
+  },
+  "20767": {
+    "model": "lgb",
+    "wmape": 51.28
+  },
+  "22254": {
+    "model": "lgb",
+    "wmape": 58.2
+  },
+  "85099C": {
+    "model": "nst",
+    "wmape": 41.42
+  },
+  "20682": {
+    "model": "sarimax",
+    "wmape": 41.69
+  },
+  "21936": {
+    "model": "lgb",
+    "wmape": 63.27
+  },
+  "21481": {
+    "model": "lgb",
+    "wmape": 35.29
+  },
+  "21914": {
+    "model": "nst",
+    "wmape": 33.64
+  },
+  "22662": {
+    "model": "lr",
+    "wmape": 42.77
+  },
+  "22029": {
+    "model": "nst",
+    "wmape": 41.73
+  },
+  "22095": {
+    "model": "prophet",
+    "wmape": 71.54
+  },
+  "22469": {
+    "model": "nst",
+    "wmape": 55.5
+  },
+  "84029E": {
+    "model": "lr",
+    "wmape": 63.81
+  },
+  "79160": {
+    "model": "lr",
+    "wmape": 101.53
+  },
+  "85062": {
+    "model": "lgb",
+    "wmape": 60.61
+  },
+  "22190": {
+    "model": "nst",
+    "wmape": 83.24
+  },
+  "22072": {
+    "model": "lgb",
+    "wmape": 50.46
+  },
+  "22362": {
+    "model": "sarimax",
+    "wmape": 29.6
+  },
+  "22195": {
+    "model": "sarimax",
+    "wmape": 48.14
+  },
+  "15044D": {
+    "model": "lgb",
+    "wmape": 81.15
+  },
+  "22204": {
+    "model": "lr",
+    "wmape": 115.05
+  },
+  "22372": {
+    "model": "lgb",
+    "wmape": 41.95
+  },
+  "84836": {
+    "model": "lr",
+    "wmape": 42.61
+  },
+  "21948": {
+    "model": "sarimax",
+    "wmape": 68.35
+  },
+  "21439": {
+    "model": "lgb",
+    "wmape": 89.59
+  },
+  "22262": {
+    "model": "lgb",
+    "wmape": 76.34
+  },
+  "82600": {
+    "model": "lgb",
+    "wmape": 87.83
+  },
+  "84596F": {
+    "model": "nst",
+    "wmape": 32.56
+  },
+  "21693": {
+    "model": "lgb",
+    "wmape": 62.68
+  },
+  "75049L": {
+    "model": "nst",
+    "wmape": 80.34
+  },
+  "22341": {
+    "model": "lgb",
+    "wmape": 76.09
+  },
+  "22672": {
+    "model": "lgb",
+    "wmape": 53.81
+  },
+  "22308": {
+    "model": "lgb",
+    "wmape": 72.94
+  },
+  "85184C": {
+    "model": "prophet",
+    "wmape": 60.99
+  },
+  "84818": {
+    "model": "lr",
+    "wmape": 91.04
+  },
+  "15036": {
+    "model": "lgb",
+    "wmape": 54.71
+  },
+  "21380": {
+    "model": "lgb",
+    "wmape": 73.42
+  },
+  "72807C": {
+    "model": "lgb",
+    "wmape": 69.07
+  },
+  "82551": {
+    "model": "nst",
+    "wmape": 79.89
+  },
+  "22476": {
+    "model": "nst",
+    "wmape": 83.69
+  },
+  "22199": {
+    "model": "lgb",
+    "wmape": 44.6
+  },
+  "21519": {
+    "model": "nst",
+    "wmape": 55.68
+  },
+  "22349": {
+    "model": "sarimax",
+    "wmape": 65.89
+  },
+  "22365": {
+    "model": "lr",
+    "wmape": 85.79
+  },
+  "21041": {
+    "model": "lr",
+    "wmape": 115.65
+  },
+  "21621": {
+    "model": "nst",
+    "wmape": 34.09
+  },
+  "21878": {
+    "model": "lr",
+    "wmape": 111.96
+  },
+  "22285": {
+    "model": "lgb",
+    "wmape": 68.44
+  },
+  "21889": {
+    "model": "lgb",
+    "wmape": 47.22
+  },
+  "22120": {
+    "model": "lgb",
+    "wmape": 69.89
+  },
+  "22661": {
+    "model": "lr",
+    "wmape": 52.42
+  },
+  "22494": {
+    "model": "lgb",
+    "wmape": 59.01
+  },
+  "22606": {
+    "model": "lgb",
+    "wmape": 95.53
+  },
+  "22057": {
+    "model": "lgb",
+    "wmape": 66.27
+  },
+  "47590A": {
+    "model": "lr",
+    "wmape": 45.4
+  },
+  "22607": {
+    "model": "prophet",
+    "wmape": 54.59
+  },
+  "47567B": {
+    "model": "nst",
+    "wmape": 73.92
+  },
+  "22557": {
+    "model": "lgb",
+    "wmape": 38.81
+  },
+  "22360": {
+    "model": "lgb",
+    "wmape": 63.19
+  },
+  "48188": {
+    "model": "lr",
+    "wmape": 76.82
+  },
+  "21466": {
+    "model": "lgb",
+    "wmape": 66.79
+  },
+  "21866": {
+    "model": "lgb",
+    "wmape": 59.88
+  },
+  "21789": {
+    "model": "nst",
+    "wmape": 70.17
+  },
+  "21407": {
+    "model": "nst",
+    "wmape": 75.39
+  },
+  "22457": {
+    "model": "nst",
+    "wmape": 24.39
+  },
+  "22438": {
+    "model": "lgb",
+    "wmape": 85.79
+  },
+  "21033": {
+    "model": "lgb",
+    "wmape": 1931.99
+  },
+  "21115": {
+    "model": "lgb",
+    "wmape": 81.38
+  },
+  "22616": {
+    "model": "lgb",
+    "wmape": 58.46
+  },
+  "21136": {
+    "model": "nst",
+    "wmape": 38.26
+  },
+  "21710": {
+    "model": "lgb",
+    "wmape": 45.38
+  },
+  "22493": {
+    "model": "prophet",
+    "wmape": 39.21
+  },
+  "22514": {
+    "model": "lgb",
+    "wmape": 89.41
+  },
+  "22533": {
+    "model": "lgb",
+    "wmape": 81.55
+  },
+  "21494": {
+    "model": "lr",
+    "wmape": 43.26
+  },
+  "22094": {
+    "model": "lr",
+    "wmape": 74.63
+  },
+  "84946": {
+    "model": "lgb",
+    "wmape": 37.45
+  },
+  "22472": {
+    "model": "lgb",
+    "wmape": 50.34
+  },
+  "22413": {
+    "model": "nst",
+    "wmape": 63.37
+  },
+  "22613": {
+    "model": "lgb",
+    "wmape": 42.98
+  },
+  "21613": {
+    "model": "lgb",
+    "wmape": 86.26
+  },
+  "21745": {
+    "model": "lgb",
+    "wmape": 45.66
+  },
+  "21747": {
+    "model": "lgb",
+    "wmape": 43.27
+  },
+  "21677": {
+    "model": "lgb",
+    "wmape": 48.6
+  },
+  "20724": {
+    "model": "lgb",
+    "wmape": 27.73
+  },
+  "21464": {
+    "model": "lgb",
+    "wmape": 54.15
+  },
+  "72799E": {
+    "model": "lgb",
+    "wmape": 49.89
+  },
+  "20764": {
+    "model": "lgb",
+    "wmape": 51.45
+  },
+  "21231": {
+    "model": "lgb",
+    "wmape": 36.23
+  },
+  "22475": {
+    "model": "lgb",
+    "wmape": 64.58
+  },
+  "47566B": {
+    "model": "lgb",
+    "wmape": 77.84
+  },
+  "21294": {
+    "model": "lr",
+    "wmape": 77.78
+  },
+  "21463": {
+    "model": "lgb",
+    "wmape": 71.65
+  },
+  "22084": {
+    "model": "lgb",
+    "wmape": 36.05
+  },
+  "22068": {
+    "model": "lgb",
+    "wmape": 81.21
+  },
+  "22499": {
+    "model": "prophet",
+    "wmape": 47.04
+  },
+  "21471": {
+    "model": "lr",
+    "wmape": 54.81
+  },
+  "21947": {
+    "model": "lr",
+    "wmape": 59.16
+  },
+  "22583": {
+    "model": "lgb",
+    "wmape": 45.48
+  },
+  "84507B": {
+    "model": "lgb",
+    "wmape": 31.74
+  },
+  "84947": {
+    "model": "lgb",
+    "wmape": 50.35
+  },
+  "22326": {
+    "model": "lgb",
+    "wmape": 47.49
+  },
+  "22410": {
+    "model": "lgb",
+    "wmape": 80.91
+  },
+  "22355": {
+    "model": "nst",
+    "wmape": 32.16
+  },
+  "22464": {
+    "model": "nst",
+    "wmape": 38.22
+  },
+  "21411": {
+    "model": "lgb",
+    "wmape": 60.41
+  },
+  "22460": {
+    "model": "lgb",
+    "wmape": 41.03
+  },
+  "84598": {
+    "model": "lr",
+    "wmape": 80.85
+  },
+  "85049A": {
+    "model": "lgb",
+    "wmape": 49.67
+  },
+  "20711": {
+    "model": "nst",
+    "wmape": 65.95
+  },
+  "21329": {
+    "model": "prophet",
+    "wmape": 53.28
+  },
+  "22304": {
+    "model": "lgb",
+    "wmape": 91.6
+  },
+  "21462": {
+    "model": "nst",
+    "wmape": 77.14
+  },
+  "15056P": {
+    "model": "lgb",
+    "wmape": 66.52
+  },
+  "21741": {
+    "model": "lgb",
+    "wmape": 84.08
+  },
+  "22452": {
+    "model": "nst",
+    "wmape": 58.33
+  },
+  "21973": {
+    "model": "nst",
+    "wmape": 123.59
+  },
+  "21556": {
+    "model": "lr",
+    "wmape": 334.1
+  },
+  "22660": {
+    "model": "lr",
+    "wmape": 83.71
+  },
+  "71053": {
+    "model": "nst",
+    "wmape": 44.73
+  },
+  "22371": {
+    "model": "prophet",
+    "wmape": 30.79
+  },
+  "22625": {
+    "model": "prophet",
+    "wmape": 49.55
+  },
+  "22399": {
+    "model": "lgb",
+    "wmape": 104.97
+  },
+  "20713": {
+    "model": "lgb",
+    "wmape": 46.28
+  },
+  "22536": {
+    "model": "prophet",
+    "wmape": 78.11
+  },
+  "22101": {
+    "model": "lr",
+    "wmape": 93.14
+  },
+  "21673": {
+    "model": "lr",
+    "wmape": 51.5
+  },
+  "22119": {
+    "model": "lgb",
+    "wmape": 53.96
+  },
+  "22366": {
+    "model": "lr",
+    "wmape": 64.68
+  },
+  "22670": {
+    "model": "lgb",
+    "wmape": 46.91
+  },
+  "84970S": {
+    "model": "lgb",
+    "wmape": 55.41
+  },
+  "21090": {
+    "model": "lr",
+    "wmape": 60.52
+  },
+  "21430": {
+    "model": "prophet",
+    "wmape": 49.99
+  },
+  "22414": {
+    "model": "lgb",
+    "wmape": 75.77
+  },
+  "82482": {
+    "model": "lr",
+    "wmape": 37.97
+  },
+  "22203": {
+    "model": "lgb",
+    "wmape": 35.83
+  },
+  "22530": {
+    "model": "lgb",
+    "wmape": 53.47
+  },
+  "85066": {
+    "model": "lgb",
+    "wmape": 48.7
+  },
+  "21034": {
+    "model": "lr",
+    "wmape": 24.73
+  },
+  "22110": {
+    "model": "prophet",
+    "wmape": 36.2
+  },
+  "22336": {
+    "model": "lgb",
+    "wmape": 47.97
+  },
+  "22437": {
+    "model": "lr",
+    "wmape": 25.07
+  },
+  "22067": {
+    "model": "lgb",
+    "wmape": 74.14
+  },
+  "84012": {
+    "model": "lgb",
+    "wmape": 40.46
+  },
+  "22292": {
+    "model": "nst",
+    "wmape": 90.4
+  },
+  "22752": {
+    "model": "lgb",
+    "wmape": 55.51
+  },
+  "22107": {
+    "model": "lgb",
+    "wmape": 32.32
+  },
+  "37495": {
+    "model": "lr",
+    "wmape": 48.61
+  },
+  "21700": {
+    "model": "lgb",
+    "wmape": 150.1
   },
   "35004B": {
     "model": "lgb",
     "wmape": 75.3
+  },
+  "21154": {
+    "model": "lr",
+    "wmape": 40.29
+  },
+  "21984": {
+    "model": "lgb",
+    "wmape": 43.75
+  },
+  "21533": {
+    "model": "lgb",
+    "wmape": 82.41
+  },
+  "85035A": {
+    "model": "lgb",
+    "wmape": 65.36
+  },
+  "22169": {
+    "model": "nst",
+    "wmape": 54.98
+  },
+  "22243": {
+    "model": "lgb",
+    "wmape": 138.38
+  },
+  "22550": {
+    "model": "lr",
+    "wmape": 49.05
+  },
+  "22192": {
+    "model": "lr",
+    "wmape": 43.56
+  },
+  "22291": {
+    "model": "lgb",
+    "wmape": 76.18
+  },
+  "22377": {
+    "model": "lgb",
+    "wmape": 72.23
+  },
+  "21679": {
+    "model": "lgb",
+    "wmape": 64.65
+  },
+  "51014A": {
+    "model": "lgb",
+    "wmape": 44.49
+  },
+  "22277": {
+    "model": "nst",
+    "wmape": 86.3
+  },
+  "22637": {
+    "model": "lr",
+    "wmape": 76.72
+  },
+  "16156S": {
+    "model": "lgb",
+    "wmape": 58.42
+  },
+  "21192": {
+    "model": "lgb",
+    "wmape": 86.36
+  },
+  "84949": {
+    "model": "lgb",
+    "wmape": 58.97
+  },
+  "21408": {
+    "model": "nst",
+    "wmape": 72.25
+  },
+  "20750": {
+    "model": "lr",
+    "wmape": 48.72
+  },
+  "22028": {
+    "model": "lgb",
+    "wmape": 43.73
+  },
+  "84884A": {
+    "model": "lgb",
+    "wmape": 73.69
+  },
+  "22063": {
+    "model": "lr",
+    "wmape": 81.4
+  },
+  "47504K": {
+    "model": "lgb",
+    "wmape": 70.94
+  },
+  "10133": {
+    "model": "lgb",
+    "wmape": 199.53
+  },
+  "84828": {
+    "model": "lgb",
+    "wmape": 71.35
+  },
+  "21108": {
+    "model": "lr",
+    "wmape": 61.75
+  },
+  "22433": {
+    "model": "lgb",
+    "wmape": 66.53
+  },
+  "22639": {
+    "model": "lgb",
+    "wmape": 54.83
+  },
+  "22654": {
+    "model": "nst",
+    "wmape": 62.17
+  },
+  "22610": {
+    "model": "nst",
+    "wmape": 50.87
+  },
+  "22342": {
+    "model": "lgb",
+    "wmape": 64.81
+  },
+  "72760B": {
+    "model": "lgb",
+    "wmape": 41.28
+  },
+  "21232": {
+    "model": "lr",
+    "wmape": 42.68
+  },
+  "21670": {
+    "model": "nst",
+    "wmape": 48.57
+  },
+  "22331": {
+    "model": "nst",
+    "wmape": 66.47
+  },
+  "21927": {
+    "model": "lgb",
+    "wmape": 56.35
+  },
+  "21980": {
+    "model": "lr",
+    "wmape": 56.0
+  },
+  "22561": {
+    "model": "lgb",
+    "wmape": 25.11
+  },
+  "22516": {
+    "model": "lgb",
+    "wmape": 67.08
+  },
+  "22293": {
+    "model": "nst",
+    "wmape": 96.78
+  },
+  "85054": {
+    "model": "lgb",
+    "wmape": 61.52
+  },
+  "85061W": {
+    "model": "sarimax",
+    "wmape": 56.68
+  },
+  "22694": {
+    "model": "lr",
+    "wmape": 47.6
+  },
+  "84832": {
+    "model": "lgb",
+    "wmape": 50.72
+  },
+  "85172": {
+    "model": "lgb",
+    "wmape": 81.86
+  },
+  "21773": {
+    "model": "lr",
+    "wmape": 75.76
+  },
+  "21755": {
+    "model": "nst",
+    "wmape": 42.9
+  },
+  "20718": {
+    "model": "nst",
+    "wmape": 45.16
+  },
+  "22059": {
+    "model": "lgb",
+    "wmape": 86.03
+  },
+  "22151": {
+    "model": "nst",
+    "wmape": 49.31
+  },
+  "22534": {
+    "model": "lr",
+    "wmape": 44.87
+  },
+  "21786": {
+    "model": "prophet",
+    "wmape": 53.9
+  },
+  "37370": {
+    "model": "nst",
+    "wmape": 247.22
+  },
+  "37500": {
+    "model": "lgb",
+    "wmape": 52.72
+  },
+  "48187": {
+    "model": "lgb",
+    "wmape": 76.54
+  },
+  "20984": {
+    "model": "lgb",
+    "wmape": 78.99
+  },
+  "84558A": {
+    "model": "lr",
+    "wmape": 86.0
+  },
+  "22035": {
+    "model": "lgb",
+    "wmape": 127.91
+  },
+  "22627": {
+    "model": "nst",
+    "wmape": 35.91
+  },
+  "37446": {
+    "model": "sarimax",
+    "wmape": 63.54
+  },
+  "22297": {
+    "model": "nst",
+    "wmape": 49.67
+  },
+  "85114C": {
+    "model": "lgb",
+    "wmape": 67.03
+  },
+  "22513": {
+    "model": "lgb",
+    "wmape": 66.77
+  },
+  "22492": {
+    "model": "nst",
+    "wmape": 52.94
+  },
+  "84347": {
+    "model": "lgb",
+    "wmape": 54.17
+  },
+  "20719": {
+    "model": "lgb",
+    "wmape": 31.39
+  },
+  "20702": {
+    "model": "nst",
+    "wmape": 140.93
+  },
+  "21830": {
+    "model": "lgb",
+    "wmape": 104.35
+  },
+  "21872": {
+    "model": "prophet",
+    "wmape": 86.94
+  },
+  "22078": {
+    "model": "lgb",
+    "wmape": 46.33
+  },
+  "22302": {
+    "model": "lgb",
+    "wmape": 66.58
+  },
+  "22567": {
+    "model": "nst",
+    "wmape": 70.36
+  },
+  "22669": {
+    "model": "lgb",
+    "wmape": 60.66
+  },
+  "21902": {
+    "model": "nst",
+    "wmape": 59.41
+  },
+  "22436": {
+    "model": "nst",
+    "wmape": 30.27
+  },
+  "84032B": {
+    "model": "lgb",
+    "wmape": 54.41
+  },
+  "21731": {
+    "model": "lgb",
+    "wmape": 39.87
+  },
+  "22359": {
+    "model": "nst",
+    "wmape": 69.4
+  },
+  "21899": {
+    "model": "prophet",
+    "wmape": 46.81
+  },
+  "20983": {
+    "model": "lr",
+    "wmape": 61.75
+  },
+  "22152": {
+    "model": "lgb",
+    "wmape": 69.8
   }
 }

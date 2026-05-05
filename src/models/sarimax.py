@@ -239,10 +239,14 @@ def save_artifacts(cluster_models, regressors, sku_clusters, best_params=None, a
     path = os.path.join(artifacts_dir, file_name)
     
     artifact = {
-        "cluster_models": cluster_models,
-        "regressors": list(regressors),
-        "sku_clusters": {k: v for k, v in sku_clusters.items()},
-        "best_params": best_params,
+        "models": cluster_models,
+        "features": list(regressors),
+        "scaler": None,
+        "metadata": {
+            "sku_clusters": {k: v for k, v in sku_clusters.items()},
+            "best_params": best_params,
+            "model_type": "sarimax"
+        }
     }
     
     joblib.dump(artifact, path)

@@ -251,11 +251,14 @@ def save_artifacts(cluster_models, feature_cols, sku_clusters, global_scaler=Non
     path = os.path.join(artifacts_dir, file_name)
 
     artifact = {
-        "cluster_models": cluster_models,
-        "feature_cols": list(feature_cols),
-        "sku_clusters": {k: v for k, v in sku_clusters.items()},
-        "global_scaler": global_scaler,
-        "best_params": best_params,
+        "models": cluster_models,
+        "features": list(feature_cols),
+        "scaler": global_scaler,
+        "metadata": {
+            "sku_clusters": {k: v for k, v in sku_clusters.items()},
+            "best_params": best_params,
+            "model_type": "lgb"
+        }
     }
     
     joblib.dump(artifact, path)

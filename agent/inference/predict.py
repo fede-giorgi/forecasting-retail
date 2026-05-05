@@ -112,16 +112,20 @@ def predict_retail(stock_code: str, model_name: str, df_all: pd.DataFrame, horiz
 
         # 3. Load Artifact
         art = _load_artifact(model_name)
-        cluster_models = art["cluster_models"]
+        
+        # Backwards compatibility: read "models" (new) or "cluster_models" (old)
+        cluster_models = art.get("models", art.get("cluster_models", {}))
         
         if cluster_id not in cluster_models:
              raise KeyError(f"Cluster model not found for cluster '{cluster_id}'.")
              
         model_obj = cluster_models[cluster_id]
+        
+        # Extract features/regressors with backwards compatibility
+        feature_cols = art.get("features", art.get("feature_cols", art.get("regressors", [])))
 
         # 4. Model Inference
         if model_name in ['lr', 'lgb']:
-            feature_cols = art["feature_cols"]
 
             # 1. Global Scaling — log1p for volumes, MinMax for ratios.
             # Use the scaler saved during training so the range matches exactly.
@@ -134,7 +138,7 @@ def predict_retail(stock_code: str, model_name: str, df_all: pd.DataFrame, horiz
             ratio_features = [c for c in ratio_features if c in test_df.columns]
 
             if ratio_features:
-                scaler = art.get("global_scaler")
+                scaler = art.get("scaler", art.get("global_scaler"))
                 if scaler is None:
                     # Fallback for artifacts saved before the scaler was persisted.
                     # Re-fit on training rows only to avoid leaking test-period stats.
@@ -181,12 +185,11 @@ def predict_retail(stock_code: str, model_name: str, df_all: pd.DataFrame, horiz
             future_df = test_df.copy()
             future_df['ds'] = future_df['Week']
 
-            regressors = art.get("regressors", [])
-            for reg in regressors:
+            for reg in feature_cols:
                 if reg not in future_df.columns:
                     future_df[reg] = 0.0
 
-            future = future_df[['ds'] + regressors]
+            future = future_df[['ds'] + feature_cols]
             forecast = model_obj.predict(future)
             preds_scaled = forecast['yhat'].values
 
@@ -229,11 +232,10 @@ def predict_retail(stock_code: str, model_name: str, df_all: pd.DataFrame, horiz
             return ForecastResult(model_name, stock_code, future_ts, preds_qty)
 
         elif model_name == 'sarimax':
-            regressors = art.get("regressors", [])
-            for reg in regressors:
+            for reg in feature_cols:
                 if reg not in test_df.columns:
                     test_df[reg] = 0.0
-            X_test = test_df[regressors].fillna(0).values
+            X_test = test_df[feature_cols].fillna(0).values
             preds_scaled = model_obj.forecast(steps=len(test_df), exog=X_test)
 
         else:
