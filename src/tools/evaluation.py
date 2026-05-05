@@ -6,6 +6,7 @@ Shared evaluation metrics for all forecasting models in the project.
 All functions operate on raw (un-scaled) values and return percentages or units.
 Keeping metrics here ensures a single source of truth across all models.
 """
+from typing import Callable
 import numpy as np
 import pandas as pd
 
@@ -201,3 +202,75 @@ def compute_cluster_metrics(cluster_eval: pd.DataFrame) -> pd.DataFrame:
     # insertion order ever changes.
     summary = summary[["WMAPE", "Median_MAPE", "Mean_Absolute_Error"]]
     return summary
+
+
+# ── Rolling-origin CV helpers (used by src/models/selection.py) ──────────────
+
+
+def rolling_origin_folds(
+    series: pd.Series,
+    n_folds: int = 3,
+    test_size: int = 12,
+    min_train: int = 70,
+) -> list[tuple[pd.Series, pd.Series]]:
+    """
+    Returns n_folds (train, test) pairs ordered from earliest to latest test window.
+    Fold 0 is used as the validation fold; folds 1..N-1 are the held-out test folds.
+    Returns an empty list if the series is too short.
+    """
+    n = len(series)
+    if n < min_train + n_folds * test_size:
+        return []
+
+    folds = []
+    for i in range(n_folds):
+        test_start = n - (n_folds - i) * test_size
+        test_end = test_start + test_size
+        folds.append((series.iloc[:test_start], series.iloc[test_start:test_end]))
+    return folds
+
+
+def rolling_block_evaluate(
+    train: pd.Series,
+    test: pd.Series,
+    model_func: Callable,
+    block_size: int = 4,
+) -> pd.DataFrame:
+    """
+    Fits model_func(train, horizon) and breaks the test window into equal-sized
+    blocks, computing block-level APE for each.  Returns a DataFrame with columns:
+    Block, Actual_Block, Forecast_Block, Block_APE.
+    """
+    horizon = len(test)
+    try:
+        fcst = np.asarray(model_func(train, horizon), dtype=float).reshape(-1)
+    except Exception:
+        fcst = np.zeros(horizon)
+
+    y_true = test.values.astype(float)
+    n_blocks = max(1, horizon // block_size)
+
+    rows = []
+    for b in range(n_blocks):
+        s = b * block_size
+        e = min(s + block_size, horizon)
+        y_t = y_true[s:e]
+        y_p = fcst[s:e]
+        actual_block = float(y_t.sum())
+        forecast_block = float(y_p.sum())
+        denom = max(actual_block, 1e-8)
+        rows.append({
+            "Block": b + 1,
+            "Actual_Block": actual_block,
+            "Forecast_Block": forecast_block,
+            "Block_APE": float(abs(actual_block - forecast_block) / denom * 100),
+        })
+    return pd.DataFrame(rows)
+
+
+def block_summary(block_df: pd.DataFrame, group_cols: list[str]) -> pd.DataFrame:
+    """
+    Returns block_df unchanged.  The caller is responsible for adding group_cols
+    (e.g. StockCode, Model) as metadata columns before calling this function.
+    """
+    return block_df.copy()

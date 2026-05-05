@@ -84,7 +84,6 @@ def preprocess_and_split(df_long):
         train[f'{col}_Scaled'] = train_scaled[:, i]
         test[f'{col}_Scaled']  = test_scaled[:, i]
 
-    # Drop rows that have NaN in scaled target (should be handled by nan_to_num though, but just in case)
     train = train.dropna(subset=['Quantity_Scaled'])
 
     # Columns to drop for X
@@ -110,7 +109,7 @@ def preprocess_and_split(df_long):
     # We exclude profile_cluster_id from feature_cols because we segment on it
     feature_cols = X_train.drop(columns=['profile_cluster_id'], errors='ignore').columns.tolist()
 
-    return train, test, X_train, y_train, X_test, feature_cols
+    return train, test, X_train, y_train, X_test, feature_cols, global_scaler
 
 
 def tune_hyperparameters(X_train, y_train, train, n_trials=50):
@@ -242,17 +241,18 @@ def evaluate_models(test):
     return cluster_eval, summary
 
 
-def save_artifacts(cluster_models, feature_cols, sku_clusters, best_params=None, artifacts_dir="../agent/artifacts"):
+def save_artifacts(cluster_models, feature_cols, sku_clusters, global_scaler=None, best_params=None, artifacts_dir="../agent/artifacts"):
     print(f"Saving Cluster Linear Regression artifacts to {artifacts_dir}...")
     os.makedirs(artifacts_dir, exist_ok=True)
 
     file_name = "lr_cluster_models.pkl"
     path = os.path.join(artifacts_dir, file_name)
-    
+
     artifact = {
         "cluster_models": cluster_models,
         "feature_cols": list(feature_cols),
         "sku_clusters": {k: v for k, v in sku_clusters.items()},
+        "global_scaler": global_scaler,
         "best_params": best_params,
     }
     
@@ -272,19 +272,19 @@ def run_linear_regression_pipeline(file_path, plot=False, tune=False):
     Complete pipeline to load data, (optionally tune), train models, predict, evaluate, and visualize results.
     """
     df_long = load_processed_data(file_path)
-    train, test, X_train, y_train, X_test, feature_cols = preprocess_and_split(df_long)
-    
+    train, test, X_train, y_train, X_test, feature_cols, global_scaler = preprocess_and_split(df_long)
+
     best_params = None
     if tune:
         best_params = tune_hyperparameters(X_train, y_train, train)
-    
+
     cluster_models = train_models(X_train, y_train, train, params=best_params)
     test = predict_models(cluster_models, test, X_test)
     cluster_eval, summary = evaluate_models(test)
-    
+
     sku_clusters = df_long.drop_duplicates(subset=['StockCode']).set_index('StockCode')['profile_cluster_id'].to_dict()
     artifacts_dir = os.path.join(PROJECT_ROOT, 'agent', 'artifacts')
-    save_artifacts(cluster_models, feature_cols, sku_clusters, best_params=best_params, artifacts_dir=artifacts_dir)
+    save_artifacts(cluster_models, feature_cols, sku_clusters, global_scaler=global_scaler, best_params=best_params, artifacts_dir=artifacts_dir)
 
     # Save per-SKU metrics for the model selector
     sku_wmape = {}

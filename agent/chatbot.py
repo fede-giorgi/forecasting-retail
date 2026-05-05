@@ -127,7 +127,7 @@ TOOL USAGE STRATEGY:
 
 PARAMETERS:
 - `stock_code`: The unique identifier of the product (e.g., '85123A').
-- `model`: 'auto' (default, best per SKU), 'lgb' (LightGBM), 'lr' (Ridge), 'prophet' (Prophet).
+- `model`: 'auto' (default, best per SKU), 'lgb' (LightGBM), 'lr' (Ridge), 'prophet' (Prophet), 'nst' (Non-Stationary Transformer).
 - `horizon_weeks`: Defaults to 4 weeks (1 month) for short/mid-term planning.
 
 RESPONSE FORMAT:

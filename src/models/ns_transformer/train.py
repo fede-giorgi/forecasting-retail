@@ -78,10 +78,12 @@ class SkuPanelDataset(Dataset):
 
     def _time_features(self, start, end):
         weeks = np.arange(start, end)
-        wk_of_year = (weeks % 52) / 51.0 - 0.5
-        sin_year = np.sin(2 * np.pi * (weeks % 52) / 52)
-        cos_year = np.cos(2 * np.pi * (weeks % 52) / 52)
-        month_norm = ((weeks % 52) // 4) / 12.0 - 0.5
+        # Period 53: ISO week 53 exists in some years (e.g. 2009-12-28).
+        # Using 52 as the period would compress week 53 past the full cycle.
+        wk_of_year = (weeks % 53) / 52.0 - 0.5
+        sin_year = np.sin(2 * np.pi * (weeks % 53) / 53)
+        cos_year = np.cos(2 * np.pi * (weeks % 53) / 53)
+        month_norm = ((weeks % 53) // 4) / 12.0 - 0.5
         return np.stack([wk_of_year, sin_year, cos_year, month_norm], axis=-1).astype(np.float32)
 
     def __getitem__(self, idx):
@@ -216,15 +218,25 @@ def predict_ns_transformer(
     raw_panel = _build_panel(weekly_sku, skus)
     # 2. Apply Log1p to the historical context to match training inputs
     panel = np.log1p(np.clip(raw_panel, a_min=0, a_max=None))
-    
-    enc_x = torch.tensor(panel[-seq_len:], dtype=torch.float32).unsqueeze(0).to(device)
-    dec_x = torch.tensor(panel[-label_len:], dtype=torch.float32).unsqueeze(0).to(device)
+
+    # 3. STRICT SPLIT: encoder context must use only training-period weeks.
+    # panel[-seq_len:] would include test-period rows when weekly_sku contains
+    # the full panel — leaking future observations into the context window.
+    full_idx = pd.date_range(weekly_sku["Week"].min(), weekly_sku["Week"].max(), freq="W-MON")
+    cutoff_pos = int(full_idx.searchsorted(pd.to_datetime(TEST_CUTOFF_DT)))
+    cutoff_pos = min(cutoff_pos, panel.shape[0])  # guard against out-of-bounds
+
+    enc_start = max(0, cutoff_pos - seq_len)
+    dec_start = max(0, cutoff_pos - label_len)
+
+    enc_x = torch.tensor(panel[enc_start:cutoff_pos], dtype=torch.float32).unsqueeze(0).to(device)
+    dec_x = torch.tensor(panel[dec_start:cutoff_pos], dtype=torch.float32).unsqueeze(0).to(device)
     dec_x = torch.cat([dec_x, torch.zeros((1, horizon, panel.shape[1]), device=device)], dim=1)
 
     ds = SkuPanelDataset(panel, seq_len, label_len, horizon)
-    enc_mark = torch.tensor(ds._time_features(panel.shape[0] - seq_len, panel.shape[0]),
+    enc_mark = torch.tensor(ds._time_features(enc_start, cutoff_pos),
                             dtype=torch.float32).unsqueeze(0).to(device)
-    dec_mark = torch.tensor(ds._time_features(panel.shape[0] - label_len, panel.shape[0] + horizon),
+    dec_mark = torch.tensor(ds._time_features(dec_start, cutoff_pos + horizon),
                             dtype=torch.float32).unsqueeze(0).to(device)
 
     with torch.no_grad():

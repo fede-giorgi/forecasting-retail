@@ -122,84 +122,114 @@ def predict_retail(stock_code: str, model_name: str, df_all: pd.DataFrame, horiz
         # 4. Model Inference
         if model_name in ['lr', 'lgb']:
             feature_cols = art["feature_cols"]
-            from sklearn.preprocessing import MinMaxScaler
-            
-            # 1. On-the-fly Global Scaling (Shared for BOTH LR and LightGBM)
+
+            # 1. Global Scaling — log1p for volumes, MinMax for ratios.
+            # Use the scaler saved during training so the range matches exactly.
             vol_features = [f'lag_{l}' for l in (1, 4, 13, 52)] + [f'rmean_{w}' for w in (4, 13)] + [f'rstd_{w}' for w in (4, 13)]
             for col in vol_features:
                 if col in test_df.columns:
                     test_df[f'{col}_Scaled'] = np.log1p(test_df[col].clip(lower=0).fillna(0))
-                    
+
             ratio_features = ['return_rate_4w', 'return_rate_13w', 'price_weekly', 'price_percent_change', 'ADI', 'CV2', 'share_zero_weeks']
             ratio_features = [c for c in ratio_features if c in test_df.columns]
-            
+
             if ratio_features:
-                scaler = MinMaxScaler()
-                # Fit on df_all to perfectly match the training distribution
-                scaler.fit(df_all[ratio_features].fillna(0))
+                scaler = art.get("global_scaler")
+                if scaler is None:
+                    # Fallback for artifacts saved before the scaler was persisted.
+                    # Re-fit on training rows only to avoid leaking test-period stats.
+                    from sklearn.preprocessing import MinMaxScaler
+                    scaler = MinMaxScaler()
+                    train_rows = df_all[df_all['Week'] < TEST_CUTOFF_DT]
+                    scaler.fit(train_rows[ratio_features].fillna(0))
                 test_df[[f"{c}_Scaled" for c in ratio_features]] = scaler.transform(test_df[ratio_features].fillna(0))
-            
+
             # 2. Model Specific Inference
             if model_name == 'lr':
-                # CRITICAL FIX FOR LR: We must One-Hot Encode test_df before reindexing!
-                # Otherwise, test_df.reindex will fill all dummy columns (e.g. volume_tier_High) with 0.0, 
-                # causing the model to collapse its intercept and predict near-zero values.
+                # One-Hot Encode before reindexing so dummy columns are correctly populated.
                 cat_cols = ['volume_tier', 'semantic_cluster_name', 'demand_class']
                 test_df_lr = pd.get_dummies(test_df, columns=[c for c in cat_cols if c in test_df.columns], drop_first=False)
-                
-                # Now we can safely reindex. The dummy variables will be correctly aligned.
                 X = test_df_lr.reindex(columns=feature_cols, fill_value=0)
                 preds_scaled = model_obj.predict(X.astype(float).values)
-                
+
             elif model_name == 'lgb':
                 # Bulletproof Categorical Casting to prevent C++ Segmentation Faults
                 X = pd.DataFrame(index=test_df.index)
                 cat_cols = ['volume_tier', 'semantic_cluster_name', 'demand_class']
-                
+
                 for col in feature_cols:
-                    if model_name == 'lgb' and col in cat_cols:
-                        # Extract exact categories from df_all to guarantee the memory dictionary matches LightGBM
+                    if col in cat_cols:
                         exact_categories = df_all[col].astype('category').cat.categories
-                        # Extract the integer codes directly (this exactly mimics how LightGBM sees categoricals internally)
                         X[col] = pd.Categorical(test_df[col], categories=exact_categories, ordered=False).codes.astype(float)
                     elif col in test_df.columns:
                         X[col] = test_df[col].astype(float)
                     else:
-                        # Fallback for missing columns. 
-                        # Reconstruct One-Hot Encoded dummy variables dynamically.
                         val_assigned = False
-                        if model_name == 'lr':
-                            for cat in cat_cols:
-                                if col.startswith(cat + "_"):
-                                    expected_val = col[len(cat) + 1:] # e.g. "High" from "volume_tier_High"
-                                    X[col] = (test_df[cat].astype(str) == expected_val).astype(float)
-                                    val_assigned = True
-                                    break
-                        
+                        for cat in cat_cols:
+                            if col.startswith(cat + "_"):
+                                expected_val = col[len(cat) + 1:]
+                                X[col] = (test_df[cat].astype(str) == expected_val).astype(float)
+                                val_assigned = True
+                                break
                         if not val_assigned:
                             X[col] = 0.0
-                        
-                # Passing a NumPy array (X.values) instead of a Pandas DataFrame
-                # bypasses the internal memory mapping bug between Pandas Categoricals and LightGBM's C++ library.
-                # Also forcing num_threads=1 during inference prevents OpenMP crashes in Langchain.
+
+                # num_threads=1 prevents OpenMP crashes in LangChain.
                 preds_scaled = model_obj.predict(X.values, num_threads=1)
-                
+
         elif model_name == 'prophet':
             future_df = test_df.copy()
             future_df['ds'] = future_df['Week']
-            
-            # Extract the necessary regressors saved in the artifact during training
+
             regressors = art.get("regressors", [])
             for reg in regressors:
                 if reg not in future_df.columns:
-                    future_df[reg] = 0.0 
-                    
+                    future_df[reg] = 0.0
+
             future = future_df[['ds'] + regressors]
             forecast = model_obj.predict(future)
             preds_scaled = forecast['yhat'].values
-            
+
+        elif model_name == 'nst':
+            # NST is a global multivariate model: rebuild from state_dict, run on
+            # all cluster SKUs, then slice the output for the requested SKU.
+            import torch
+            from src.models.ns_transformer.architecture import NonStationaryTransformer
+            from src.models.ns_transformer.train import predict_ns_transformer, DEFAULT
+
+            nst_art = _load_artifact('nst')
+            nst_cluster_data = nst_art["cluster_models"].get(cluster_id)
+            if nst_cluster_data is None:
+                raise KeyError(f"NST cluster model not found for cluster '{cluster_id}'.")
+
+            meta = nst_cluster_data["meta"]
+            p = {**DEFAULT, **meta.get("params", {})}
+            skus_in_cluster = nst_cluster_data["skus"]
+            n_skus = meta["panel_shape"][1]
+
+            nst_model = NonStationaryTransformer(
+                enc_in=n_skus, c_out=n_skus,
+                seq_len=p["SEQ_LEN"], label_len=p["LABEL_LEN"], pred_len=p["PRED_LEN"],
+                d_model=p["D_MODEL"], n_heads=p["N_HEADS"],
+                e_layers=p["E_LAYERS"], d_layers=p["D_LAYERS"],
+                d_ff=p["D_FF"], dropout=p["DROPOUT"],
+                n_time_feat=p.get("N_TIME_FEAT", 4),
+            )
+            nst_model.load_state_dict(nst_cluster_data["model_state"])
+
+            fcst_df = predict_ns_transformer(
+                nst_model, df_all, skus_in_cluster,
+                horizon=horizon_weeks,
+                seq_len=p["SEQ_LEN"], label_len=p["LABEL_LEN"],
+                device=torch.device("cpu"),
+            )
+            sku_fcst = fcst_df[fcst_df["StockCode"] == stock_code].sort_values("Horizon")
+            preds_qty = [round(max(0.0, float(v)), 2) for v in sku_fcst["Forecast"].values[:horizon_weeks]]
+            # NST already applies expm1 internally — return directly without further inversion.
+            return ForecastResult(model_name, stock_code, future_ts, preds_qty)
+
         else:
-            raise ValueError(f"Unknown model: {model_name}. Allowed: 'lr', 'prophet', 'lgb'.")
+            raise ValueError(f"Unknown model: {model_name}. Allowed: 'lr', 'prophet', 'lgb', 'nst'.")
             
         # 5. Inverse Scale target (log1p -> expm1)
         preds_scaled = np.clip(preds_scaled, a_min=None, a_max=20.0) # Prevent overflow

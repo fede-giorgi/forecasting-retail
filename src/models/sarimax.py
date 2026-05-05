@@ -19,8 +19,8 @@ from statsmodels.tsa.statespace.sarimax import SARIMAX
 
 from .naive import naive
 
-ORDER = (1, 1, 1)
-SEASONAL_ORDER = (1, 1, 0, 52)
+ORDER = (0, 2, 1)
+SEASONAL_ORDER = (1, 0, 1, 52)
 MIN_WEEKS_FOR_SEASONAL = 70  # need >1 full season + buffer for stable fit
 
 
