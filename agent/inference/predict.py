@@ -198,8 +198,24 @@ def predict_retail(stock_code: str, model_name: str, df_all: pd.DataFrame, horiz
             forecast = model_obj.predict(future)
             preds_scaled = forecast['yhat'].values
             
+        elif model_name == 'sarimax':
+            regressors = art.get("regressors", [])
+            # Fill missing regressors if any
+            for reg in regressors:
+                if reg not in test_df.columns:
+                    test_df[reg] = 0.0
+            X_test = test_df[regressors].fillna(0).values
+            
+            if model_obj["status"] == "success":
+                try:
+                    preds_scaled = model_obj["fit_res"].forecast(steps=len(test_df), exog=X_test)
+                except Exception:
+                    preds_scaled = np.full(len(test_df), model_obj["naive_fallback"])
+            else:
+                preds_scaled = np.full(len(test_df), model_obj["naive_fallback"])
+                
         else:
-            raise ValueError(f"Unknown model: {model_name}. Allowed: 'lr', 'prophet', 'lgb'.")
+            raise ValueError(f"Unknown model: {model_name}. Allowed: 'lr', 'prophet', 'lgb', 'sarimax'.")
             
         # 5. Inverse Scale target (log1p -> expm1)
         preds_scaled = np.clip(preds_scaled, a_min=None, a_max=20.0) # Prevent overflow

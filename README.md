@@ -162,6 +162,7 @@ python src/models/lightgbm_recursive.py
 python src/models/linear_regression.py
 python src/models/prophet_model.py
 python src/models/ns_transformer/train.py
+python src/models/sarimax.py
 ```
 
 **Option B — Notebooks (one per model, with plots and diagnostics):**
@@ -171,6 +172,7 @@ python src/models/ns_transformer/train.py
 | Ridge Regression | `notebooks/lr_playground.ipynb` |
 | Prophet | `notebooks/prophet_playground.ipynb` |
 | NS-Transformer | `notebooks/nst_playground.ipynb` |
+| SARIMAX | `notebooks/sarimax.ipynb` |
 
 ### Step 3: Run the Auto-Router
 Generate the optimal routing matrix by comparing the saved evaluation metrics.
@@ -203,3 +205,4 @@ The `chatbot.py` script acts as a smart orchestrator. It allows non-technical bu
 2. **Linear Regression (Ridge):** A highly interpretable autoregressive baseline utilizing dummy variables for temporal states.
 3. **Facebook Prophet:** Specialized in capturing strong additive multi-seasonality (weekly, yearly) and holiday effects.
 4. **Non-Stationary Transformer (NST):** A deep learning architecture that tackles the inherent non-stationarity of retail markets. It utilizes Projector networks (`tau` and `delta` learners) to de-stationarize the inputs before attention calculation.
+5. **SARIMAX:** A pure statistical time-series model. It is used as a rigid baseline for highly stable seasonal patterns where machine learning models might overfit.
