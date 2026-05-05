@@ -228,8 +228,16 @@ def predict_retail(stock_code: str, model_name: str, df_all: pd.DataFrame, horiz
             # NST already applies expm1 internally — return directly without further inversion.
             return ForecastResult(model_name, stock_code, future_ts, preds_qty)
 
+        elif model_name == 'sarimax':
+            regressors = art.get("regressors", [])
+            for reg in regressors:
+                if reg not in test_df.columns:
+                    test_df[reg] = 0.0
+            X_test = test_df[regressors].fillna(0).values
+            preds_scaled = model_obj.forecast(steps=len(test_df), exog=X_test)
+
         else:
-            raise ValueError(f"Unknown model: {model_name}. Allowed: 'lr', 'prophet', 'lgb', 'nst'.")
+            raise ValueError(f"Unknown model: {model_name}. Allowed: 'lr', 'prophet', 'lgb', 'nst', 'sarimax'.")
             
         # 5. Inverse Scale target (log1p -> expm1)
         preds_scaled = np.clip(preds_scaled, a_min=None, a_max=20.0) # Prevent overflow

@@ -10,6 +10,7 @@
 # Generated artifacts (raw dataset stays tracked, derived outputs don't)
 data/processed/
 embeddings/
+agent/artifacts/*.pkl
 
 # Python
 __pycache__/

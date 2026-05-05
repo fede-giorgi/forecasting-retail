@@ -22,7 +22,7 @@ def run_model_selection(model_names: list[str] = None):
     Reads saved per-SKU WMAPE files from agent/artifacts and selects the best model.
     """
     if model_names is None:
-        model_names = ['lgb', 'lr', 'prophet', 'nst']
+        model_names = ['lgb', 'lr', 'prophet', 'nst', 'sarimax']
         
     print(f"\nModel Selection: Comparing {len(model_names)} models based on saved evaluation scores...")
     

@@ -53,7 +53,7 @@ def run_forecast(stock_code: str, model: str = "auto", horizon_weeks: int = 4) -
     """Forecast weekly retail demand for a specific product using a specified model.
     Args:
         stock_code: Product identifier (e.g., '85123A', '22423')
-        model: Model type ('auto' for best model per SKU, 'lgb' for LightGBM, 'lr' for Ridge Regression, 'prophet' for Facebook Prophet)
+        model: Model type ('auto' for best model per SKU, 'lgb' for LightGBM, 'lr' for Ridge Regression, 'prophet' for Facebook Prophet, 'nst' for NS-Transformer, 'sarimax' for SARIMAX)
         horizon_weeks: Number of weeks into the future to forecast (default 4)
     """
     stock_code = str(stock_code).strip().upper()
@@ -127,7 +127,7 @@ TOOL USAGE STRATEGY:
 
 PARAMETERS:
 - `stock_code`: The unique identifier of the product (e.g., '85123A').
-- `model`: 'auto' (default, best per SKU), 'lgb' (LightGBM), 'lr' (Ridge), 'prophet' (Prophet), 'nst' (Non-Stationary Transformer).
+- `model`: 'auto' (default, best per SKU), 'lgb' (LightGBM), 'lr' (Ridge), 'prophet' (Prophet), 'nst' (NS-Transformer), 'sarimax' (SARIMAX).
 - `horizon_weeks`: Defaults to 4 weeks (1 month) for short/mid-term planning.
 
 RESPONSE FORMAT:
