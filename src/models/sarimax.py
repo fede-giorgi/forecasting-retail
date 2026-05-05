@@ -170,18 +170,9 @@ def train_models(train_agg, regressors, params=None):
                     enforce_invertibility=False,
                 )
                 fit_res = model.fit(disp=False, maxiter=100)
-            
-            cluster_models[cluster_id] = {
-                "status": "success",
-                "fit_res": fit_res,
-                "naive_fallback": np.mean(y_train)
-            }
+            cluster_models[cluster_id] = fit_res
         except Exception as e:
-            # If model entirely fails, fallback to naive mean
-            cluster_models[cluster_id] = {
-                "status": "failed",
-                "naive_fallback": np.mean(y_train) if len(y_train) > 0 else 0
-            }
+            print(f"Failed to fit cluster {cluster_id}: {e}")
             
     return cluster_models
 
@@ -191,20 +182,14 @@ def predict_models(cluster_models, test_agg, test_raw, regressors):
     
     all_cluster_forecasts = []
     
-    for cluster_id, artifact in cluster_models.items():
+    for cluster_id, fit_res in cluster_models.items():
         df_test_c = test_agg[test_agg['profile_cluster_id'] == cluster_id]
         if len(df_test_c) == 0:
             continue
             
         X_test = df_test_c[regressors].values
         
-        if artifact["status"] == "success":
-            try:
-                fcst_scaled = artifact["fit_res"].forecast(steps=len(df_test_c), exog=X_test)
-            except Exception:
-                fcst_scaled = np.full(len(df_test_c), artifact["naive_fallback"])
-        else:
-            fcst_scaled = np.full(len(df_test_c), artifact["naive_fallback"])
+        fcst_scaled = fit_res.forecast(steps=len(df_test_c), exog=X_test)
             
         fcst_df = pd.DataFrame({
             'profile_cluster_id': cluster_id,
@@ -253,16 +238,8 @@ def save_artifacts(cluster_models, regressors, sku_clusters, best_params=None, a
     file_name = "sarimax_cluster_models.pkl"
     path = os.path.join(artifacts_dir, file_name)
     
-    # We strip out heavy statsmodels objects if they failed, just keep fit_res
-    safe_models = {}
-    for cid, data in cluster_models.items():
-        if data["status"] == "success":
-            safe_models[cid] = {"status": "success", "fit_res": data["fit_res"], "naive_fallback": data["naive_fallback"]}
-        else:
-            safe_models[cid] = {"status": "failed", "naive_fallback": data["naive_fallback"]}
-            
     artifact = {
-        "cluster_models": safe_models,
+        "cluster_models": cluster_models,
         "regressors": list(regressors),
         "sku_clusters": {k: v for k, v in sku_clusters.items()},
         "best_params": best_params,

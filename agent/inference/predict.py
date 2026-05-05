@@ -206,13 +206,7 @@ def predict_retail(stock_code: str, model_name: str, df_all: pd.DataFrame, horiz
                     test_df[reg] = 0.0
             X_test = test_df[regressors].fillna(0).values
             
-            if model_obj["status"] == "success":
-                try:
-                    preds_scaled = model_obj["fit_res"].forecast(steps=len(test_df), exog=X_test)
-                except Exception:
-                    preds_scaled = np.full(len(test_df), model_obj["naive_fallback"])
-            else:
-                preds_scaled = np.full(len(test_df), model_obj["naive_fallback"])
+            preds_scaled = model_obj.forecast(steps=len(test_df), exog=X_test)
                 
         else:
             raise ValueError(f"Unknown model: {model_name}. Allowed: 'lr', 'prophet', 'lgb', 'sarimax'.")
