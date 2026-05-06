@@ -8,7 +8,7 @@
 
 An end-to-end, production-ready Machine Learning pipeline for SKU-level retail demand forecasting on the UCI *Online Retail II* dataset (UK gift-ware retailer).
 
-This project bridges the gap between complex data science operations and business decision-making by implementing a scalable MLOps architecture, four distinct forecasting models (including a State-of-the-Art Non-Stationary Transformer and Optuna auto-tuning), and an **LLM-based Agentic Assistant** for natural language querying and automated model routing.
+This project bridges the gap between complex data science operations and business decision-making by implementing a scalable MLOps architecture, five distinct forecasting models (including a State-of-the-Art Non-Stationary Transformer and Optuna auto-tuning), and an **LLM-based Agentic Assistant** for natural language querying and automated model routing.
 
 ---
 
@@ -46,13 +46,14 @@ graph LR
         PR[Facebook Prophet]:::model
         LGB[LightGBM Tweedie]:::model
         NST[NS-Transformer]:::model
+        SAR[SARIMAX]:::model
     end
     
     Select[Auto-Routing<br>Model Selector]:::block
 
     %% Data Flow
-    Preproc ==> LR & PR & LGB & NST
-    LR & PR & LGB & NST ==> Select
+    Preproc ==> LR & PR & LGB & NST & SAR
+    LR & PR & LGB & NST & SAR ==> Select
     
     %% User/Agent Interaction
     User <==>|Query / Response| Agent
@@ -63,11 +64,12 @@ graph LR
     Select -.->|Execute Inference| PR
     Select -.->|Execute Inference| LGB
     Select -.->|Execute Inference| NST
+    Select -.->|Execute Inference| SAR
 ```
 
 ### Architecture Breakdown
 1. **Data Preprocessing & Clustering:** Centralized ingestion that cleans data, engineers temporal/pricing features, calculates Syntetos-Boylan demand classes (Smooth, Erratic, Lumpy, Intermittent), and clusters SKUs using HDBSCAN on Gemini LLM embeddings of product descriptions.
-2. **Forecasting Engine:** Four parallel modeling architectures that train dynamically based on the semantic/behavioral clusters. Includes automated hyperparameter tuning via Optuna.
+2. **Forecasting Engine:** Five parallel modeling architectures that train dynamically based on the semantic/behavioral clusters. Includes automated hyperparameter tuning via Optuna.
 3. **Auto-Routing Model Selection:** Evaluates the test-set WMAPE for every SKU across all models and builds a routing matrix (`best_model_per_sku.json`).
 4. **Agentic Orchestration:** An LLM-powered layer that abstracts backend complexity. It interprets business queries, automatically routes inference to the best-performing model for that specific product, and provides analytical insights.
 
@@ -100,7 +102,7 @@ forecasting-retail/
 ├── notebooks/                  # Interactive playgrounds for EDA and Sandboxing
 │
 ├── src/                        # Core mathematical and utility logic (The Engine)
-│   ├── models/                 # Unified API for LR, Prophet, LightGBM, NST, and Selector
+│   ├── models/                 # Unified API for LR, Prophet, LightGBM, NST, SARIMAX, and Selector
 │   └── tools/                  # Data loaders, embeddings, clustering, evaluation
 │
 ├── requirements.txt            # Project dependencies
